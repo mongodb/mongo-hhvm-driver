@@ -1,0 +1,68 @@
+mongo-c-driver (1.1.0-rc0-0) unstable; urgency=low
+
+  * Release 1.1.0-rc0
+
+ -- Jason Carey <jason.carey@mongodb.com>  Thu, 13 Nov 2014 13:57:43 -0500
+
+mongo-c-driver (1.0.3-0) unstable; urgency=low
+
+  * Post-release bump to 1.0.3.
+
+ -- Jason Carey <jason.carey@mongodb.com>  Thu, 09 Oct 2014 10:16:06 -0400
+
+mongo-c-driver (1.0.2-0) unstable; urgency=low
+
+  * Release 1.0.2.
+
+ -- Jason Carey <jason.carey@mongodb.com>  Thu, 09 Oct 2014 09:35:59 -0400
+
+mongo-c-driver (1.0.1-0) unstable; urgency=low
+
+  * Post-release bump to 1.0.1.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Tue, 26 Aug 2014 19:04:51 -0700
+
+mongo-c-driver (1.0.0-0) unstable; urgency=low
+
+  * Release 1.0.0.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Tue, 26 Aug 2014 17:50:46 -0700
+
+mongo-c-driver (0.98.2-0) unstable; urgency=low
+
+  * Release 0.98.2.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Wed, 13 Aug 2014 11:33:09 -0700
+
+mongo-c-driver (0.98.1-0) unstable; urgency=low
+
+  * Bump for development releases.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Thu, 17 Jul 2014 14:21:33 -0700
+
+
+mongo-c-driver (0.98.0-0) unstable; urgency=low
+
+  * Bump for 0.98.0.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Wed, 16 Jul 2014 14:16:36 -0700
+
+
+mongo-c-driver (0.96.5-0) unstable; urgency=low
+
+  * Bump for development releases.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Fri, 20 Jun 2014 16:19:28 -0700
+
+
+mongo-c-driver (0.96.4-0) unstable; urgency=low
+
+  * Release of 0.96.4.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Fri, 20 Jun 2014 14:13:38 -0700
+
+mongo-c-driver (0.96.3-0) unstable; urgency=low
+
+  * Initial release for 0.96.3 development branch.
+
+ -- Christian Hergert <christian.hergert@mongodb.com>  Tue, 06 May 2014 00:36:14 -0700
