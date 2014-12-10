@@ -3,4 +3,5 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
-example.so
+mongodb.so
+run-test
