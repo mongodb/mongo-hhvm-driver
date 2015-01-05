@@ -15,6 +15,7 @@
  */
 
 #include "hphp/runtime/base/base-includes.h"
+#include "hphp/runtime/vm/native-data.h"
 
 extern "C" {
 #include "libbson/src/bson/bson.h"
@@ -22,21 +23,50 @@ extern "C" {
 #include <stdio.h>
 }
 
+#define IMPLEMENT_GET_CLASS(cls) \
+	Class* cls::getClass() { \
+	if (s_class == nullptr) { \
+		s_class = Unit::lookupClass(s_className.get()); \
+		assert(s_class); \
+	} \
+	return s_class; \
+} 
+
 namespace HPHP {
 
-static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn) {
-    mongoc_client_t *client;
+class MongoDBManagerData
+{
+	public:
+		static Class* getClass();
+
+		mongoc_client_t *m_client;
+		static Class* s_class;
+		static const StaticString s_className;
+};
+
+Class* MongoDBManagerData::s_class = nullptr;
+const StaticString MongoDBManagerData::s_className("MongoDBManager");
+
+static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
+{
+	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
+
+	mongoc_client_t *client;
+/*
     mongoc_collection_t *collection;
     mongoc_cursor_t *cursor;
     bson_error_t error;
     bson_oid_t oid;
     bson_t *doc;
+*/
+    client = mongoc_client_new(dsn.c_str());
 
-    mongoc_init ();
+	if (!client) {
+		throw Object(SystemLib::AllocExceptionObject("Can't connect"));
+	}
 
-    client = mongoc_client_new ("mongodb://localhost:27017/");
-    collection = mongoc_client_get_collection (client, "test", "test");
-
+	data->m_client = client;
+/*
     doc = bson_new ();
     bson_oid_init (&oid, NULL);
     BSON_APPEND_OID (doc, "_id", &oid);
@@ -49,16 +79,30 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn) {
     bson_destroy (doc);
     mongoc_collection_destroy (collection);
     mongoc_client_destroy (client);
+*/
 }
 
-static class MongoDBExtension : public Extension {
- public:
-  MongoDBExtension() : Extension("mongodb") {}
+static void HHVM_METHOD(MongoDBManager, __destruct)
+{
+	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
+	mongoc_client_destroy(data->m_client);
+}
 
-  virtual void moduleInit() {
-    HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
-    loadSystemlib("mongodb");
-  }
+IMPLEMENT_GET_CLASS(MongoDBManagerData);
+
+static class MongoDBExtension : public Extension {
+	public:
+		MongoDBExtension() : Extension("mongodb") {}
+
+		virtual void moduleInit() {
+			HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
+			HHVM_MALIAS(MongoDB\\Manager, __destruct, MongoDBManager, __destruct);
+
+			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get(), Native::NDIFlags::NO_SWEEP);
+
+			loadSystemlib("mongodb");
+			mongoc_init();
+		}
 } s_mongodb_extension;
 
 HHVM_GET_MODULE(mongodb)
