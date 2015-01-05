@@ -42,6 +42,14 @@ class MongoDBManagerData
 		mongoc_client_t *m_client;
 		static Class* s_class;
 		static const StaticString s_className;
+
+		void sweep() {
+			mongoc_client_destroy(m_client);
+		}
+
+		~MongoDBManagerData() {
+			sweep();
+		};
 };
 
 Class* MongoDBManagerData::s_class = nullptr;
@@ -59,7 +67,7 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
     bson_oid_t oid;
     bson_t *doc;
 */
-    client = mongoc_client_new(dsn.c_str());
+	client = mongoc_client_new(dsn.c_str());
 
 	if (!client) {
 		throw Object(SystemLib::AllocExceptionObject("Can't connect"));
@@ -82,12 +90,6 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
 */
 }
 
-static void HHVM_METHOD(MongoDBManager, __destruct)
-{
-	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
-	mongoc_client_destroy(data->m_client);
-}
-
 IMPLEMENT_GET_CLASS(MongoDBManagerData);
 
 static class MongoDBExtension : public Extension {
@@ -96,9 +98,8 @@ static class MongoDBExtension : public Extension {
 
 		virtual void moduleInit() {
 			HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
-			HHVM_MALIAS(MongoDB\\Manager, __destruct, MongoDBManager, __destruct);
 
-			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get(), Native::NDIFlags::NO_SWEEP);
+			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
 
 			loadSystemlib("mongodb");
 			mongoc_init();
