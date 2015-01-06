@@ -6,8 +6,32 @@ class Manager {
 	<<__Native>>
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array()): void;
 
+	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\CommandResult
+	{
+	}
+
+	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\QueryResult
+	{
+	}
+
+	function executeWriteBatch(string $namespace, MongoDB\Driver\WriteBatch $batch, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
+	{
+	}
+
 	<<__Native>>
 	function executeInsert(string $namespace, mixed $document, ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
+
+	function executeUpdate(string $namespace, $query, $newObj, array $updateOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
+	{
+	}
+
+	function executeDelete(string $namespace, $query, array $deleteOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
+	{
+	}
+
+	function getServers(): void
+	{
+	}
 }
 
 namespace MongoDB\Driver;
