@@ -92,12 +92,26 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
 */
 }
 
+const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
+
+static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
+{
+	static Class* c_foobar;
+
+	c_foobar = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
+	assert(c_foobar);
+	ObjectData* obj = ObjectData::newInstance(c_foobar);
+
+	return Object(obj);
+}
+
 static class MongoDBExtension : public Extension {
 	public:
 		MongoDBExtension() : Extension("mongodb") {}
 
 		virtual void moduleInit() {
 			HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
+			HHVM_MALIAS(MongoDB\\Manager, executeInsert, MongoDBManager, executeInsert);
 
 			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
 
