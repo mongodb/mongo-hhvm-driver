@@ -25,23 +25,24 @@ extern "C" {
 
 #define IMPLEMENT_GET_CLASS(cls) \
 	Class* cls::getClass() { \
-	if (s_class == nullptr) { \
-		s_class = Unit::lookupClass(s_className.get()); \
-		assert(s_class); \
-	} \
-	return s_class; \
-} 
+		if (s_class == nullptr) { \
+			s_class = Unit::lookupClass(s_className.get()); \
+			assert(s_class); \
+		} \
+		return s_class; \
+	}
 
 namespace HPHP {
 
 class MongoDBManagerData
 {
 	public:
-		static Class* getClass();
-
-		mongoc_client_t *m_client;
 		static Class* s_class;
 		static const StaticString s_className;
+
+		mongoc_client_t *m_client;
+
+		static Class* getClass();
 
 		void sweep() {
 			mongoc_client_destroy(m_client);
@@ -54,6 +55,7 @@ class MongoDBManagerData
 
 Class* MongoDBManagerData::s_class = nullptr;
 const StaticString MongoDBManagerData::s_className("MongoDBManager");
+IMPLEMENT_GET_CLASS(MongoDBManagerData);
 
 static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
@@ -89,8 +91,6 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
     mongoc_client_destroy (client);
 */
 }
-
-IMPLEMENT_GET_CLASS(MongoDBManagerData);
 
 static class MongoDBExtension : public Extension {
 	public:
