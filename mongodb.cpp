@@ -102,6 +102,9 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 	assert(c_foobar);
 	ObjectData* obj = ObjectData::newInstance(c_foobar);
 
+	obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
+
 	return Object(obj);
 }
 

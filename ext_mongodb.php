@@ -41,7 +41,7 @@ final class WriteResult {
 	private $nMatched = 0;
 	private $nRemoved = 0;
 	private $nInserted = 0;
-	private $nModified = 0;
+	protected $nModified = 0;
 	private $upsertedIds = null;
 	private $writeErrors = null;
 	private $writeConcernError = null;
