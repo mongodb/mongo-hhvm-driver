@@ -1,4 +1,5 @@
-HHVM_EXTENSION(mongodb mongodb.cpp
+HHVM_EXTENSION(mongodb
+ mongodb.cpp bson.cpp
  libbson/src/yajl/yajl.c libbson/src/yajl/yajl_alloc.c
  libbson/src/yajl/yajl_buf.c libbson/src/yajl/yajl_encode.c
  libbson/src/yajl/yajl_gen.c libbson/src/yajl/yajl_lex.c

@@ -17,6 +17,8 @@
 #include "hphp/runtime/base/base-includes.h"
 #include "hphp/runtime/vm/native-data.h"
 
+#include "bson.h"
+
 extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
@@ -97,6 +99,23 @@ const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteRes
 static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
 {
 	static Class* c_foobar;
+	bson_t *bson;
+	mongoc_collection_t *collection;
+	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
+	bson_error_t error;
+
+	VariantToBsonConverter converter(document);
+	bson = bson_new();
+	converter.convert(bson);
+
+	collection = mongoc_client_get_collection(data->m_client, "test", "test");
+
+	if (!mongoc_collection_insert(collection, MONGOC_INSERT_NONE, bson, NULL, &error)) {
+		printf ("%s\n", error.message);
+	}
+
+	bson_destroy(bson);
+	mongoc_collection_destroy(collection);
 
 	c_foobar = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
 	assert(c_foobar);
