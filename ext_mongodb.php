@@ -4,7 +4,7 @@ namespace MongoDB;
 <<__NativeData("MongoDBManager")>>
 class Manager {
 	<<__Native>>
-	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array()): void;
+	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
 	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\CommandResult
 	{
