@@ -158,7 +158,12 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 	}
 }
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v) { std::cout << "x\n"; };
+void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
+{
+	std::cout << "object coverted to ";
+
+	convertPart(bson, key, v.toArray());
+}
 
 void VariantToBsonConverter::convert(bson_t *bson, Array a)
 {
