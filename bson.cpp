@@ -24,6 +24,29 @@ extern "C" {
 
 namespace HPHP {
 
+int VariantToBsonConverter::_isPackedArray(const Array &a)
+{
+	int idx = 0, key_value = 0;
+
+	for (ArrayIter iter(a); iter; ++iter) {
+		Variant key(iter.first());
+
+		if (!key.isInteger()) {
+			return false;
+		}
+
+		key_value = key.toInt32(); 
+		std::cout << idx << "key: " << key_value << "\n";
+
+		if (idx != key_value) {
+			return false;
+		}
+
+		idx++;
+	}
+	return true;
+}
+
 VariantToBsonConverter::VariantToBsonConverter(const Variant& document)
 {
 	m_document = document;
@@ -114,7 +137,12 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 	bson_t child;
 
 	std::cout << "array\n";
-	bson_append_array_begin(bson, key, -1, &child);
+
+	if (_isPackedArray(v)) {
+		bson_append_array_begin(bson, key, -1, &child);
+	} else {
+		bson_append_document_begin(bson, key, -1, &child);
+	}
 
 	for (ArrayIter iter(v); iter; ++iter) {
 		Variant key(iter.first());
@@ -123,7 +151,11 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 		convertPart(&child, key.toString().c_str(), data);
 	}
 
-	bson_append_array_end(bson, &child);
+	if (_isPackedArray(v)) {
+		bson_append_array_end(bson, &child);
+	} else {
+		bson_append_document_end(bson, &child);
+	}
 }
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v) { std::cout << "x\n"; };

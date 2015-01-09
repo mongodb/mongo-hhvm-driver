@@ -23,6 +23,7 @@ namespace HPHP {
 
 class VariantToBsonConverter
 {
+
 	public:
 		Variant m_document;
 		int m_level;
@@ -42,6 +43,9 @@ class VariantToBsonConverter
 	void convertPart(bson_t *bson, const char *key, String v);
 	void convertPart(bson_t *bson, const char *key, Array v);
 	void convertPart(bson_t *bson, const char *key, Object v);
+	
+	private:
+		int _isPackedArray(const Array &a);
 
 };
 
