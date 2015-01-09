@@ -40,9 +40,9 @@ class VariantToBsonConverter
 	void convertPart(const char *key, bool v);
 	void convertPart(const char *key, int64_t v);
 	void convertPart(const char *key, double v);
-	void convertPart(const char *key, HPHP::String v);
-	void convertPart(const char *key, HPHP::Array v);
-	void convertPart(const char *key, HPHP::Object v);
+	void convertPart(const char *key, String v);
+	void convertPart(const char *key, Array v);
+	void convertPart(const char *key, Object v);
 
 };
 
