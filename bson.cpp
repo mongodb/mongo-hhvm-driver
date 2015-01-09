@@ -30,93 +30,89 @@ namespace HPHP {
 		m_level = 0;
 	}
 
-	bson_t *VariantToBsonConverter::convert(bson_t *bson)
+	void VariantToBsonConverter::convert(bson_t *bson)
 	{
-		m_output = bson;
-
-		convert(m_document);
-
-		return m_output;
+		return convert(bson, m_document);
 	}
 
-	void VariantToBsonConverter::convert(Variant v)
+	void VariantToBsonConverter::convert(bson_t *bson, Variant v)
 	{
 		std::cout << "convert Variant\n";
 
 		if (v.isObject()) {
-//			convertPart(v.toObject()); 
+//			convert(bson, v.toObject());
 		} else if (v.isArray()) {
-			convert(v.toArray()); 
+			convert(bson, v.toArray()); 
 		} else {
 			std::cout << "convert *unimplemented*: " << getDataTypeString(v.getType()).c_str() << "\n";
 		}
 	}
 
-	void VariantToBsonConverter::convertPart(const char *key, Variant v)
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant v)
 	{
 		switch (v.getType()) {
 			case KindOfUninit:
 			case KindOfNull:
-				convertPart(key);
+				convertPart(bson, key);
 				break;
 			case KindOfBoolean:
-				convertPart(key, v.toBoolean());
+				convertPart(bson, key, v.toBoolean());
 				break;
 			case KindOfInt64:
-				convertPart(key, v.toInt64());
+				convertPart(bson, key, v.toInt64());
 				break;
 			case KindOfDouble:
-				convertPart(key, v.toDouble());
+				convertPart(bson, key, v.toDouble());
 				break;
 			case KindOfStaticString:
 			case KindOfString:
-				convertPart(key, v.toString());
+				convertPart(bson, key, v.toString());
 				break;
 			case KindOfArray:
-				convertPart(key, v.toArray());
+				convertPart(bson, key, v.toArray());
 				break;
 			case KindOfObject:
-				convertPart(key, v.toObject());
+				convertPart(bson, key, v.toObject());
 				break;
 			default:
 				break;
 		}
 	}
 
-	void VariantToBsonConverter::convertPart(const char *key)
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key)
 	{
 		std::cout << "null\n";
-		bson_append_null(m_output, key, -1);
+		bson_append_null(bson, key, -1);
 	};
 	
-	void VariantToBsonConverter::convertPart(const char *key, bool v)
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, bool v)
 	{
 		std::cout << "bool\n";
-		bson_append_bool(m_output, key, -1, v);
+		bson_append_bool(bson, key, -1, v);
 	};
 
-	void VariantToBsonConverter::convertPart(const char *key, int64_t v)
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, int64_t v)
 	{
 		std::cout << "int64\n";
-		bson_append_int64(m_output, key, -1, v);
+		bson_append_int64(bson, key, -1, v);
 	};
 
-	void VariantToBsonConverter::convertPart(const char *key, double v)
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, double v)
 	{
 		std::cout << "double\n";
-		bson_append_double(m_output, key, -1, v);
+		bson_append_double(bson, key, -1, v);
 	};
 
-	void VariantToBsonConverter::convertPart(const char *key, String v)
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, String v)
 	{
 		std::cout << "utf8: " << v.c_str() << "\n";
-		bson_append_utf8(m_output, key, -1, v.c_str(), v.size());
+		bson_append_utf8(bson, key, -1, v.c_str(), v.size());
 	}
 
-	void VariantToBsonConverter::convertPart(const char *key, Array v) { std::cout << "x\n"; };
-	void VariantToBsonConverter::convertPart(const char *key, Object v) { std::cout << "x\n"; };
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v) { std::cout << "x\n"; };
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v) { std::cout << "x\n"; };
 
-	void VariantToBsonConverter::convert(Array a)
+	void VariantToBsonConverter::convert(bson_t *bson, Array a)
 	{
 		std::cout << "convert Top Level Array\n";
 
@@ -124,11 +120,11 @@ namespace HPHP {
 			Variant key(iter.first());
 			const Variant& data(iter.secondRef());
 
-			convertPart(key.toString().c_str(), data);
+			convertPart(bson, key.toString().c_str(), data);
 		}
 	}
 
-	void VariantToBsonConverter::convert(Object o)
+	void VariantToBsonConverter::convert(bson_t *bson, Object o)
 	{
 		std::cout << "convert Top Level Object\n";
 /*

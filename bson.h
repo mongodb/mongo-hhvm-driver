@@ -25,24 +25,23 @@ class VariantToBsonConverter
 {
 	public:
 		Variant m_document;
-		bson_t *m_output;
 		int m_level;
 	
 	VariantToBsonConverter(const Variant& document);
-	bson_t *convert(bson_t *bson);
+	void convert(bson_t *bson);
 
-	void convert(Variant v);
-	void convert(Array a);
-	void convert(Object o);
+	void convert(bson_t *bson, Variant v);
+	void convert(bson_t *bson, Array a);
+	void convert(bson_t *bson, Object o);
 
-	void convertPart(const char *key);
-	void convertPart(const char *key, Variant v);
-	void convertPart(const char *key, bool v);
-	void convertPart(const char *key, int64_t v);
-	void convertPart(const char *key, double v);
-	void convertPart(const char *key, String v);
-	void convertPart(const char *key, Array v);
-	void convertPart(const char *key, Object v);
+	void convertPart(bson_t *bson, const char *key);
+	void convertPart(bson_t *bson, const char *key, Variant v);
+	void convertPart(bson_t *bson, const char *key, bool v);
+	void convertPart(bson_t *bson, const char *key, int64_t v);
+	void convertPart(bson_t *bson, const char *key, double v);
+	void convertPart(bson_t *bson, const char *key, String v);
+	void convertPart(bson_t *bson, const char *key, Array v);
+	void convertPart(bson_t *bson, const char *key, Object v);
 
 };
 
