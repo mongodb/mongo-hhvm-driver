@@ -10,7 +10,7 @@ $doc = [
 	'length' => 185,
 	'does_opensource' => true,
 	'null_value' => null,
-	'site' => 'http://derickretans.nl',
+	'sites' => [ 'http://derickretans.nl', 'http://xdebug.org' ],
 ];
 
 $r = $m->executeInsert( 'demo.test', $doc );

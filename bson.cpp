@@ -109,7 +109,23 @@ namespace HPHP {
 		bson_append_utf8(bson, key, -1, v.c_str(), v.size());
 	}
 
-	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v) { std::cout << "x\n"; };
+	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
+	{
+		bson_t child;
+
+		std::cout << "array\n";
+		bson_append_array_begin(bson, key, -1, &child);
+
+		for (ArrayIter iter(v); iter; ++iter) {
+			Variant key(iter.first());
+			const Variant& data(iter.secondRef());
+
+			convertPart(&child, key.toString().c_str(), data);
+		}
+
+		bson_append_array_end(bson, &child);
+	}
+
 	void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v) { std::cout << "x\n"; };
 
 	void VariantToBsonConverter::convert(bson_t *bson, Array a)
