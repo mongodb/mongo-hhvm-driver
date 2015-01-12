@@ -23,31 +23,31 @@ namespace HPHP {
 
 class VariantToBsonConverter
 {
-
 	public:
 		Variant m_document;
 		int m_level;
-	
-	VariantToBsonConverter(const Variant& document);
-	void convert(bson_t *bson);
+/* {{{ public methods */
+		VariantToBsonConverter(const Variant& document);
+		void convert(bson_t *bson);
 
-	void convert(bson_t *bson, Variant v);
-	void convert(bson_t *bson, Array a);
-	void convert(bson_t *bson, Object o);
+		void convert(bson_t *bson, Variant v);
+		void convert(bson_t *bson, Array a);
+		void convert(bson_t *bson, Object o);
 
-	void convertPart(bson_t *bson, const char *key);
-	void convertPart(bson_t *bson, const char *key, Variant v);
-	void convertPart(bson_t *bson, const char *key, bool v);
-	void convertPart(bson_t *bson, const char *key, int64_t v);
-	void convertPart(bson_t *bson, const char *key, double v);
-	void convertPart(bson_t *bson, const char *key, String v);
-	void convertPart(bson_t *bson, const char *key, Array v);
-	void convertPart(bson_t *bson, const char *key, Object v);
-	
+		void convertPart(bson_t *bson, const char *key);
+		void convertPart(bson_t *bson, const char *key, Variant v);
+		void convertPart(bson_t *bson, const char *key, bool v);
+		void convertPart(bson_t *bson, const char *key, int64_t v);
+		void convertPart(bson_t *bson, const char *key, double v);
+		void convertPart(bson_t *bson, const char *key, String v);
+		void convertPart(bson_t *bson, const char *key, Array v);
+		void convertPart(bson_t *bson, const char *key, Object v);
+/* }}} */
 	private:
+/* private methods {{{ */
 		int _isPackedArray(const Array &a);
 		char *_getUnmangledPropertyName(String key);
-
+/* }}} */
 };
 
 }
