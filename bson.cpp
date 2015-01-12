@@ -132,15 +132,34 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, String v
 	bson_append_utf8(bson, key, -1, v.c_str(), v.size());
 }
 
+char *VariantToBsonConverter::_getUnmangledPropertyName(String key)
+{
+	const char *ckey = key.c_str();
+
+	if (ckey[0] == '\0' && key.length()) {
+		const char *cls = ckey + 1;
+		if (*cls == '*') { // protected
+			return strdup(ckey + 3);
+		} else {
+			int l = strlen(cls);
+			return strdup(cls + l + 1);
+		}
+	} else {
+		return strdup(ckey);
+	}
+}
+
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 {
 	bson_t child;
+	int unmangle = 0;
 
 	std::cout << "array\n";
 
 	if (_isPackedArray(v)) {
 		bson_append_array_begin(bson, key, -1, &child);
 	} else {
+		unmangle = 1;
 		bson_append_document_begin(bson, key, -1, &child);
 	}
 
@@ -148,7 +167,15 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 		Variant key(iter.first());
 		const Variant& data(iter.secondRef());
 
-		convertPart(&child, key.toString().c_str(), data);
+		if (unmangle) {
+			const char *unmangledName;
+
+			unmangledName = _getUnmangledPropertyName(key.toString());
+			convertPart(&child, unmangledName, data);
+			free((void*) unmangledName);
+		} else {
+			convertPart(&child, key.toString().c_str(), data);
+		}
 	}
 
 	if (_isPackedArray(v)) {

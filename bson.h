@@ -46,6 +46,7 @@ class VariantToBsonConverter
 	
 	private:
 		int _isPackedArray(const Array &a);
+		char *_getUnmangledPropertyName(String key);
 
 };
 

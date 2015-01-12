@@ -3,6 +3,12 @@ var_dump(extension_loaded("mongodb"));
 
 $m = new MongoDB\Manager("mongodb://localhost:27017");
 
+class myClass {
+	public $publiek = 1;
+	protected $beveiligd = 2;
+	private $privaat = 3;
+}
+
 $testClass = new StdClass;
 $testClass->true = "ja";
 $testClass->false = "nee";
@@ -18,6 +24,7 @@ $doc = [
 	'sites_err' => [ 0 => 'http://derickretans.nl', 2 => 'http://xdebug.org' ],
 	'phones' => [ 'work' => '02077771111', 'mobile' => '075551111' ],
 	'boolean' => $testClass,
+	'ppp' => new MyClass,
 ];
 
 $r = $m->executeInsert( 'demo.test', $doc );
