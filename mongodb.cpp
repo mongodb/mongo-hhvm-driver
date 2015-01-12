@@ -18,6 +18,7 @@
 #include "hphp/runtime/vm/native-data.h"
 
 #include "bson.h"
+#include "utils.h"
 
 extern "C" {
 #include "libbson/src/bson/bson.h"
@@ -100,22 +101,35 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 {
 	static Class* c_foobar;
 	bson_t *bson;
-	mongoc_collection_t *collection;
 	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
 	bson_error_t error;
+	bson_t reply;
+	mongoc_bulk_operation_t *batch;
+	char *database;
+	char *collection;
+	int hint;
 
 	VariantToBsonConverter converter(document);
 	bson = bson_new();
 	converter.convert(bson);
 
-	collection = mongoc_client_get_collection(data->m_client, "test", "test");
+	/* Prepare */
+	MongoDriver::Utils::splitNamespace(ns, &database, &collection);
 
-	if (!mongoc_collection_insert(collection, MONGOC_INSERT_NONE, bson, NULL, &error)) {
-		printf ("%s\n", error.message);
-	}
+	batch = mongoc_bulk_operation_new(true);
+	mongoc_bulk_operation_insert(batch, bson);
+	mongoc_bulk_operation_set_database(batch, database);
+	mongoc_bulk_operation_set_collection(batch, collection);
+	mongoc_bulk_operation_set_client(batch, data->m_client);
 
+	/* Run operation */
+	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
+
+	/* Destroy */
 	bson_destroy(bson);
-	mongoc_collection_destroy(collection);
+	mongoc_bulk_operation_destroy(batch);
+
+	/* Prepare result */
 
 	c_foobar = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
 	assert(c_foobar);
