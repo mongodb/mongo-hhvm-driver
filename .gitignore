@@ -5,3 +5,5 @@ Makefile
 cmake_install.cmake
 mongodb.so
 run-test
+*.sw*
+install_manifest.txt
