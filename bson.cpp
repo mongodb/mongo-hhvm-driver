@@ -185,6 +185,10 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 	}
 }
 
+/* {{{ Serialization of types */
+const StaticString s_MongoDriverBsonType_className("MongoDB\\BSON\\Type");
+
+/* {{{ MongoDriver\BSON\Regex */
 const StaticString s_MongoDriverBsonRegex_className("MongoDB\\BSON\\Regex");
 const StaticString s_MongoDriverBsonRegex_pattern("pattern");
 const StaticString s_MongoDriverBsonRegex_flags("flags");
@@ -196,14 +200,20 @@ void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object
 
 	bson_append_regex(bson, key, -1, regex.c_str(), flags.c_str());
 }
+/* }}} */
+
+/* }}} */
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
 {
-	std::cout << v->getClassName().c_str() << " object coverted to ";
+	std::cout << v->getClassName().c_str() << " object converted to ";
 
-	if (v.instanceof(String("MongoDB\\BSON\\Regex"))) {
-		std::cout << "REGEXP\n";
-		_convertRegex(bson, key, v);
+	if (v.instanceof(s_MongoDriverBsonType_className)) {
+		std::cout << "internal type ";
+		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
+			std::cout << "Regex\n";
+			_convertRegex(bson, key, v);
+		}
 	} else {
 		convertPart(bson, key, v.toArray());
 	}
