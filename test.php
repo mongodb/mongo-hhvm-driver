@@ -13,7 +13,7 @@ $testClass = new StdClass;
 $testClass->true = "ja";
 $testClass->false = "nee";
 
-$re = new MongoDB\BSON\Regex("/^name=/", "i");
+$re = new MongoDB\BSON\Regex("^name=", "");
 
 $doc = [
 	'name' => 'Derick',

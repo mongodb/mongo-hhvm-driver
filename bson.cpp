@@ -185,17 +185,21 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 	}
 }
 
+const StaticString s_MongoDriverBsonRegex_className("MongoDB\\BSON\\Regex");
+const StaticString s_MongoDriverBsonRegex_pattern("pattern");
+const StaticString s_MongoDriverBsonRegex_flags("flags");
+
 void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object v)
 {
-	String regex = v.o_get("pattern", false, String("MongoDB\\BSON\\Regex"));
-	String flags = v.o_get("flags", false, String("MongoDB\\BSON\\Regex"));
+	String regex = v.o_get(s_MongoDriverBsonRegex_pattern, false, s_MongoDriverBsonRegex_className);
+	String flags = v.o_get(s_MongoDriverBsonRegex_flags, false, s_MongoDriverBsonRegex_className);
 
 	bson_append_regex(bson, key, -1, regex.c_str(), flags.c_str());
 }
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
 {
-	std::cout << "object coverted to ";
+	std::cout << v->getClassName().c_str() << " object coverted to ";
 
 	if (v.instanceof(String("MongoDB\\BSON\\Regex"))) {
 		std::cout << "REGEXP\n";
