@@ -185,11 +185,24 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 	}
 }
 
+void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object v)
+{
+	String regex = v.o_get("pattern", false, String("MongoDB\\BSON\\Regex"));
+	String flags = v.o_get("flags", false, String("MongoDB\\BSON\\Regex"));
+
+	bson_append_regex(bson, key, -1, regex.c_str(), flags.c_str());
+}
+
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
 {
 	std::cout << "object coverted to ";
 
-	convertPart(bson, key, v.toArray());
+	if (v.instanceof(String("MongoDB\\BSON\\Regex"))) {
+		std::cout << "REGEXP\n";
+		_convertRegex(bson, key, v);
+	} else {
+		convertPart(bson, key, v.toArray());
+	}
 }
 
 void VariantToBsonConverter::convert(bson_t *bson, Array a)

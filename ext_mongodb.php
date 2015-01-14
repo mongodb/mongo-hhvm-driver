@@ -90,3 +90,31 @@ final class WriteResult {
 		return [];
 	}
 }
+
+namespace MongoDB\BSON;
+
+interface Type
+{
+}
+
+class Regex implements Type
+{
+	function __construct(private string $pattern, private string $flags)
+	{
+	}
+
+	function getPattern() : string
+	{
+		return $this->pattern;
+	}
+
+	function getFlags() : string
+	{
+		return $this->flags;
+	}
+
+	function __toString() : string
+	{
+		return "/{$this->pattern}/{$this->flags}";
+	}
+}

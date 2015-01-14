@@ -13,6 +13,8 @@ $testClass = new StdClass;
 $testClass->true = "ja";
 $testClass->false = "nee";
 
+$re = new MongoDB\BSON\Regex("/^name=/", "i");
+
 $doc = [
 	'name' => 'Derick',
 	'twitter' => 'derickr',
@@ -25,6 +27,7 @@ $doc = [
 	'phones' => [ 'work' => '02077771111', 'mobile' => '075551111' ],
 	'boolean' => $testClass,
 	'ppp' => new MyClass,
+	're' => $re,
 ];
 
 $r = $m->executeInsert( 'demo.test', $doc );
