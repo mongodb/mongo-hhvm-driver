@@ -63,15 +63,8 @@ IMPLEMENT_GET_CLASS(MongoDBManagerData);
 static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
 	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
-
 	mongoc_client_t *client;
-/*
-    mongoc_collection_t *collection;
-    mongoc_cursor_t *cursor;
-    bson_error_t error;
-    bson_oid_t oid;
-    bson_t *doc;
-*/
+
 	client = mongoc_client_new(dsn.c_str());
 
 	if (!client) {
@@ -79,20 +72,6 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
 	}
 
 	data->m_client = client;
-/*
-    doc = bson_new ();
-    bson_oid_init (&oid, NULL);
-    BSON_APPEND_OID (doc, "_id", &oid);
-    BSON_APPEND_UTF8 (doc, "hello", "world");
-
-    if (!mongoc_collection_insert (collection, MONGOC_INSERT_NONE, doc, NULL, &error)) {
-        printf ("%s\n", error.message);
-    }
-
-    bson_destroy (doc);
-    mongoc_collection_destroy (collection);
-    mongoc_client_destroy (client);
-*/
 }
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
