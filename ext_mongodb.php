@@ -39,6 +39,43 @@ namespace MongoDB\Driver;
 class Exception {
 }
 
+class Utils {
+	const ERROR_INVALID_ARGUMENT  = 1;
+	const ERROR_RUNTIME           = 2;
+	const ERROR_MONGOC_FAILED     = 3;
+	const ERROR_WRITE_FAILED      = 4;
+	const ERROR_CONNECTION_FAILED = 5;
+
+	static function throwHippoException($domain, $message)
+	{
+		switch ($domain) {
+			case self::ERROR_INVALID_ARGUMENT:
+				throw new \InvalidArgumentException($message);
+
+			case self::ERROR_RUNTIME:
+			case self::ERROR_MONGOC_FAILED:
+				throw new RuntimeException($mssage);
+
+			case self::ERROR_WRITE_FAILED:
+				throw new WriteException($message);
+
+			case self::ERROR_CONNECTION_FAILED:
+				throw new ConnectionException($message);
+		}
+	}
+
+	static function mustBeArrayOrObject(string $name, mixed $value)
+	{
+		$valueType = gettype($value);
+		if (!in_array($valueType, [ 'array', 'object' ])) {
+			Utils::throwHippoException(
+				Utils::ERROR_INVALID_ARGUMENT,
+				"Expected {$name} to be array or object, {$valueType} given"
+			);
+		}
+	}
+}
+
 class RuntimeException extends Exception {
 }
 
