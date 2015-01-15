@@ -32,5 +32,16 @@ $doc = [
 
 $r = $m->executeInsert( 'demo.test', new MyClass );
 $r = $m->executeInsert( 'demo.test', $doc );
+
+$w = new MongoDB\Driver\Query(
+	['twitter' => 'derickr'],
+	[
+		'projection' => ['phones' => 1, 'ppp' => 1 ],
+		'sort' => [ 'length' => 1 ]
+	]
+);
+
+echo MongoDB\Driver\Query::FLAG_NONE, "\n";
+
 var_dump( $r );
 ?>

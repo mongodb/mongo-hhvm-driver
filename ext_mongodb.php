@@ -79,6 +79,44 @@ class Utils {
 class RuntimeException extends Exception {
 }
 
+final class Query {
+	private array $query;
+
+	public function __construct(mixed $filter, array $options = array())
+	{
+		$zquery = [];
+
+		/* phongo_query_init */
+		Utils::mustBeArrayOrObject('filter', $filter);
+
+		if ($options) {
+			$this->query['batchSize'] = array_key_exists('batchSize', $options ) ? $options['batchSize'] : 0;
+			$this->query['flags'] = array_key_exists('flags', $options ) ? $options['flags'] : 0;
+			$this->query['limit'] = array_key_exists('limit', $options ) ? $options['limit'] : 0;
+			$this->query['skip'] = array_key_exists('skip', $options ) ? $options['skip'] : 0;
+		}
+
+		if (array_key_exists('modifiers', $options)) {
+			Utils::mustBeArrayOrObject('modifiers', $options['modifiers']);
+			$zquery += (array) $options['modifiers'];
+		}
+
+		if (array_key_exists('projection', $options)) {
+			Utils::mustBeArrayOrObject('projection', $options['projection']);
+			$this->query['selector'] = (array) $options['projection'];
+		}
+
+		if (array_key_exists('sort', $options)) {
+			Utils::mustBeArrayOrObject('sort', $options['sort']);
+			$zquery['$orderby'] = (array) $options['sort'];
+		}
+
+		$zquery['$query'] = $filter;
+
+		$this->query['query'] = $zquery;
+	}
+}
+
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;

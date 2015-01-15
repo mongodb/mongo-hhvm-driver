@@ -120,6 +120,8 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 	return Object(obj);
 }
 
+const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
+
 static class MongoDBExtension : public Extension {
 	public:
 		MongoDBExtension() : Extension("mongodb") {}
@@ -129,6 +131,15 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Manager, executeInsert, MongoDBManager, executeInsert);
 
 			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
+
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_NONE"), (long) MONGOC_QUERY_NONE);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_TAILABLE_CURSOR"), (long) MONGOC_QUERY_TAILABLE_CURSOR);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_SLAVE_OK"), (long) MONGOC_QUERY_SLAVE_OK);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_OPLOG_REPLAY"), (long) MONGOC_QUERY_OPLOG_REPLAY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_NO_CURSOR_TIMEOUT"), (long) MONGOC_QUERY_NO_CURSOR_TIMEOUT);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_AWAIT_DATA"), (long) MONGOC_QUERY_AWAIT_DATA);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_EXHAUST"), (long) MONGOC_QUERY_EXHAUST);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_PARTIAL"), (long) MONGOC_QUERY_PARTIAL);
 
 			loadSystemlib("mongodb");
 			mongoc_init();
