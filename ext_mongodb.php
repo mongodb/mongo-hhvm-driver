@@ -36,6 +36,12 @@ class Manager {
 
 namespace MongoDB\Driver;
 
+class Exception {
+}
+
+class RuntimeException extends Exception {
+}
+
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;
