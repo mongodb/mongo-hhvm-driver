@@ -63,7 +63,7 @@ void VariantToBsonConverter::convert(bson_t *bson, Variant v)
 	std::cout << "convert Variant\n";
 
 	if (v.isObject()) {
-//		convert(bson, v.toObject());
+		convert(bson, v.toObject());
 	} else if (v.isArray()) {
 		convert(bson, v.toArray()); 
 	} else {
@@ -92,7 +92,7 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant 
 			convertPart(bson, key, v.toString());
 			break;
 		case KindOfArray:
-			convertPart(bson, key, v.toArray());
+			convertPart(bson, key, v.toArray(), true);
 			break;
 		case KindOfObject:
 			convertPart(bson, key, v.toObject());
@@ -149,7 +149,7 @@ char *VariantToBsonConverter::_getUnmangledPropertyName(String key)
 	}
 }
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
+void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v, bool wrap)
 {
 	bson_t child;
 	int unmangle = 0;
@@ -157,10 +157,14 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 	std::cout << "array\n";
 
 	if (_isPackedArray(v)) {
-		bson_append_array_begin(bson, key, -1, &child);
+		if (wrap) {
+			bson_append_array_begin(bson, key, -1, &child);
+		}
 	} else {
 		unmangle = 1;
-		bson_append_document_begin(bson, key, -1, &child);
+		if (wrap) {
+			bson_append_document_begin(bson, key, -1, &child);
+		}
 	}
 
 	for (ArrayIter iter(v); iter; ++iter) {
@@ -171,17 +175,19 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v)
 			const char *unmangledName;
 
 			unmangledName = _getUnmangledPropertyName(key.toString());
-			convertPart(&child, unmangledName, data);
+			convertPart(wrap ? &child : bson, unmangledName, data);
 			free((void*) unmangledName);
 		} else {
-			convertPart(&child, key.toString().c_str(), data);
+			convertPart(wrap ? &child : bson, key.toString().c_str(), data);
 		}
 	}
 
-	if (_isPackedArray(v)) {
-		bson_append_array_end(bson, &child);
-	} else {
-		bson_append_document_end(bson, &child);
+	if (wrap) {
+		if (_isPackedArray(v)) {
+			bson_append_array_end(bson, &child);
+		} else {
+			bson_append_document_end(bson, &child);
+		}
 	}
 }
 
@@ -223,25 +229,14 @@ void VariantToBsonConverter::convert(bson_t *bson, Array a)
 {
 	std::cout << "convert Top Level Array\n";
 
-	for (ArrayIter iter(a); iter; ++iter) {
-		Variant key(iter.first());
-		const Variant& data(iter.secondRef());
-
-		convertPart(bson, key.toString().c_str(), data);
-	}
+	convertPart(bson, NULL, a, false);
 }
 
 void VariantToBsonConverter::convert(bson_t *bson, Object o)
 {
 	std::cout << "convert Top Level Object\n";
-/*
-	for (ArrayIter iter(a); iter; ++iter) {
-		Variant key(iter.first());
-		const Variant& data(iter.secondRef());
 
-		convertPart(key.toString().c_str(), data);
-	}
-*/
+	convert(bson, o.toArray());
 }
 
 } /* namespace HPHP */

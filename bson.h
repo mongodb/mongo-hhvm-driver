@@ -40,7 +40,7 @@ class VariantToBsonConverter
 		void convertPart(bson_t *bson, const char *key, int64_t v);
 		void convertPart(bson_t *bson, const char *key, double v);
 		void convertPart(bson_t *bson, const char *key, String v);
-		void convertPart(bson_t *bson, const char *key, Array v);
+		void convertPart(bson_t *bson, const char *key, Array v, bool wrap);
 		void convertPart(bson_t *bson, const char *key, Object v);
 /* }}} */
 	private:

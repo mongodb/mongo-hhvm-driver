@@ -30,6 +30,7 @@ $doc = [
 	're' => $re,
 ];
 
+$r = $m->executeInsert( 'demo.test', new MyClass );
 $r = $m->executeInsert( 'demo.test', $doc );
 var_dump( $r );
 ?>
