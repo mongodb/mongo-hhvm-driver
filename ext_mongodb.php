@@ -36,9 +36,6 @@ class Manager {
 
 namespace MongoDB\Driver;
 
-class Exception {
-}
-
 class Utils {
 	const ERROR_INVALID_ARGUMENT  = 1;
 	const ERROR_RUNTIME           = 2;
@@ -76,9 +73,12 @@ class Utils {
 	}
 }
 
-class RuntimeException extends Exception {
-}
+/* {{{ Exception Classes */
+class Exception {}
+class RuntimeException extends Exception {}
+/* }}} */
 
+/* {{{ Value Classes */
 final class Query {
 	private array $query;
 
@@ -171,7 +171,9 @@ final class WriteResult {
 		return [];
 	}
 }
+/* }}} */
 
+/* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;
 
 interface Type
@@ -199,3 +201,4 @@ class Regex implements Type
 		return "/{$this->pattern}/{$this->flags}";
 	}
 }
+/* }}} */
