@@ -39,6 +39,7 @@ namespace HPHP {
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
 
+/* {{{ MongoDB\Manager */
 class MongoDBManagerData
 {
 	public:
@@ -119,19 +120,24 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 
 	return Object(obj);
 }
+/* }}} */
 
+/* {{{ MongoDB\Driver\Query */
 const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
+/* }}} */
 
 static class MongoDBExtension : public Extension {
 	public:
 		MongoDBExtension() : Extension("mongodb") {}
 
 		virtual void moduleInit() {
+			/* MongoDB\Manager */
 			HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
 			HHVM_MALIAS(MongoDB\\Manager, executeInsert, MongoDBManager, executeInsert);
 
 			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
 
+			/* MongoDb\Driver\Query */
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_NONE"), (int64_t) MONGOC_QUERY_NONE);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_TAILABLE_CURSOR"), (int64_t) MONGOC_QUERY_TAILABLE_CURSOR);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_SLAVE_OK"), (int64_t) MONGOC_QUERY_SLAVE_OK);
