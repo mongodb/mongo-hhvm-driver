@@ -37,6 +37,8 @@ extern "C" {
 
 namespace HPHP {
 
+const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
+
 class MongoDBManagerData
 {
 	public:
@@ -73,8 +75,6 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
 
 	data->m_client = client;
 }
-
-const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
 
 static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
 {
