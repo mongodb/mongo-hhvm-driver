@@ -36,7 +36,6 @@ int VariantToBsonConverter::_isPackedArray(const Array &a)
 		}
 
 		key_value = key.toInt32(); 
-		std::cout << idx << "key: " << key_value << "\n";
 
 		if (idx != key_value) {
 			return false;
@@ -60,8 +59,6 @@ void VariantToBsonConverter::convert(bson_t *bson)
 
 void VariantToBsonConverter::convert(bson_t *bson, Variant v)
 {
-	std::cout << "convert Variant\n";
-
 	if (v.isObject()) {
 		convert(bson, v.toObject());
 	} else if (v.isArray()) {
@@ -104,31 +101,26 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant 
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key)
 {
-	std::cout << "null\n";
 	bson_append_null(bson, key, -1);
 };
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, bool v)
 {
-	std::cout << "bool\n";
 	bson_append_bool(bson, key, -1, v);
 };
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, int64_t v)
 {
-	std::cout << "int64\n";
 	bson_append_int64(bson, key, -1, v);
 };
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, double v)
 {
-	std::cout << "double\n";
 	bson_append_double(bson, key, -1, v);
 };
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, String v)
 {
-	std::cout << "key: " << key << ", utf8: " << v.c_str() << "\n";
 	bson_append_utf8(bson, key, -1, v.c_str(), v.size());
 }
 
@@ -153,8 +145,6 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 {
 	bson_t child;
 	int unmangle = 0;
-
-	std::cout << "array\n";
 
 	if (_isPackedArray(v)) {
 		if (wrap) {
@@ -212,12 +202,8 @@ void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
 {
-	std::cout << v->getClassName().c_str() << " object converted to ";
-
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
-		std::cout << "internal type ";
 		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
-			std::cout << "Regex\n";
 			_convertRegex(bson, key, v);
 		}
 	} else {
@@ -227,15 +213,11 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 
 void VariantToBsonConverter::convert(bson_t *bson, Array a)
 {
-	std::cout << "convert Top Level Array\n";
-
 	convertPart(bson, NULL, a, false);
 }
 
 void VariantToBsonConverter::convert(bson_t *bson, Object o)
 {
-	std::cout << "convert Top Level Object\n";
-
 	convert(bson, o.toArray());
 }
 
