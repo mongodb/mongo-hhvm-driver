@@ -7,3 +7,9 @@ mongodb.so
 run-test
 *.sw*
 install_manifest.txt
+tests/*.diff
+tests/*.exp
+tests/*.log
+tests/*.out
+tests/*.php
+tests/*.sh
