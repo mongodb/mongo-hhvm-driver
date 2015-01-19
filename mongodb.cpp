@@ -126,6 +126,59 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
 /* }}} */
 
+/* {{{ MongoDB\Driver\ReadPreference */
+const StaticString s_MongoDriverReadPreference_className("MongoDB\\Driver\\ReadPreference");
+
+class MongoDBDriverReadPreferenceData
+{
+	public:
+		static Class* s_class;
+		static const StaticString s_className;
+
+		mongoc_read_prefs_t *m_read_preference = NULL;
+
+		static Class* getClass();
+
+		void sweep() {
+			mongoc_read_prefs_destroy(m_read_preference);
+		}
+
+		~MongoDBDriverReadPreferenceData() {
+			sweep();
+		};
+};
+
+Class* MongoDBDriverReadPreferenceData::s_class = nullptr;
+const StaticString MongoDBDriverReadPreferenceData::s_className("MongoDBDriverReadPreference");
+IMPLEMENT_GET_CLASS(MongoDBDriverReadPreferenceData);
+
+static void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPreference)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+
+	data->m_read_preference = mongoc_read_prefs_new((mongoc_read_mode_t) readPreference);
+}
+
+static void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Variant &tagSets)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+	bson_t *bson;
+
+	/* Convert argument */
+	VariantToBsonConverter converter(tagSets);
+	bson = bson_new();
+	converter.convert(bson);
+
+	/* Set and check errors */
+	mongoc_read_prefs_set_tags(data->m_read_preference, bson);
+	bson_destroy(bson);
+	if (!mongoc_read_prefs_is_valid(data->m_read_preference)) {
+		/* Throw exception */
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid tagSet"));
+	}
+}
+/* }}} */
+
 static class MongoDBExtension : public Extension {
 	public:
 		MongoDBExtension() : Extension("mongodb") {}
@@ -146,6 +199,18 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_AWAIT_DATA"), (int64_t) MONGOC_QUERY_AWAIT_DATA);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_EXHAUST"), (int64_t) MONGOC_QUERY_EXHAUST);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_PARTIAL"), (int64_t) MONGOC_QUERY_PARTIAL);
+
+			/* MongoDb\Driver\ReadPreference */
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreference, MongoDBDriverReadPreference, _setReadPreference);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreferenceTags, MongoDBDriverReadPreference, _setReadPreferenceTags);
+
+			Native::registerNativeDataInfo<MongoDBDriverReadPreferenceData>(MongoDBDriverReadPreferenceData::s_className.get());
+
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_PRIMARY"), (int64_t) MONGOC_READ_PRIMARY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_PRIMARY_PREFERRED"), (int64_t) MONGOC_READ_PRIMARY_PREFERRED);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY"), (int64_t) MONGOC_READ_SECONDARY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY_PREFERRED"), (int64_t) MONGOC_READ_SECONDARY_PREFERRED);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_NEAREST"), (int64_t) MONGOC_READ_NEAREST);
 
 			loadSystemlib("mongodb");
 			mongoc_init();

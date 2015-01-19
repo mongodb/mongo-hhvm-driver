@@ -117,6 +117,43 @@ final class Query {
 	}
 }
 
+<<__NativeData("MongoDBDriverReadPreference")>>
+final class ReadPreference {
+	<<__Native>>
+	private function _setReadPreference(int $readPreference): void;
+
+	<<__Native>>
+	private function _setReadPreferenceTags(array $tagSets): void;
+
+	public function __construct(int $readPreference, mixed $tagSets = null)
+	{
+		if ($tagSets !== NULL && Utils::mustBeArrayOrObject('parameter 2', $tagSets)) {
+			return;
+		}
+
+		switch ($readPreference) {
+			case ReadPreference::RP_PRIMARY:
+			case ReadPreference::RP_PRIMARY_PREFERRED:
+			case ReadPreference::RP_SECONDARY:
+			case ReadPreference::RP_SECONDARY_PREFERRED:
+			case ReadPreference::RP_NEAREST:
+				// calling into Native
+				$this->_setReadPreference($readPreference);
+
+				if ($tagSets) {
+					// calling into Native, might throw exception
+					$this->_setReadPreferenceTags($tagSets);
+				}
+
+				break;
+
+			default:
+				Utils::throwHippoException(Utils::ERROR_INVALID_ARGUMENT, "Invalid ReadPreference");
+				break;
+		}
+	}
+}
+
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;
