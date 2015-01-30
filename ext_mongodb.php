@@ -183,6 +183,9 @@ final class ReadPreference {
 	}
 }
 
+final class Server {
+}
+
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;
