@@ -90,10 +90,10 @@ final class Query {
 		Utils::mustBeArrayOrObject('filter', $filter);
 
 		if ($options) {
-			$this->query['batchSize'] = array_key_exists('batchSize', $options ) ? $options['batchSize'] : 0;
-			$this->query['flags'] = array_key_exists('flags', $options ) ? $options['flags'] : 0;
-			$this->query['limit'] = array_key_exists('limit', $options ) ? $options['limit'] : 0;
-			$this->query['skip'] = array_key_exists('skip', $options ) ? $options['skip'] : 0;
+			$this->query['batchSize'] = array_key_exists('batchSize', $options ) ? (int) $options['batchSize'] : 0;
+			$this->query['flags'] = array_key_exists('flags', $options ) ? (int) $options['flags'] : 0;
+			$this->query['limit'] = array_key_exists('limit', $options ) ? (int) $options['limit'] : 0;
+			$this->query['skip'] = array_key_exists('skip', $options ) ? (int) $options['skip'] : 0;
 		}
 
 		if (array_key_exists('modifiers', $options)) {
@@ -103,17 +103,16 @@ final class Query {
 
 		if (array_key_exists('projection', $options)) {
 			Utils::mustBeArrayOrObject('projection', $options['projection']);
-			$this->query['selector'] = (array) $options['projection'];
+			$this->query['fields'] = (array) $options['projection'];
 		}
 
 		if (array_key_exists('sort', $options)) {
 			Utils::mustBeArrayOrObject('sort', $options['sort']);
-			$zquery['$orderby'] = (array) $options['sort'];
+			$this->query['query']['$orderby'] = (array) $options['sort'];
 		}
 
-		$zquery['$query'] = $filter;
+		$this->query['query']['$query'] = $filter;
 
-		$this->query['query'] = $zquery;
 	}
 }
 
