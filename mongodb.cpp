@@ -153,10 +153,80 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 
 	return Object(obj);
 }
-/* }}} */
 
-/* {{{ MongoDB\Driver\Query */
-const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
+static Object HHVM_METHOD(MongoDBManager, executeQuery, const String &ns, Object &query, Object &readPreference)
+{
+	static Class* c_foobar;
+	bson_t *bson_query = NULL, *bson_fields = NULL;
+	const bson_t *doc;
+	MongoDBManagerData* manager_data = Native::data<MongoDBManagerData>(this_);
+	char *dbname;
+	char *collname;
+	mongoc_collection_t *collection;
+	mongoc_cursor_t *cursor;
+
+	uint32_t skip, limit, batch_size;
+	mongoc_query_flags_t flags;
+
+	/* Prepare */
+	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		return NULL;
+	}
+
+	/* Get query properties */
+	auto zquery = query->o_get(String("query"), false, s_MongoDriverQuery_className);
+
+	if (zquery.getType() == KindOfArray) {
+		const Array& aquery = zquery.toArray();
+
+		skip = aquery[String("skip")].toInt32();
+		limit = aquery[String("limit")].toInt32();
+		batch_size = aquery[String("batch_size")].toInt32();
+		flags = (mongoc_query_flags_t) aquery[String("flags")].toInt32();
+
+		VariantToBsonConverter converter(aquery[String("query")]);
+		bson_query = bson_new();
+		converter.convert(bson_query);
+
+		if (aquery.exists(String("fields"))) {
+			VariantToBsonConverter converter(aquery[String("fields")]);
+			bson_fields = bson_new();
+			converter.convert(bson_fields);
+		}
+	}
+
+	/* Run query and get cursor */
+	collection = mongoc_client_get_collection(manager_data->m_client, dbname, collname);
+	cursor = mongoc_collection_find(collection, flags, skip, limit, batch_size, bson_query, bson_fields, NULL /*read_preference*/);
+	mongoc_collection_destroy(collection);
+
+	/* Check for errors */
+	if (!mongoc_cursor_next(cursor, &doc)) {
+		bson_error_t error;
+
+		/* Could simply be no docs, which is not an error */
+		if (mongoc_cursor_error(cursor, &error)) {
+//			MongoDriver::Utils::throwExceptionFromBsonError(&error);
+			mongoc_cursor_destroy(cursor);
+			return NULL;
+		}
+	}
+
+	/* Prepare result */
+	c_foobar = Unit::lookupClass(s_MongoDriverQueryResult_className.get());
+	assert(c_foobar);
+	ObjectData* obj = ObjectData::newInstance(c_foobar);
+
+	MongoDBDriverQueryResultData* result_data = Native::data<MongoDBDriverQueryResultData>(obj);
+
+	result_data->cursor = cursor;
+	result_data->hint = mongoc_cursor_get_hint(cursor);
+	result_data->is_command_cursor = false;
+	result_data->first_batch = doc ? bson_copy(doc) : NULL;
+
+	return Object(obj);
+}
 /* }}} */
 
 /* {{{ MongoDB\Driver\ReadPreference */
@@ -220,6 +290,7 @@ static class MongoDBExtension : public Extension {
 			/* MongoDB\Manager */
 			HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
 			HHVM_MALIAS(MongoDB\\Manager, executeInsert, MongoDBManager, executeInsert);
+			HHVM_MALIAS(MongoDB\\Manager, executeQuery, MongoDBManager, executeQuery);
 
 			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
 
