@@ -68,6 +68,10 @@ const StaticString MongoDBDriverQueryResultData::s_className("MongoDBDriverQuery
 IMPLEMENT_GET_CLASS(MongoDBDriverQueryResultData);
 /* }}} */
 
+/* {{{ MongoDB\Driver\Query */
+const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
+/* }}} */
+
 /* {{{ MongoDB\Manager */
 class MongoDBManagerData
 {
