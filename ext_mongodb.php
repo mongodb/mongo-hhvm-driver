@@ -112,7 +112,38 @@ final class Query {
 		}
 
 		$this->query['query']['$query'] = $filter;
+	}
+}
 
+<<__NativeData("MongoDBDriverQueryResult")>>
+final class QueryResult {
+	function __construct(private string $namespace, private Query $zquery, private ReadPreference $readPreference = null)
+	{
+	}
+
+	public function setTypemap(array $typemap) : void
+	{
+		throw new \Exception("getTypemap is not implemented yet");
+	}
+
+	public function getIterator() : Cursor
+	{
+		throw new \Exception("getIterator is not implemented yet");
+	}
+
+	public function setIteratorClass() : QueryResult
+	{
+		throw new \Exception("setIteratorClass is not implemented yet");
+	}
+
+	public function setIteratorInitCallback() : QueryResult
+	{
+		throw new \Exception("setIteratorInitCallback is not implemented yet");
+	}
+
+	public function getServer(): Server
+	{
+		throw new \Exception("getServer is not implemented yet");
 	}
 }
 

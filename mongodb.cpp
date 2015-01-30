@@ -39,6 +39,35 @@ namespace HPHP {
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
 
+/* {{{ MongoDB\Driver\QueryResult */
+const StaticString s_MongoDriverQueryResult_className("MongoDB\\Driver\\QueryResult");
+
+class MongoDBDriverQueryResultData
+{
+	public:
+		static Class* s_class;
+		static const StaticString s_className;
+
+		static Class* getClass();
+
+		mongoc_cursor_t *cursor;
+		int              hint;
+		bool             is_command_cursor;
+		bson_t          *first_batch;
+
+		void sweep() {
+		}
+
+		~MongoDBDriverQueryResultData() {
+			sweep();
+		};
+};
+
+Class* MongoDBDriverQueryResultData::s_class = nullptr;
+const StaticString MongoDBDriverQueryResultData::s_className("MongoDBDriverQueryResult");
+IMPLEMENT_GET_CLASS(MongoDBDriverQueryResultData);
+/* }}} */
+
 /* {{{ MongoDB\Manager */
 class MongoDBManagerData
 {
@@ -211,6 +240,9 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY"), (int64_t) MONGOC_READ_SECONDARY);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY_PREFERRED"), (int64_t) MONGOC_READ_SECONDARY_PREFERRED);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_NEAREST"), (int64_t) MONGOC_READ_NEAREST);
+
+			/* MongoDb\Driver\QueryResult */
+			Native::registerNativeDataInfo<MongoDBDriverQueryResultData>(MongoDBDriverQueryResultData::s_className.get());
 
 			loadSystemlib("mongodb");
 			mongoc_init();
