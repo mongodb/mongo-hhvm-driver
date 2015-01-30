@@ -3,6 +3,30 @@ var_dump(extension_loaded("mongodb"));
 
 $m = new MongoDB\Manager("mongodb://localhost:27017");
 
+$doc = [
+	'foo' => 'bar',
+];
+$r = $m->executeInsert( 'demo.test', $doc );
+$r = $m->executeInsert( 'demo.test', $doc );
+$r = $m->executeInsert( 'demo.test', $doc );
+$r = $m->executeInsert( 'demo.test', $doc );
+$r = $m->executeInsert( 'demo.test', $doc );
+
+$q = new MongoDB\Driver\Query(
+	[ 'foo' => 'bar' ],
+	[
+		'sort' => [ 'foo' => -1 ],
+		'limit' => -2,
+		'skip' => 1,
+		'projection' => [ '_id' => 0, 'foo' => 1 ]
+	]
+);
+
+var_dump($m->executeQuery( 'demo.test', $q ) );
+/*
+$r = new MongoDB\Driver\ReadPreference(MongoDB\Driver\ReadPreference::RP_SECONDARY, [ [ 'cs' => 'east' ] ] );
+
+
 class myClass {
 	public $publiek = 1;
 	protected $beveiligd = 2;
@@ -42,6 +66,5 @@ $w = new MongoDB\Driver\Query(
 );
 
 echo MongoDB\Driver\Query::FLAG_NONE, "\n";
-
-var_dump( $r );
+*/
 ?>
