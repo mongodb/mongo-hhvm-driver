@@ -16,6 +16,9 @@
 
 #include "hphp/runtime/base/base-includes.h"
 #include "hphp/runtime/vm/native-data.h"
+#if 0
+#include "hphp/runtime/base/array-init.h"
+#endif
 
 #include "bson.h"
 #include "utils.h"
@@ -38,6 +41,33 @@ extern "C" {
 namespace HPHP {
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
+
+#if 0
+class Utils
+{
+	public:
+		ObjectData* AllocInvalidArgumentException(const Variant& message);
+}
+
+ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
+	ObjectData* inst;
+	TypedValue ret;
+
+	c_invalidArgumentException = Unit::lookupClass(s_MongoDBInvalidArgumentException.get());
+	inst = ObjectData::newInstance(c_invalidArgumentException);
+
+	{
+		CountableHelper cnt(inst);
+		g_context->invokeFunc(
+			&ret,
+			->getCtor(),
+			make_packed_array(message),
+			inst
+		);
+	}
+	tvRefcountedDecRef(&ret);
+}
+#endif
 
 /* {{{ MongoDB\Driver\QueryResult */
 const StaticString s_MongoDriverQueryResult_className("MongoDB\\Driver\\QueryResult");
