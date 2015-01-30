@@ -127,7 +127,10 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 	converter.convert(bson);
 
 	/* Prepare */
-	MongoDriver::Utils::splitNamespace(ns, &database, &collection);
+	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		return NULL;
+	}
 
 	batch = mongoc_bulk_operation_new(true);
 	mongoc_bulk_operation_insert(batch, bson);
