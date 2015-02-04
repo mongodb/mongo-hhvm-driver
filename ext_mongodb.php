@@ -183,6 +183,7 @@ final class ReadPreference {
 	}
 }
 
+<<__NativeData("MongoDBDriverServer")>>
 final class Server {
 }
 

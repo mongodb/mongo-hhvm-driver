@@ -69,6 +69,33 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 }
 #endif
 
+/* {{{ MongoDB\Driver\Server */
+const StaticString s_MongoDriverServer_className("MongoDB\\Driver\\Server");
+
+class MongoDBDriverServerData
+{
+	public:
+		static Class* s_class;
+		static const StaticString s_className;
+
+		static Class* getClass();
+
+		int                 hint;
+		mongoc_host_list_t *host;
+
+		void sweep() {
+		}
+
+		~MongoDBDriverServerData() {
+			sweep();
+		};
+};
+
+Class* MongoDBDriverServerData::s_class = nullptr;
+const StaticString MongoDBDriverServerData::s_className("MongoDBDriverServer");
+IMPLEMENT_GET_CLASS(MongoDBDriverServerData);
+/* }}} */
+
 /* {{{ MongoDB\Driver\QueryResult */
 const StaticString s_MongoDriverQueryResult_className("MongoDB\\Driver\\QueryResult");
 
@@ -351,6 +378,9 @@ static class MongoDBExtension : public Extension {
 
 			/* MongoDb\Driver\QueryResult */
 			Native::registerNativeDataInfo<MongoDBDriverQueryResultData>(MongoDBDriverQueryResultData::s_className.get());
+
+			/* MongoDb\Driver\Server */
+			Native::registerNativeDataInfo<MongoDBDriverServerData>(MongoDBDriverServerData::s_className.get());
 
 			loadSystemlib("mongodb");
 			mongoc_init();
