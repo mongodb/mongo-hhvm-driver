@@ -126,16 +126,16 @@ IMPLEMENT_GET_CLASS(MongoDBDriverQueryResultData);
 
 static Object HHVM_METHOD(MongoDBDriverQueryResult, getServer)
 {
-	static Class* c_foobar;
+	static Class* c_server;
 	mongoc_host_list_t host;
 	MongoDBDriverQueryResultData* data = Native::data<MongoDBDriverQueryResultData>(this_);
 
 	mongoc_cursor_get_host(data->cursor, &host);
 
 	/* Prepare result */
-	c_foobar = Unit::lookupClass(s_MongoDriverServer_className.get());
-	assert(c_foobar);
-	ObjectData* obj = ObjectData::newInstance(c_foobar);
+	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
+	assert(c_server);
+	ObjectData* obj = ObjectData::newInstance(c_server);
 
 	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
 
@@ -191,7 +191,7 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
 
 static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
 {
-	static Class* c_foobar;
+	static Class* c_writeResult;
 	bson_t *bson;
 	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
 	bson_error_t error;
@@ -226,9 +226,9 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 
 	/* Prepare result */
 
-	c_foobar = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
-	assert(c_foobar);
-	ObjectData* obj = ObjectData::newInstance(c_foobar);
+	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
+	assert(c_writeResult);
+	ObjectData* obj = ObjectData::newInstance(c_writeResult);
 
 	obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
@@ -238,7 +238,7 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 
 static Object HHVM_METHOD(MongoDBManager, executeQuery, const String &ns, Object &query, Object &readPreference)
 {
-	static Class* c_foobar;
+	static Class* c_queryResult;
 	bson_t *bson_query = NULL, *bson_fields = NULL;
 	const bson_t *doc;
 	MongoDBManagerData* manager_data = Native::data<MongoDBManagerData>(this_);
@@ -296,9 +296,9 @@ static Object HHVM_METHOD(MongoDBManager, executeQuery, const String &ns, Object
 	}
 
 	/* Prepare result */
-	c_foobar = Unit::lookupClass(s_MongoDriverQueryResult_className.get());
-	assert(c_foobar);
-	ObjectData* obj = ObjectData::newInstance(c_foobar);
+	c_queryResult = Unit::lookupClass(s_MongoDriverQueryResult_className.get());
+	assert(c_queryResult);
+	ObjectData* obj = ObjectData::newInstance(c_queryResult);
 
 	MongoDBDriverQueryResultData* result_data = Native::data<MongoDBDriverQueryResultData>(obj);
 
