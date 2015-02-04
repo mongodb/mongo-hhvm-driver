@@ -123,6 +123,28 @@ class MongoDBDriverQueryResultData
 Class* MongoDBDriverQueryResultData::s_class = nullptr;
 const StaticString MongoDBDriverQueryResultData::s_className("MongoDBDriverQueryResult");
 IMPLEMENT_GET_CLASS(MongoDBDriverQueryResultData);
+
+static Object HHVM_METHOD(MongoDBDriverQueryResult, getServer)
+{
+	static Class* c_foobar;
+	mongoc_host_list_t host;
+	MongoDBDriverQueryResultData* data = Native::data<MongoDBDriverQueryResultData>(this_);
+
+	mongoc_cursor_get_host(data->cursor, &host);
+
+	/* Prepare result */
+	c_foobar = Unit::lookupClass(s_MongoDriverServer_className.get());
+	assert(c_foobar);
+	ObjectData* obj = ObjectData::newInstance(c_foobar);
+
+	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
+
+	result_data->hint = data->hint;
+	result_data->host = &host;
+
+	return Object(obj);
+}
+
 /* }}} */
 
 /* {{{ MongoDB\Driver\Query */
@@ -377,6 +399,8 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_NEAREST"), (int64_t) MONGOC_READ_NEAREST);
 
 			/* MongoDb\Driver\QueryResult */
+			HHVM_MALIAS(MongoDB\\Driver\\QueryResult, getServer, MongoDBDriverQueryResult, getServer);
+
 			Native::registerNativeDataInfo<MongoDBDriverQueryResultData>(MongoDBDriverQueryResultData::s_className.get());
 
 			/* MongoDb\Driver\Server */

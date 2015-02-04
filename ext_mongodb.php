@@ -140,10 +140,8 @@ final class QueryResult {
 		throw new \Exception("setIteratorInitCallback is not implemented yet");
 	}
 
-	public function getServer(): Server
-	{
-		throw new \Exception("getServer is not implemented yet");
-	}
+	<<__Native>>
+	public function getServer(): Server;
 }
 
 <<__NativeData("MongoDBDriverReadPreference")>>
