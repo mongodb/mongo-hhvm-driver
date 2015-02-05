@@ -23,7 +23,7 @@ $q = new MongoDB\Driver\Query(
 );
 
 $r = $m->executeQuery( 'demo.test', $q );
-var_dump( $r->getServer() );
+var_dump( $r->getIterator() );
 /*
 $r = new MongoDB\Driver\ReadPreference(MongoDB\Driver\ReadPreference::RP_SECONDARY, [ [ 'cs' => 'east' ] ] );
 

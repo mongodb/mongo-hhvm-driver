@@ -131,10 +131,8 @@ final class QueryResult {
 		throw new \Exception("getTypemap is not implemented yet");
 	}
 
-	public function getIterator() : Cursor
-	{
-		throw new \Exception("getIterator is not implemented yet");
-	}
+	<<__Native>>
+	public function getIterator() : Cursor;
 
 	public function setIteratorClass() : QueryResult
 	{
