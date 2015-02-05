@@ -77,6 +77,12 @@ class Exception {}
 class RuntimeException extends Exception {}
 /* }}} */
 
+/* {{{ Cursor Classes */
+<<__NativeData("MongoDBDriverCursor")>>
+final class Cursor {
+}
+/* }}} */
+
 /* {{{ Value Classes */
 final class Query {
 	private array $query;

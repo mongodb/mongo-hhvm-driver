@@ -69,6 +69,35 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 }
 #endif
 
+/* {{{ MongoDB\Driver\Cursor */
+const StaticString s_MongoDriverCursor_className("MongoDB\\Driver\\Cursor");
+
+class MongoDBDriverCursorData
+{
+	public:
+		static Class* s_class;
+		static const StaticString s_className;
+
+		static Class* getClass();
+
+		mongoc_cursor_t *cursor;
+		int              hint;
+		bool             is_command_cursor;
+		bson_t          *first_batch;
+
+		void sweep() {
+		}
+
+		~MongoDBDriverCursorData() {
+			sweep();
+		};
+};
+
+Class* MongoDBDriverCursorData::s_class = nullptr;
+const StaticString MongoDBDriverCursorData::s_className("MongoDBDriverCursor");
+IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
+/* }}} */
+
 /* {{{ MongoDB\Driver\Server */
 const StaticString s_MongoDriverServer_className("MongoDB\\Driver\\Server");
 
@@ -375,6 +404,9 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Manager, executeQuery, MongoDBManager, executeQuery);
 
 			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
+
+			/* MongoDb\Driver\Cursor */
+			Native::registerNativeDataInfo<MongoDBDriverCursorData>(MongoDBDriverCursorData::s_className.get());
 
 			/* MongoDb\Driver\Query */
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_NONE"), (int64_t) MONGOC_QUERY_NONE);
