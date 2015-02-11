@@ -22,6 +22,7 @@
 
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Cursor.h"
+#include "src/MongoDB/Driver/Server.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -62,33 +63,6 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 	tvRefcountedDecRef(&ret);
 }
 #endif
-
-/* {{{ MongoDB\Driver\Server */
-const StaticString s_MongoDriverServer_className("MongoDB\\Driver\\Server");
-
-class MongoDBDriverServerData
-{
-	public:
-		static Class* s_class;
-		static const StaticString s_className;
-
-		static Class* getClass();
-
-		int                 hint;
-		mongoc_host_list_t *host;
-
-		void sweep() {
-		}
-
-		~MongoDBDriverServerData() {
-			sweep();
-		};
-};
-
-Class* MongoDBDriverServerData::s_class = nullptr;
-const StaticString MongoDBDriverServerData::s_className("MongoDBDriverServer");
-IMPLEMENT_GET_CLASS(MongoDBDriverServerData);
-/* }}} */
 
 /* {{{ MongoDB\Driver\QueryResult */
 const StaticString s_MongoDriverQueryResult_className("MongoDB\\Driver\\QueryResult");
