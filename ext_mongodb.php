@@ -87,8 +87,38 @@ final class CursorId {
 
 <<__NativeData("MongoDBDriverCursor")>>
 final class Cursor {
+	public function __construct(MongoDB\Driver\Server $server, MongoDB\Driver\CursorId $cursorId, array $firstBatch)
+	{
+	}
+
 	<<__Native>>
 	public function getId() : MongoDB\Driver\CursorId;
+
+	public function getServer() : MongoDB\Driver\Server
+	{
+		throw new \Exception("getServer is not implemented yet");
+	}
+
+	public function isDead() : bool
+	{
+		throw new \Exception("isDead is not implemented yet");
+	}
+
+	public function kill() : void
+	{
+		throw new \Exception("kill is not implemented yet");
+	}
+
+	public function setBatchSize(integer $batchSize) : integer
+	{
+		throw new \Exception("setBatchSize is not implemented yet");
+	}
+
+	public function getBatchSize() : integer
+	{
+		throw new \Exception("getBatchSize is not implemented yet");
+	}
+
 }
 /* }}} */
 
