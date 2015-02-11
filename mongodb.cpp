@@ -20,6 +20,9 @@
 #include "hphp/runtime/base/array-init.h"
 #endif
 
+#include "src/MongoDB/Driver/CursorId.h"
+
+#include "mongodb.h"
 #include "bson.h"
 #include "utils.h"
 
@@ -28,16 +31,6 @@ extern "C" {
 #include "libmongoc/src/mongoc/mongoc.h"
 #include <stdio.h>
 }
-
-#define IMPLEMENT_GET_CLASS(cls) \
-	Class* cls::getClass() { \
-		if (s_class == nullptr) { \
-			s_class = Unit::lookupClass(s_className.get()); \
-			assert(s_class); \
-		} \
-		return s_class; \
-	}
-
 namespace HPHP {
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
@@ -68,46 +61,6 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 	tvRefcountedDecRef(&ret);
 }
 #endif
-
-/* {{{ MongoDB\Driver\CursorId */
-const StaticString s_MongoDriverCursorId_className("MongoDB\\Driver\\CursorId");
-
-class MongoDBDriverCursorIdData
-{
-	public:
-		static Class* s_class;
-		static const StaticString s_className;
-
-		static Class* getClass();
-
-		int64_t id;
-
-		void sweep() {
-		}
-
-		~MongoDBDriverCursorIdData() {
-			sweep();
-		};
-};
-
-Class* MongoDBDriverCursorIdData::s_class = nullptr;
-const StaticString MongoDBDriverCursorIdData::s_className("MongoDBDriverCursorId");
-IMPLEMENT_GET_CLASS(MongoDBDriverCursorIdData);
-
-static void HHVM_METHOD(MongoDBDriverCursorId, __construct, const String &id)
-{
-	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(this_);
-
-	data->id = id.toInt64();
-}
-
-static String HHVM_METHOD(MongoDBDriverCursorId, __toString)
-{
-	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(this_);
-
-	return String(data->id);
-}
-/* }}} */
 
 /* {{{ MongoDB\Driver\Cursor */
 const StaticString s_MongoDriverCursor_className("MongoDB\\Driver\\Cursor");
