@@ -6,11 +6,14 @@ $m = new MongoDB\Manager("mongodb://localhost:27017");
 $doc = [
 	'foo' => 'bar',
 ];
-$r = $m->executeInsert( 'demo.test', $doc );
-$r = $m->executeInsert( 'demo.test', $doc );
-$r = $m->executeInsert( 'demo.test', $doc );
-$r = $m->executeInsert( 'demo.test', $doc );
-$r = $m->executeInsert( 'demo.test', $doc );
+for ( $i = 0; $i < 40; $i++ )
+{
+	$r = $m->executeInsert( 'demo.test', $doc );
+	$r = $m->executeInsert( 'demo.test', $doc );
+	$r = $m->executeInsert( 'demo.test', $doc );
+	$r = $m->executeInsert( 'demo.test', $doc );
+	$r = $m->executeInsert( 'demo.test', $doc );
+}
 
 $q = new MongoDB\Driver\Query(
 	[ 'foo' => 'bar' ],
@@ -23,7 +26,14 @@ $q = new MongoDB\Driver\Query(
 );
 
 $r = $m->executeQuery( 'demo.test', $q );
-var_dump( $r->getIterator() );
+$cursor = $r->getIterator();
+$cursorId = $cursor->getId();
+
+var_dump($cursor, $cursorId);
+echo $cursorId, "\n";
+
+$cursorId = new MongoDB\Driver\CursorID("345345");
+echo $cursorId, "\n";
 /*
 $r = new MongoDB\Driver\ReadPreference(MongoDB\Driver\ReadPreference::RP_SECONDARY, [ [ 'cs' => 'east' ] ] );
 

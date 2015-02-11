@@ -69,6 +69,46 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 }
 #endif
 
+/* {{{ MongoDB\Driver\CursorId */
+const StaticString s_MongoDriverCursorId_className("MongoDB\\Driver\\CursorId");
+
+class MongoDBDriverCursorIdData
+{
+	public:
+		static Class* s_class;
+		static const StaticString s_className;
+
+		static Class* getClass();
+
+		int64_t id;
+
+		void sweep() {
+		}
+
+		~MongoDBDriverCursorIdData() {
+			sweep();
+		};
+};
+
+Class* MongoDBDriverCursorIdData::s_class = nullptr;
+const StaticString MongoDBDriverCursorIdData::s_className("MongoDBDriverCursorId");
+IMPLEMENT_GET_CLASS(MongoDBDriverCursorIdData);
+
+static void HHVM_METHOD(MongoDBDriverCursorId, __construct, const String &id)
+{
+	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(this_);
+
+	data->id = id.toInt64();
+}
+
+static String HHVM_METHOD(MongoDBDriverCursorId, __toString)
+{
+	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(this_);
+
+	return String(data->id);
+}
+/* }}} */
+
 /* {{{ MongoDB\Driver\Cursor */
 const StaticString s_MongoDriverCursor_className("MongoDB\\Driver\\Cursor");
 
@@ -427,6 +467,12 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Manager, executeQuery, MongoDBManager, executeQuery);
 
 			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
+
+			/* MongoDb\Driver\CursorId */
+			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __construct, MongoDBDriverCursorId, __construct);
+			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __toString,  MongoDBDriverCursorId, __toString);
+
+			Native::registerNativeDataInfo<MongoDBDriverCursorIdData>(MongoDBDriverCursorIdData::s_className.get());
 
 			/* MongoDb\Driver\Cursor */
 			Native::registerNativeDataInfo<MongoDBDriverCursorData>(MongoDBDriverCursorData::s_className.get());

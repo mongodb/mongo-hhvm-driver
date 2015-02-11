@@ -78,6 +78,15 @@ class RuntimeException extends Exception {}
 /* }}} */
 
 /* {{{ Cursor Classes */
+<<__NativeData("MongoDBDriverCursorId")>>
+final class CursorId {
+	<<__Native>>
+	public function __construct(string $id);
+
+	<<__Native>>
+	public function __toString() : string;
+}
+
 <<__NativeData("MongoDBDriverCursor")>>
 final class Cursor {
 }
