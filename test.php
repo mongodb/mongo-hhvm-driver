@@ -1,7 +1,7 @@
 <?php
 var_dump(extension_loaded("mongodb"));
 
-$m = new MongoDB\Manager("mongodb://localhost:27017");
+$m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $doc = [
 	'foo' => 'bar',

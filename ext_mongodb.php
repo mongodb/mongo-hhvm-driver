@@ -1,7 +1,7 @@
 <?hh
-namespace MongoDB;
+namespace MongoDB\Driver;
 
-<<__NativeData("MongoDBManager")>>
+<<__NativeData("MongoDBDriverManager")>>
 class Manager {
 	<<__Native>>
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
@@ -32,8 +32,6 @@ class Manager {
 	{
 	}
 }
-
-namespace MongoDB\Driver;
 
 class Utils {
 	const ERROR_INVALID_ARGUMENT  = 1;

@@ -263,8 +263,8 @@ static Object HHVM_METHOD(MongoDBDriverQueryResult, getServer)
 const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
 /* }}} */
 
-/* {{{ MongoDB\Manager */
-class MongoDBManagerData
+/* {{{ MongoDB\Driver\Manager */
+class MongoDBDriverManagerData
 {
 	public:
 		static Class* s_class;
@@ -278,18 +278,18 @@ class MongoDBManagerData
 			mongoc_client_destroy(m_client);
 		}
 
-		~MongoDBManagerData() {
+		~MongoDBDriverManagerData() {
 			sweep();
 		};
 };
 
-Class* MongoDBManagerData::s_class = nullptr;
-const StaticString MongoDBManagerData::s_className("MongoDBManager");
-IMPLEMENT_GET_CLASS(MongoDBManagerData);
+Class* MongoDBDriverManagerData::s_class = nullptr;
+const StaticString MongoDBDriverManagerData::s_className("MongoDBDriverManager");
+IMPLEMENT_GET_CLASS(MongoDBDriverManagerData);
 
-static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
+static void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
-	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	mongoc_client_t *client;
 
 	client = mongoc_client_new(dsn.c_str());
@@ -301,11 +301,11 @@ static void HHVM_METHOD(MongoDBManager, __construct, const String &dsn, const Ar
 	data->m_client = client;
 }
 
-static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
+static Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
 {
 	static Class* c_writeResult;
 	bson_t *bson;
-	MongoDBManagerData* data = Native::data<MongoDBManagerData>(this_);
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	bson_error_t error;
 	bson_t reply;
 	mongoc_bulk_operation_t *batch;
@@ -348,12 +348,12 @@ static Object HHVM_METHOD(MongoDBManager, executeInsert, const String &ns, const
 	return Object(obj);
 }
 
-static Object HHVM_METHOD(MongoDBManager, executeQuery, const String &ns, Object &query, Object &readPreference)
+static Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object &query, Object &readPreference)
 {
 	static Class* c_queryResult;
 	bson_t *bson_query = NULL, *bson_fields = NULL;
 	const bson_t *doc;
-	MongoDBManagerData* manager_data = Native::data<MongoDBManagerData>(this_);
+	MongoDBDriverManagerData* manager_data = Native::data<MongoDBDriverManagerData>(this_);
 	char *dbname;
 	char *collname;
 	mongoc_collection_t *collection;
@@ -481,12 +481,12 @@ static class MongoDBExtension : public Extension {
 		MongoDBExtension() : Extension("mongodb") {}
 
 		virtual void moduleInit() {
-			/* MongoDB\Manager */
-			HHVM_MALIAS(MongoDB\\Manager, __construct, MongoDBManager, __construct);
-			HHVM_MALIAS(MongoDB\\Manager, executeInsert, MongoDBManager, executeInsert);
-			HHVM_MALIAS(MongoDB\\Manager, executeQuery, MongoDBManager, executeQuery);
+			/* MongoDB\Driver\Manager */
+			HHVM_MALIAS(MongoDB\\Driver\\Manager, __construct, MongoDBDriverManager, __construct);
+			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeInsert, MongoDBDriverManager, executeInsert);
+			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeQuery, MongoDBDriverManager, executeQuery);
 
-			Native::registerNativeDataInfo<MongoDBManagerData>(MongoDBManagerData::s_className.get());
+			Native::registerNativeDataInfo<MongoDBDriverManagerData>(MongoDBDriverManagerData::s_className.get());
 
 			/* MongoDb\Driver\CursorId */
 			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __construct, MongoDBDriverCursorId, __construct);
