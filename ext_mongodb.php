@@ -89,6 +89,8 @@ final class CursorId {
 
 <<__NativeData("MongoDBDriverCursor")>>
 final class Cursor {
+	<<__Native>>
+	public function getId() : MongoDB\Driver\CursorId;
 }
 /* }}} */
 

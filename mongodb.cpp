@@ -136,6 +136,26 @@ class MongoDBDriverCursorData
 Class* MongoDBDriverCursorData::s_class = nullptr;
 const StaticString MongoDBDriverCursorData::s_className("MongoDBDriverCursor");
 IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
+
+static Object HHVM_METHOD(MongoDBDriverCursor, getId)
+{
+	static Class* c_cursor;
+	int64_t cursorid;
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	cursorid = mongoc_cursor_get_id(data->cursor);
+
+	/* Prepare result */
+	c_cursor = Unit::lookupClass(s_MongoDriverCursorId_className.get());
+	assert(c_cursor);
+	ObjectData* obj = ObjectData::newInstance(c_cursor);
+
+	MongoDBDriverCursorIdData* cursorid_data = Native::data<MongoDBDriverCursorIdData>(obj);
+
+	cursorid_data->id = cursorid;
+
+	return Object(obj);
+}
 /* }}} */
 
 /* {{{ MongoDB\Driver\Server */
@@ -475,6 +495,8 @@ static class MongoDBExtension : public Extension {
 			Native::registerNativeDataInfo<MongoDBDriverCursorIdData>(MongoDBDriverCursorIdData::s_className.get());
 
 			/* MongoDb\Driver\Cursor */
+			HHVM_MALIAS(MongoDB\\Driver\\Cursor, getId, MongoDBDriverCursor, getId);
+
 			Native::registerNativeDataInfo<MongoDBDriverCursorData>(MongoDBDriverCursorData::s_className.get());
 
 			/* MongoDb\Driver\Query */
