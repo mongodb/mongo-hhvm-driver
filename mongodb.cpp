@@ -21,6 +21,7 @@
 #endif
 
 #include "src/MongoDB/Driver/CursorId.h"
+#include "src/MongoDB/Driver/Cursor.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -61,55 +62,6 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 	tvRefcountedDecRef(&ret);
 }
 #endif
-
-/* {{{ MongoDB\Driver\Cursor */
-const StaticString s_MongoDriverCursor_className("MongoDB\\Driver\\Cursor");
-
-class MongoDBDriverCursorData
-{
-	public:
-		static Class* s_class;
-		static const StaticString s_className;
-
-		static Class* getClass();
-
-		mongoc_cursor_t *cursor;
-		int              hint;
-		bool             is_command_cursor;
-		bson_t          *first_batch;
-
-		void sweep() {
-		}
-
-		~MongoDBDriverCursorData() {
-			sweep();
-		};
-};
-
-Class* MongoDBDriverCursorData::s_class = nullptr;
-const StaticString MongoDBDriverCursorData::s_className("MongoDBDriverCursor");
-IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
-
-static Object HHVM_METHOD(MongoDBDriverCursor, getId)
-{
-	static Class* c_cursor;
-	int64_t cursorid;
-	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
-
-	cursorid = mongoc_cursor_get_id(data->cursor);
-
-	/* Prepare result */
-	c_cursor = Unit::lookupClass(s_MongoDriverCursorId_className.get());
-	assert(c_cursor);
-	ObjectData* obj = ObjectData::newInstance(c_cursor);
-
-	MongoDBDriverCursorIdData* cursorid_data = Native::data<MongoDBDriverCursorIdData>(obj);
-
-	cursorid_data->id = cursorid;
-
-	return Object(obj);
-}
-/* }}} */
 
 /* {{{ MongoDB\Driver\Server */
 const StaticString s_MongoDriverServer_className("MongoDB\\Driver\\Server");
