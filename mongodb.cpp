@@ -23,6 +23,7 @@
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/Server.h"
+#include "src/MongoDB/Driver/Query.h"
 #include "src/MongoDB/Driver/QueryResult.h"
 
 #include "mongodb.h"
@@ -64,10 +65,6 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 	tvRefcountedDecRef(&ret);
 }
 #endif
-
-/* {{{ MongoDB\Driver\Query */
-const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");
-/* }}} */
 
 /* {{{ MongoDB\Driver\Manager */
 class MongoDBDriverManagerData
