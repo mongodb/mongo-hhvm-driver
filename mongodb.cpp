@@ -25,6 +25,7 @@
 #include "src/MongoDB/Driver/Server.h"
 #include "src/MongoDB/Driver/Query.h"
 #include "src/MongoDB/Driver/QueryResult.h"
+#include "src/MongoDB/Driver/WriteResult.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -36,8 +37,6 @@ extern "C" {
 }
 
 namespace HPHP {
-
-const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
 
 #if 0
 class Utils
