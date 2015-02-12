@@ -7,6 +7,7 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/Driver/QueryResult.cpp
  src/MongoDB/Driver/Manager.cpp
  src/MongoDB/Driver/WriteResult.cpp
+ src/MongoDB/Driver/ReadPreference.cpp
  libbson/src/yajl/yajl.c libbson/src/yajl/yajl_alloc.c
  libbson/src/yajl/yajl_buf.c libbson/src/yajl/yajl_encode.c
  libbson/src/yajl/yajl_gen.c libbson/src/yajl/yajl_lex.c

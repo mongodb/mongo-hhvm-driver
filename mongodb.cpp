@@ -27,6 +27,7 @@
 #include "src/MongoDB/Driver/QueryResult.h"
 #include "src/MongoDB/Driver/WriteResult.h"
 #include "src/MongoDB/Driver/Manager.h"
+#include "src/MongoDB/Driver/ReadPreference.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -65,59 +66,6 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 	tvRefcountedDecRef(&ret);
 }
 #endif
-
-/* {{{ MongoDB\Driver\ReadPreference */
-const StaticString s_MongoDriverReadPreference_className("MongoDB\\Driver\\ReadPreference");
-
-class MongoDBDriverReadPreferenceData
-{
-	public:
-		static Class* s_class;
-		static const StaticString s_className;
-
-		mongoc_read_prefs_t *m_read_preference = NULL;
-
-		static Class* getClass();
-
-		void sweep() {
-			mongoc_read_prefs_destroy(m_read_preference);
-		}
-
-		~MongoDBDriverReadPreferenceData() {
-			sweep();
-		};
-};
-
-Class* MongoDBDriverReadPreferenceData::s_class = nullptr;
-const StaticString MongoDBDriverReadPreferenceData::s_className("MongoDBDriverReadPreference");
-IMPLEMENT_GET_CLASS(MongoDBDriverReadPreferenceData);
-
-static void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPreference)
-{
-	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
-
-	data->m_read_preference = mongoc_read_prefs_new((mongoc_read_mode_t) readPreference);
-}
-
-static void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Variant &tagSets)
-{
-	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
-	bson_t *bson;
-
-	/* Convert argument */
-	VariantToBsonConverter converter(tagSets);
-	bson = bson_new();
-	converter.convert(bson);
-
-	/* Set and check errors */
-	mongoc_read_prefs_set_tags(data->m_read_preference, bson);
-	bson_destroy(bson);
-	if (!mongoc_read_prefs_is_valid(data->m_read_preference)) {
-		/* Throw exception */
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid tagSet"));
-	}
-}
-/* }}} */
 
 static class MongoDBExtension : public Extension {
 	public:
