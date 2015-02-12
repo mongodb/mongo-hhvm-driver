@@ -23,6 +23,7 @@
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/Server.h"
+#include "src/MongoDB/Driver/QueryResult.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -31,8 +32,8 @@
 extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
-#include <stdio.h>
 }
+
 namespace HPHP {
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
@@ -63,80 +64,6 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 	tvRefcountedDecRef(&ret);
 }
 #endif
-
-/* {{{ MongoDB\Driver\QueryResult */
-const StaticString s_MongoDriverQueryResult_className("MongoDB\\Driver\\QueryResult");
-
-class MongoDBDriverQueryResultData
-{
-	public:
-		static Class* s_class;
-		static const StaticString s_className;
-
-		static Class* getClass();
-
-		mongoc_cursor_t *cursor;
-		int              hint;
-		bool             is_command_cursor;
-		bson_t          *first_batch;
-
-		void sweep() {
-		}
-
-		~MongoDBDriverQueryResultData() {
-			sweep();
-		};
-};
-
-Class* MongoDBDriverQueryResultData::s_class = nullptr;
-const StaticString MongoDBDriverQueryResultData::s_className("MongoDBDriverQueryResult");
-IMPLEMENT_GET_CLASS(MongoDBDriverQueryResultData);
-
-static Object HHVM_METHOD(MongoDBDriverQueryResult, getIterator)
-{
-	static Class* c_cursor;
-	mongoc_host_list_t host;
-	MongoDBDriverQueryResultData* data = Native::data<MongoDBDriverQueryResultData>(this_);
-
-	mongoc_cursor_get_host(data->cursor, &host);
-
-	/* Prepare result */
-	c_cursor = Unit::lookupClass(s_MongoDriverCursor_className.get());
-	assert(c_cursor);
-	ObjectData* obj = ObjectData::newInstance(c_cursor);
-
-	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
-
-	cursor_data->cursor = data->cursor;
-	cursor_data->hint = data->hint;
-	cursor_data->is_command_cursor = data->is_command_cursor;
-	cursor_data->first_batch = data->first_batch;
-
-	return Object(obj);
-}
-
-static Object HHVM_METHOD(MongoDBDriverQueryResult, getServer)
-{
-	static Class* c_server;
-	mongoc_host_list_t host;
-	MongoDBDriverQueryResultData* data = Native::data<MongoDBDriverQueryResultData>(this_);
-
-	mongoc_cursor_get_host(data->cursor, &host);
-
-	/* Prepare result */
-	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
-	assert(c_server);
-	ObjectData* obj = ObjectData::newInstance(c_server);
-
-	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
-
-	result_data->hint = data->hint;
-	result_data->host = &host;
-
-	return Object(obj);
-}
-
-/* }}} */
 
 /* {{{ MongoDB\Driver\Query */
 const StaticString s_MongoDriverQuery_className("MongoDB\\Driver\\Query");

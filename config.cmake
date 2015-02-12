@@ -3,6 +3,7 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/Driver/CursorId.cpp
  src/MongoDB/Driver/Cursor.cpp
  src/MongoDB/Driver/Server.cpp
+ src/MongoDB/Driver/QueryResult.cpp
  libbson/src/yajl/yajl.c libbson/src/yajl/yajl_alloc.c
  libbson/src/yajl/yajl_buf.c libbson/src/yajl/yajl_encode.c
  libbson/src/yajl/yajl_gen.c libbson/src/yajl/yajl_lex.c
