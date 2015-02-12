@@ -13,6 +13,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+#ifndef __MONGODB_BSON_H__
+#define __MONGODB_BSON_H__
+
 #include "hphp/runtime/base/base-includes.h"
 
 extern "C" {
@@ -52,3 +55,4 @@ class VariantToBsonConverter
 };
 
 }
+#endif
