@@ -20,14 +20,14 @@
 #include "hphp/runtime/base/array-init.h"
 #endif
 
-#include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Cursor.h"
-#include "src/MongoDB/Driver/Server.h"
+#include "src/MongoDB/Driver/CursorId.h"
+#include "src/MongoDB/Driver/Manager.h"
 #include "src/MongoDB/Driver/Query.h"
 #include "src/MongoDB/Driver/QueryResult.h"
-#include "src/MongoDB/Driver/WriteResult.h"
-#include "src/MongoDB/Driver/Manager.h"
 #include "src/MongoDB/Driver/ReadPreference.h"
+#include "src/MongoDB/Driver/Server.h"
+#include "src/MongoDB/Driver/WriteResult.h"
 
 #include "mongodb.h"
 #include "bson.h"
