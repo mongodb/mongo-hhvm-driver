@@ -86,7 +86,7 @@ final class CursorId {
 }
 
 <<__NativeData("MongoDBDriverCursor")>>
-final class Cursor {
+final class Cursor implements Iterator {
 	public function __construct(MongoDB\Driver\Server $server, MongoDB\Driver\CursorId $cursorId, array $firstBatch)
 	{
 	}
@@ -118,6 +118,46 @@ final class Cursor {
 	{
 		throw new \Exception("getBatchSize is not implemented yet");
 	}
+
+	/**
+	* Get the current element
+	*
+	* @return ReturnType -
+	*/
+	<<__Native>>
+	public function current(): mixed;
+
+	/**
+	* Get the current key
+	*
+	* @return ReturnType -
+	*/
+	<<__Native>>
+	public function key(): int;
+
+	/**
+	* Move forward to the next element
+	*
+	* @return ReturnType -
+	*/
+	<<__Native>>
+	public function next(): mixed;
+
+	/**
+	* Rewind the iterator to the first element
+	*
+	* @return ReturnType -
+	*/
+	<<__Native>>
+	public function rewind(): mixed;
+
+	/**
+	* Check if current position is valid
+	*
+	* @return ReturnType -
+	*/
+	<<__Native>>
+	public function valid(): bool;
 
 }
 /* }}} */

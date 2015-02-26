@@ -36,6 +36,15 @@ class MongoDBDriverCursorData
 		int              hint;
 		bool             is_command_cursor;
 		bson_t          *first_batch;
+		int64_t          current;
+
+		/* Iterators */
+		bson_iter_t      first_batch_iter;
+
+		struct visitor_data {
+			bool zchild_active;
+			Variant zchild;
+		} visitor_data;
 
 		void sweep() {
 		}
@@ -46,6 +55,12 @@ class MongoDBDriverCursorData
 };
 
 Object HHVM_METHOD(MongoDBDriverCursor, getId);
+
+Variant HHVM_METHOD(MongoDBDriverCursor, current);
+int64_t HHVM_METHOD(MongoDBDriverCursor, key);
+Variant HHVM_METHOD(MongoDBDriverCursor, next);
+void HHVM_METHOD(MongoDBDriverCursor, rewind);
+bool HHVM_METHOD(MongoDBDriverCursor, valid);
 
 }
 #endif

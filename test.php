@@ -30,6 +30,9 @@ $cursor = $r->getIterator();
 $cursorId = $cursor->getId();
 
 var_dump($cursor, $cursorId);
+foreach ( $cursor as $result )
+{
+}
 echo $cursorId, "\n";
 
 $cursorId = new MongoDB\Driver\CursorID("345345");

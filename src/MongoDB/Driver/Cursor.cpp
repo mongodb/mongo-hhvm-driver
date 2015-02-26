@@ -29,6 +29,16 @@ Class* MongoDBDriverCursorData::s_class = nullptr;
 const StaticString MongoDBDriverCursorData::s_className("MongoDBDriverCursor");
 IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
 
+
+static void invalidate_current(MongoDBDriverCursorData *data)
+{
+	if (data->visitor_data.zchild_active) {
+//		data->visitor_data.zchild = NULL;
+		data->visitor_data.zchild_active = false;
+	}
+}
+
+
 Object HHVM_METHOD(MongoDBDriverCursor, getId)
 {
 	static Class* c_cursor;
@@ -48,5 +58,106 @@ Object HHVM_METHOD(MongoDBDriverCursor, getId)
 
 	return Object(obj);
 }
+
+Variant HHVM_METHOD(MongoDBDriverCursor, current)
+{
+	std::cout << "current\n";
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	return data->visitor_data.zchild;
+}
+
+int64_t HHVM_METHOD(MongoDBDriverCursor, key)
+{
+	std::cout << "key\n";
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	return data->current;
+}
+
+Variant HHVM_METHOD(MongoDBDriverCursor, next)
+{
+	std::cout << "next\n";
+	const bson_t *doc;
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	invalidate_current(data);
+
+	data->current++;
+	if (bson_iter_next(&data->first_batch_iter)) {
+		if (BSON_ITER_HOLDS_DOCUMENT(&data->first_batch_iter)) {
+			const uint8_t *document = NULL;
+			uint32_t document_len = 0;
+
+			bson_iter_document(&data->first_batch_iter, &document_len, &document);
+/*
+			MAKE_STD_ZVAL(result->visitor_data.zchild);
+			bson_to_zval(document, document_len, &data->visitor_data);
+*/
+			data->visitor_data.zchild_active = true;
+			return String("next");
+		}
+	}
+	if (mongoc_cursor_next(data->cursor, &doc)) {
+/*
+		MAKE_STD_ZVAL(result->visitor_data.zchild);
+		bson_to_zval(bson_get_data(doc), doc->len, &data->visitor_data);
+*/
+		data->visitor_data.zchild_active = true;
+		return String("next");
+	} else {
+		invalidate_current(data);
+	}
+
+	return String("fail");
+}
+
+void HHVM_METHOD(MongoDBDriverCursor, rewind)
+{
+	std::cout << "rewinding\n";
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	invalidate_current(data);
+
+	if (data->first_batch) {
+		if (data->is_command_cursor) {
+			if (!bson_iter_init(&data->first_batch_iter, data->first_batch)) {
+				return;
+			}
+			if (bson_iter_next(&data->first_batch_iter)) {
+				if (BSON_ITER_HOLDS_DOCUMENT(&data->first_batch_iter)) {
+					const uint8_t *document = NULL;
+					uint32_t document_len = 0;
+
+					bson_iter_document(&data->first_batch_iter, &document_len, &document);
+/*
+					MAKE_STD_ZVAL(result->visitor_data.zchild);
+					bson_to_zval(document, document_len, &data->visitor_data);
+*/
+					data->visitor_data.zchild_active = true;
+				}
+			}
+		} else {
+/*
+			MAKE_STD_ZVAL(result->visitor_data.zchild);
+			bson_to_zval(bson_get_data(result->firstBatch), result->firstBatch->len, &result->visitor_data);
+*/
+			data->visitor_data.zchild_active = true;
+		}
+	}
+}
+
+bool HHVM_METHOD(MongoDBDriverCursor, valid)
+{
+	std::cout << "vali\n";
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	if (data->visitor_data.zchild_active) {
+		return true;
+	}
+
+	return false;
+}
+
 
 }

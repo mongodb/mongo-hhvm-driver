@@ -47,6 +47,8 @@ Object HHVM_METHOD(MongoDBDriverQueryResult, getIterator)
 	cursor_data->hint = data->hint;
 	cursor_data->is_command_cursor = data->is_command_cursor;
 	cursor_data->first_batch = data->first_batch;
+	cursor_data->current = 0;
+	cursor_data->visitor_data.zchild = NULL;
 
 	return Object(obj);
 }
