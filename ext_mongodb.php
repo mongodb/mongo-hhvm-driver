@@ -163,6 +163,15 @@ final class Cursor implements Iterator {
 /* }}} */
 
 /* {{{ Value Classes */
+final class Command {
+	private array $command;
+
+	public function __construct(mixed $command)
+	{
+		$this->command = $command;
+	}
+}
+
 final class Query {
 	private array $query;
 

@@ -1,5 +1,6 @@
 HHVM_EXTENSION(mongodb
  mongodb.cpp bson.cpp utils.cpp
+ src/MongoDB/Driver/Command.cpp
  src/MongoDB/Driver/Cursor.cpp
  src/MongoDB/Driver/CursorId.cpp
  src/MongoDB/Driver/Manager.cpp
