@@ -21,6 +21,7 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+#include "Command.h"
 #include "Manager.h"
 #include "Query.h"
 #include "QueryResult.h"
@@ -44,6 +45,44 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	}
 
 	data->m_client = client;
+}
+
+Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Object &command, Object &readPreference)
+{
+	static Class* c_queryResult;
+	bson_t *bson;
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	mongoc_cursor_t *cursor;
+	const bson_t *doc;
+
+	auto zquery = command->o_get(String("command"), false, s_MongoDriverCommand_className);
+
+	VariantToBsonConverter converter(zquery);
+	bson = bson_new();
+	converter.convert(bson);
+
+	/* Run operation */
+	cursor = mongoc_client_command(data->m_client, db.c_str(), MONGOC_QUERY_NONE, 0, 1, 0, bson, NULL, NULL);
+
+	if (!mongoc_cursor_next(cursor, &doc)) {
+		bson_error_t error;
+
+		if (mongoc_cursor_error(cursor, &error)) {
+			mongoc_cursor_destroy(cursor);
+//			MongoDriver::Utils::throwExceptionFromBsonError(&error);
+			return NULL;
+		}
+	}
+
+	/* Destroy */
+	bson_destroy(bson);
+
+	/* Prepare result */
+	c_queryResult = Unit::lookupClass(s_MongoDriverQueryResult_className.get());
+	assert(c_queryResult);
+	ObjectData* obj = ObjectData::newInstance(c_queryResult);
+
+	return Object(obj);
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
