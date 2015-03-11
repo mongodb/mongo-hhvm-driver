@@ -3,10 +3,14 @@ var_dump(extension_loaded("mongodb"));
 
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
+$c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
+$r = $m->executeCommand( 'demo', $c );
+
 $doc = [
 	'foo' => 'bar',
 ];
-for ( $i = 0; $i < 40; $i++ )
+
+for ( $i = 0; $i < 2; $i++ )
 {
 	$r = $m->executeInsert( 'demo.test', $doc );
 	$r = $m->executeInsert( 'demo.test', $doc );
@@ -19,7 +23,7 @@ $q = new MongoDB\Driver\Query(
 	[ 'foo' => 'bar' ],
 	[
 		'sort' => [ 'foo' => -1 ],
-		'limit' => -2,
+//		'limit' => -2,
 		'skip' => 1,
 		'projection' => [ '_id' => 0, 'foo' => 1 ]
 	]
@@ -30,13 +34,17 @@ $cursor = $r->getIterator();
 $cursorId = $cursor->getId();
 
 var_dump($cursor, $cursorId);
+
+echo "Starting iteration\n";
+
 foreach ( $cursor as $result )
 {
 }
+/*
 echo $cursorId, "\n";
-
 $cursorId = new MongoDB\Driver\CursorID("345345");
 echo $cursorId, "\n";
+*/
 /*
 $r = new MongoDB\Driver\ReadPreference(MongoDB\Driver\ReadPreference::RP_SECONDARY, [ [ 'cs' => 'east' ] ] );
 
