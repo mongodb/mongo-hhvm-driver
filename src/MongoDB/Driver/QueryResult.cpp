@@ -48,7 +48,10 @@ Object HHVM_METHOD(MongoDBDriverQueryResult, getIterator)
 	cursor_data->is_command_cursor = data->is_command_cursor;
 	cursor_data->first_batch = data->first_batch;
 	cursor_data->current = 0;
-	cursor_data->visitor_data.zchild = NULL;
+	cursor_data->zchild = NULL;
+std::cout << "S: zchild_active: " << cursor_data->zchild_active << "\n";
+	cursor_data->zchild_active = 3;
+std::cout << "E: zchild_active: " << cursor_data->zchild_active << "\n";
 
 	return Object(obj);
 }

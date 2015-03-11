@@ -41,12 +41,11 @@ class MongoDBDriverCursorData
 		/* Iterators */
 		bson_iter_t      first_batch_iter;
 
-		struct visitor_data {
-			bool zchild_active;
-			Variant zchild;
-		} visitor_data;
+		int zchild_active;
+		Variant zchild;
 
 		void sweep() {
+			std::cout << "sweep\n";
 		}
 
 		~MongoDBDriverCursorData() {

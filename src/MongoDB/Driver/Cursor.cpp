@@ -32,10 +32,14 @@ IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
 
 static void invalidate_current(MongoDBDriverCursorData *data)
 {
-	if (data->visitor_data.zchild_active) {
-//		data->visitor_data.zchild = NULL;
-		data->visitor_data.zchild_active = false;
+std::cout << "start invalidate\n";
+std::cout << "C: zchild_active: " << data->zchild_active << "\n";
+	if (data->zchild_active) {
+//		data->zchild = NULL;
+		data->zchild_active = false;
 	}
+std::cout << "E: zchild_active: " << data->zchild_active << "\n";
+std::cout << "end invalidate\n";
 }
 
 
@@ -64,7 +68,7 @@ Variant HHVM_METHOD(MongoDBDriverCursor, current)
 	std::cout << "current\n";
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
-	return data->visitor_data.zchild;
+	return data->zchild;
 }
 
 int64_t HHVM_METHOD(MongoDBDriverCursor, key)
@@ -77,7 +81,7 @@ int64_t HHVM_METHOD(MongoDBDriverCursor, key)
 
 Variant HHVM_METHOD(MongoDBDriverCursor, next)
 {
-	std::cout << "next\n";
+	std::cout << "next: " << this_ << "\n";
 	const bson_t *doc;
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
@@ -91,19 +95,23 @@ Variant HHVM_METHOD(MongoDBDriverCursor, next)
 
 			bson_iter_document(&data->first_batch_iter, &document_len, &document);
 /*
-			MAKE_STD_ZVAL(result->visitor_data.zchild);
-			bson_to_zval(document, document_len, &data->visitor_data);
+			MAKE_STD_ZVAL(result->zchild);
+			bson_to_zval(document, document_len, &data->;
 */
-			data->visitor_data.zchild_active = true;
+std::cout << "S: zchild_active: " << data->zchild_active << "\n";
+			data->zchild_active = true;
+std::cout << "E: zchild_active: " << data->zchild_active << "\n";
 			return String("next");
 		}
 	}
 	if (mongoc_cursor_next(data->cursor, &doc)) {
 /*
-		MAKE_STD_ZVAL(result->visitor_data.zchild);
-		bson_to_zval(bson_get_data(doc), doc->len, &data->visitor_data);
+		MAKE_STD_ZVAL(result->zchild);
+		bson_to_zval(bson_get_data(doc), doc->len, &data->;
 */
-		data->visitor_data.zchild_active = true;
+std::cout << "S: zchild_active: " << data->zchild_active << "\n";
+		data->zchild_active = true;
+std::cout << "E: zchild_active: " << data->zchild_active << "\n";
 		return String("next");
 	} else {
 		invalidate_current(data);
@@ -114,7 +122,7 @@ Variant HHVM_METHOD(MongoDBDriverCursor, next)
 
 void HHVM_METHOD(MongoDBDriverCursor, rewind)
 {
-	std::cout << "rewinding\n";
+	std::cout << "rewinding: " << this_ << "\n";
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
 	invalidate_current(data);
@@ -131,28 +139,33 @@ void HHVM_METHOD(MongoDBDriverCursor, rewind)
 
 					bson_iter_document(&data->first_batch_iter, &document_len, &document);
 /*
-					MAKE_STD_ZVAL(result->visitor_data.zchild);
-					bson_to_zval(document, document_len, &data->visitor_data);
+					MAKE_STD_ZVAL(result->zchild);
+					bson_to_zval(document, document_len, &data->;
 */
-					data->visitor_data.zchild_active = true;
+std::cout << "S: zchild_active: " << data->zchild_active << "\n";
+					data->zchild_active = true;
+std::cout << "E: zchild_active: " << data->zchild_active << "\n";
 				}
 			}
 		} else {
 /*
-			MAKE_STD_ZVAL(result->visitor_data.zchild);
-			bson_to_zval(bson_get_data(result->firstBatch), result->firstBatch->len, &result->visitor_data);
+			MAKE_STD_ZVAL(result->zchild);
+			bson_to_zval(bson_get_data(result->firstBatch), result->firstBatch->len, &result->;
 */
-			data->visitor_data.zchild_active = true;
+std::cout << "S: zchild_active: " << data->zchild_active << "\n";
+			data->zchild_active = true;
+std::cout << "E: zchild_active: " << data->zchild_active << "\n";
 		}
 	}
 }
 
 bool HHVM_METHOD(MongoDBDriverCursor, valid)
 {
-	std::cout << "vali\n";
+	std::cout << "valid: " << this_ << "\n";
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
-	if (data->visitor_data.zchild_active) {
+std::cout << "C: zchild_active: " << data->zchild_active << "\n";
+	if (data->zchild_active) {
 		return true;
 	}
 
