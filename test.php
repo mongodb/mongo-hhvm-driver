@@ -37,8 +37,9 @@ var_dump($cursor, $cursorId);
 
 echo "Starting iteration\n";
 
-foreach ( $cursor as $result )
+foreach ( $cursor as $key => $result )
 {
+	var_dump($key, $result);
 }
 /*
 echo $cursorId, "\n";

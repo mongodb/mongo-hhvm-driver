@@ -54,5 +54,18 @@ class VariantToBsonConverter
 /* }}} */
 };
 
+typedef struct {
+	Array *zchild;
+} hippo_bson_state;
+
+class BsonToVariantConverter
+{
+	public:
+		BsonToVariantConverter(const unsigned char *data, int data_len);
+		bool convert(const Variant& v);
+	private:
+		bson_reader_t *m_reader;
+};
+
 }
 #endif
