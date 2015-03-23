@@ -366,7 +366,7 @@ static const bson_visitor_t hippo_bson_visitors = {
 /* }}} */
 
 
-bool BsonToVariantConverter::convert(const Variant &v)
+bool BsonToVariantConverter::convert(Variant *v)
 {
 	bson_iter_t   iter;
 	bool          eof = false;
@@ -401,7 +401,7 @@ bool BsonToVariantConverter::convert(const Variant &v)
 */
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
-	v = Variant(state.zchild);
+	*v = Variant(state.zchild->get());
 
 	return true;
 }

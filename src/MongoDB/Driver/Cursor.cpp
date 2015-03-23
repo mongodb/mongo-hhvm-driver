@@ -106,13 +106,13 @@ std::cout << "E: zchild_active: " << data->zchild_active << "\n";
 		}
 	}
 	if (mongoc_cursor_next(data->cursor, &doc)) {
-		const Variant v;
+		Variant v;
 /*
 		MAKE_STD_ZVAL(result->zchild);
 		bson_to_zval(bson_get_data(doc), doc->len, &data->;
 */
 		BsonToVariantConverter convertor(bson_get_data(doc), doc->len);
-		convertor.convert(v);
+		convertor.convert(&v);
 
 std::cout << "S: zchild_active: " << data->zchild_active << "\n";
 		data->zchild_active = true;
