@@ -242,7 +242,10 @@ bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), co
 
 bool hippo_bson_visit_utf8(const bson_iter_t *iter __attribute__((unused)), const char *key, size_t v_utf8_len, const char *v_utf8, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+
 	std::cout << "converting utf8: " << key << ": " << v_utf8 << "\n";
+	state->zchild->add(String(key), Variant(v_utf8));
 	return false;
 }
 
