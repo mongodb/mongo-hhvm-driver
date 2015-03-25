@@ -7,7 +7,12 @@ $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
 $r = $m->executeCommand( 'demo', $c );
 
 $doc = [
-	'foo' => 'bar',
+	'string' => 'bar',
+	'number_i' => 55,
+	'number_l' => 12345678901234567,
+	'bool' => true,
+	'null' => null,
+	'float' => M_PI,
 ];
 
 for ( $i = 0; $i < 2; $i++ )
@@ -19,15 +24,7 @@ for ( $i = 0; $i < 2; $i++ )
 	$r = $m->executeInsert( 'demo.test', $doc );
 }
 
-$q = new MongoDB\Driver\Query(
-	[ 'foo' => 'bar' ],
-	[
-		'sort' => [ 'foo' => -1 ],
-//		'limit' => -2,
-		'skip' => 1,
-		'projection' => [ '_id' => 0, 'foo' => 1 ]
-	]
-);
+$q = new MongoDB\Driver\Query( [] );
 
 $r = $m->executeQuery( 'demo.test', $q );
 $cursor = $r->getIterator();

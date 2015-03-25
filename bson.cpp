@@ -240,7 +240,10 @@ void hippo_bson_visit_corrupt(const bson_iter_t *iter __attribute__((unused)), v
 
 bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), const char *key, double v_double, void *data)
 {
-	std::cout << "converting double\n";
+	hippo_bson_state *state = (hippo_bson_state*) data;
+
+	std::cout << "converting double: " << key << ": " << v_double << "\n";
+	state->zchild->add(String(key), Variant(v_double));
 	return false;
 }
 
@@ -279,7 +282,10 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 
 bool hippo_bson_visit_bool(const bson_iter_t *iter __attribute__((unused)), const char *key, bool v_bool, void *data)
 {
-	std::cout << "converting bool\n";
+	hippo_bson_state *state = (hippo_bson_state*) data;
+
+	std::cout << "converting bool: " << key << ": " << v_bool << "\n";
+	state->zchild->add(String(key), Variant(v_bool));
 	return false;
 }
 
@@ -291,7 +297,10 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 
 bool hippo_bson_visit_null(const bson_iter_t *iter __attribute__((unused)), const char *key, void *data)
 {
-	std::cout << "converting null\n";
+	hippo_bson_state *state = (hippo_bson_state*) data;
+
+	std::cout << "converting null: " << key << "\n";
+	state->zchild->add(String(key), Variant(Variant::NullInit()));
 	return false;
 }
 
@@ -315,7 +324,10 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 
 bool hippo_bson_visit_int32(const bson_iter_t *iter __attribute__((unused)), const char *key, int32_t v_int32, void *data)
 {
-	std::cout << "converting int32\n";
+	hippo_bson_state *state = (hippo_bson_state*) data;
+
+	std::cout << "converting int32: " << key << ": " << v_int32 << "\n";
+	state->zchild->add(String(key), Variant(v_int32));
 	return false;
 }
 
@@ -327,7 +339,10 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 
 bool hippo_bson_visit_int64(const bson_iter_t *iter __attribute__((unused)), const char *key, int64_t v_int64, void *data)
 {
-	std::cout << "converting int64\n";
+	hippo_bson_state *state = (hippo_bson_state*) data;
+
+	std::cout << "converting int64: " << key << ": " << v_int64 << "\n";
+	state->zchild->add(String(key), Variant(v_int64));
 	return false;
 }
 
