@@ -111,7 +111,11 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, bool v)
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, int64_t v)
 {
-	bson_append_int64(bson, key, -1, v);
+	if (v > INT_MAX || v < INT_MIN) {
+		bson_append_int64(bson, key, -1, v);
+	} else {
+		bson_append_int32(bson, key, -1, (int32_t) v);
+	}
 };
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, double v)
