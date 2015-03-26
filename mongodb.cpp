@@ -20,6 +20,8 @@
 #include "hphp/runtime/base/array-init.h"
 #endif
 
+#include "src/MongoDB/BSON/Binary.h"
+
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Manager.h"
@@ -72,6 +74,15 @@ static class MongoDBExtension : public Extension {
 		MongoDBExtension() : Extension("mongodb") {}
 
 		virtual void moduleInit() {
+			/* MongoDB\BSON\Binary */
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_GENERIC"), (int64_t) BSON_SUBTYPE_BINARY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_FUNCTION"), (int64_t) BSON_SUBTYPE_FUNCTION);
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_OLD_BINARY"), (int64_t) BSON_SUBTYPE_BINARY_DEPRECATED);
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_OLD_UUID"), (int64_t) BSON_SUBTYPE_UUID_DEPRECATED);
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_UUID"), (int64_t) BSON_SUBTYPE_UUID);
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_MD5"), (int64_t) BSON_SUBTYPE_MD5);
+			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_USER_DEFINED"), (int64_t) BSON_SUBTYPE_USER);
+
 			/* MongoDB\Driver\Manager */
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, __construct, MongoDBDriverManager, __construct);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeCommand, MongoDBDriverManager, executeCommand);

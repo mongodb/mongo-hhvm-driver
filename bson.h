@@ -50,6 +50,7 @@ class VariantToBsonConverter
 /* private methods {{{ */
 		int _isPackedArray(const Array &a);
 		char *_getUnmangledPropertyName(String key);
+		void _convertBinary(bson_t *bson, const char *key, Object v);
 		void _convertRegex(bson_t *bson, const char *key, Object v);
 /* }}} */
 };

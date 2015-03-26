@@ -13,6 +13,7 @@ $doc = [
 	'bool' => true,
 	'null' => null,
 	'float' => M_PI,
+	'binary' => new MongoDB\BSON\Binary("random binary\0data", MongoDB\BSON\Binary::TYPE_MD5),
 ];
 
 for ( $i = 0; $i < 2; $i++ )

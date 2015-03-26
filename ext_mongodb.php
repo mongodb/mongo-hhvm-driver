@@ -339,6 +339,18 @@ interface Type
 {
 }
 
+class Binary implements Type
+{
+	function __construct(private string $data, private int $subType)
+	{
+	}
+
+	function getSubType()
+	{
+		return $this->subType;
+	}
+}
+
 class Regex implements Type
 {
 	function __construct(private string $pattern, private string $flags)

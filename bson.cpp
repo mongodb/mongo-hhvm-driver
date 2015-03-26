@@ -17,6 +17,8 @@
 #include "bson.h"
 #include <iostream>
 
+#include "src/MongoDB/BSON/Binary.h"
+
 extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
@@ -188,6 +190,16 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 /* {{{ Serialization of types */
 const StaticString s_MongoDriverBsonType_className("MongoDB\\BSON\\Type");
 
+/* {{{ MongoDriver\BSON\Binary */
+void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
+{
+	String data = v.o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className);
+	int64_t subType = v.o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className).toInt64();
+
+	bson_append_binary(bson, key, -1, (bson_subtype_t) subType, (const unsigned char*) data.c_str(), data.length());
+}
+/* }}} */
+
 /* {{{ MongoDriver\BSON\Regex */
 const StaticString s_MongoDriverBsonRegex_className("MongoDB\\BSON\\Regex");
 const StaticString s_MongoDriverBsonRegex_pattern("pattern");
@@ -207,6 +219,9 @@ void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
 {
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
+		if (v.instanceof(s_MongoBsonBinary_className)) {
+			_convertBinary(bson, key, v);
+		}
 		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
 			_convertRegex(bson, key, v);
 		}
@@ -270,7 +285,27 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 
 bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), const char *key, bson_subtype_t v_subtype, size_t v_binary_len, const uint8_t *v_binary, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_binary;
+	String s;
+	unsigned char *data_s;
+
 	std::cout << "converting binary\n";
+
+	s = String(v_binary_len, ReserveString);
+	data_s = (unsigned char*) s.bufferSlice().ptr;
+	memcpy(data_s, v_binary, v_binary_len);
+	s.setSize(v_binary_len);
+
+	c_binary = Unit::lookupClass(s_MongoBsonBinary_className.get());
+	assert(c_binary);
+	ObjectData* obj = ObjectData::newInstance(c_binary);
+
+	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
+	obj->o_set(s_MongoBsonBinary_subType, Variant(v_subtype), s_MongoBsonBinary_className.get());
+	
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 
