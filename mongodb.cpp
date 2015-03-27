@@ -20,8 +20,6 @@
 #include "hphp/runtime/base/array-init.h"
 #endif
 
-#include "src/MongoDB/BSON/Binary.h"
-
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Manager.h"
@@ -30,6 +28,9 @@
 #include "src/MongoDB/Driver/ReadPreference.h"
 #include "src/MongoDB/Driver/Server.h"
 #include "src/MongoDB/Driver/WriteResult.h"
+
+#include "src/MongoDB/BSON/Binary.h"
+#include "src/MongoDB/BSON/ObjectId.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -82,6 +83,12 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_UUID"), (int64_t) BSON_SUBTYPE_UUID);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_MD5"), (int64_t) BSON_SUBTYPE_MD5);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_USER_DEFINED"), (int64_t) BSON_SUBTYPE_USER);
+
+			/* MongoDB\BSON\ObjectId */
+			HHVM_MALIAS(MongoDB\\BSON\\ObjectId, __construct, MongoDBBsonObjectId, __construct);
+			HHVM_MALIAS(MongoDB\\BSON\\ObjectId, __toString, MongoDBBsonObjectId, __toString);
+			
+			Native::registerNativeDataInfo<MongoDBBsonObjectIdData>(MongoDBBsonObjectIdData::s_className.get());
 
 			/* MongoDB\Driver\Manager */
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, __construct, MongoDBDriverManager, __construct);

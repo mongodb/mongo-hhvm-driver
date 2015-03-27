@@ -351,6 +351,16 @@ class Binary implements Type
 	}
 }
 
+<<__NativeData("MongoDBBsonObjectId")>>
+class ObjectId implements Type
+{
+	<<__Native>>
+	function __construct(string $objectId = null);
+	
+	<<__Native>>
+	function __toString() : string;
+}
+
 class Regex implements Type
 {
 	function __construct(private string $pattern, private string $flags)

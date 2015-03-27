@@ -14,10 +14,13 @@
  *  limitations under the License.
  */
 
+#include "hphp/runtime/vm/native-data.h"
+
 #include "bson.h"
 #include <iostream>
 
 #include "src/MongoDB/BSON/Binary.h"
+#include "src/MongoDB/BSON/ObjectId.h"
 
 extern "C" {
 #include "libbson/src/bson/bson.h"
@@ -200,6 +203,15 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\ObjectId */
+void VariantToBsonConverter::_convertObjectId(bson_t *bson, const char *key, Object v)
+{
+    MongoDBBsonObjectIdData* data = Native::data<MongoDBBsonObjectIdData>(v.get());
+
+	bson_append_oid(bson, key, -1, &data->m_oid);
+}
+/* }}} */
+
 /* {{{ MongoDriver\BSON\Regex */
 const StaticString s_MongoDriverBsonRegex_className("MongoDB\\BSON\\Regex");
 const StaticString s_MongoDriverBsonRegex_pattern("pattern");
@@ -221,6 +233,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
 		if (v.instanceof(s_MongoBsonBinary_className)) {
 			_convertBinary(bson, key, v);
+		}
+		if (v.instanceof(s_MongoBsonObjectId_className)) {
+			_convertObjectId(bson, key, v);
 		}
 		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
 			_convertRegex(bson, key, v);
@@ -311,7 +326,20 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 
 bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const char *key, const bson_oid_t *v_oid, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_objectId;
+
 	std::cout << "converting oid\n";
+
+	c_objectId = Unit::lookupClass(s_MongoBsonObjectId_className.get());
+	assert(c_objectId);
+	ObjectData* obj = ObjectData::newInstance(c_objectId);
+
+	MongoDBBsonObjectIdData* obj_data = Native::data<MongoDBBsonObjectIdData>(obj);
+	bson_oid_copy(v_oid, &obj_data->m_oid);
+	
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 

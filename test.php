@@ -14,6 +14,7 @@ $doc = [
 	'null' => null,
 	'float' => M_PI,
 	'binary' => new MongoDB\BSON\Binary("random binary\0data", MongoDB\BSON\Binary::TYPE_MD5),
+	'oid' => new MongoDB\BSON\ObjectId(),
 ];
 
 for ( $i = 0; $i < 2; $i++ )
@@ -37,6 +38,7 @@ echo "Starting iteration\n";
 
 foreach ( $cursor as $key => $result )
 {
+	echo $result['_id'], ":\n";
 	var_dump($key, $result);
 }
 /*
