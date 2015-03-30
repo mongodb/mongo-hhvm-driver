@@ -351,6 +351,10 @@ class Binary implements Type
 	}
 }
 
+class MaxKey implements Type
+{
+}
+
 class MinKey implements Type
 {
 }

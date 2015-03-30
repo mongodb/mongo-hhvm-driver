@@ -203,6 +203,15 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\MaxKey */
+const StaticString s_MongoBsonMaxKey_className("MongoDB\\BSON\\MaxKey");
+
+void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Object v)
+{
+	bson_append_maxkey(bson, key, -1);
+}
+/* }}} */
+
 /* {{{ MongoDriver\BSON\MinKey */
 const StaticString s_MongoBsonMinKey_className("MongoDB\\BSON\\MinKey");
 
@@ -242,6 +251,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
 		if (v.instanceof(s_MongoBsonBinary_className)) {
 			_convertBinary(bson, key, v);
+		}
+		if (v.instanceof(s_MongoBsonMaxKey_className)) {
+			_convertMaxKey(bson, key, v);
 		}
 		if (v.instanceof(s_MongoBsonMinKey_className)) {
 			_convertMinKey(bson, key, v);
@@ -349,7 +361,7 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 
 	MongoDBBsonObjectIdData* obj_data = Native::data<MongoDBBsonObjectIdData>(obj);
 	bson_oid_copy(v_oid, &obj_data->m_oid);
-	
+
 	state->zchild->add(String(key), Variant(obj));
 
 	return false;
@@ -423,7 +435,17 @@ bool hippo_bson_visit_int64(const bson_iter_t *iter __attribute__((unused)), con
 
 bool hippo_bson_visit_maxkey(const bson_iter_t *iter __attribute__((unused)), const char *key, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_objectId;
+
 	std::cout << "converting maxkey\n";
+
+	c_objectId = Unit::lookupClass(s_MongoBsonMaxKey_className.get());
+	assert(c_objectId);
+	ObjectData* obj = ObjectData::newInstance(c_objectId);
+
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 
