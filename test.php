@@ -27,6 +27,7 @@ $doc = [
 	'oid2' => new MongoDB\BSON\ObjectId('456712341111222222333333'),
 	'maxkey' => new MongoDB\BSON\MaxKey(),
 	'minkey' => new MongoDB\BSON\MinKey(),
+	'utcdatetime' => new MongoDB\BSON\UtcDatetime(time() * 1000),
 ];
 
 for ( $i = 0; $i < 2; $i++ )

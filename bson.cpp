@@ -21,6 +21,7 @@
 
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/ObjectId.h"
+#include "src/MongoDB/BSON/UtcDatetime.h"
 
 extern "C" {
 #include "libbson/src/bson/bson.h"
@@ -244,6 +245,15 @@ void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\UtcDatetime */
+void VariantToBsonConverter::_convertUtcDatetime(bson_t *bson, const char *key, Object v)
+{
+	int64_t milliseconds = v.o_get(s_MongoBsonUtcDatetime_milliseconds, false, s_MongoBsonUtcDatetime_className).toInt64();
+
+	bson_append_date_time(bson, key, -1, milliseconds);
+}
+/* }}} */
+
 /* }}} */
 
 void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
@@ -263,6 +273,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 		}
 		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
 			_convertRegex(bson, key, v);
+		}
+		if (v.instanceof(s_MongoBsonUtcDatetime_className)) {
+			_convertUtcDatetime(bson, key, v);
 		}
 	} else {
 		convertPart(bson, key, v.toArray());
@@ -378,7 +391,19 @@ bool hippo_bson_visit_bool(const bson_iter_t *iter __attribute__((unused)), cons
 
 bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)), const char *key, int64_t msec_since_epoch, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_datetime;
+
 	std::cout << "converting date_time\n";
+
+	c_datetime = Unit::lookupClass(s_MongoBsonUtcDatetime_className.get());
+	assert(c_datetime);
+	ObjectData* obj = ObjectData::newInstance(c_datetime);
+
+	obj->o_set(s_MongoBsonUtcDatetime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUtcDatetime_className.get());
+
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 

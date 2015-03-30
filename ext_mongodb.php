@@ -390,4 +390,20 @@ class Regex implements Type
 		return "/{$this->pattern}/{$this->flags}";
 	}
 }
+
+class UtcDatetime implements Type
+{
+	function __construct(private int $milliseconds)
+	{
+	}
+
+	function __toString() : string
+	{
+		return (string) $this->milliseconds;
+	}
+
+	<<__Native>>
+	function toDateTime() : \DateTime;
+}
+
 /* }}} */

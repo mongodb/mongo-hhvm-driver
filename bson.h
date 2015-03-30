@@ -55,6 +55,7 @@ class VariantToBsonConverter
 		void _convertMinKey(bson_t *bson, const char *key, Object v);
 		void _convertObjectId(bson_t *bson, const char *key, Object v);
 		void _convertRegex(bson_t *bson, const char *key, Object v);
+		void _convertUtcDatetime(bson_t *bson, const char *key, Object v);
 /* }}} */
 };
 

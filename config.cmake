@@ -2,6 +2,7 @@ HHVM_EXTENSION(mongodb
  mongodb.cpp bson.cpp utils.cpp
  src/MongoDB/BSON/Binary.cpp
  src/MongoDB/BSON/ObjectId.cpp
+ src/MongoDB/BSON/UtcDatetime.cpp
  src/MongoDB/Driver/Command.cpp
  src/MongoDB/Driver/Cursor.cpp
  src/MongoDB/Driver/CursorId.cpp
