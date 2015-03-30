@@ -37,7 +37,7 @@ void HHVM_METHOD(MongoDBBsonObjectId, __construct, const Variant &objectId)
 		if (bson_oid_is_valid(str_objectId.c_str(), str_objectId.length())) {
 			bson_oid_init_from_string(&data->m_oid, str_objectId.c_str());
 		} else {
-//			phongo_throw_exception(PHONGO_ERROR_INVALID_ARGUMENT TSRMLS_CC, "%s", "Invalid BSON ID provided");
+			throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid BSON ID provided"));
 		}
 	} else {
 		bson_oid_init(&data->m_oid, NULL);

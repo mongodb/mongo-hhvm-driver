@@ -1,6 +1,15 @@
 <?php
 var_dump(extension_loaded("mongodb"));
 
+try
+{
+	$falseOid = new MongoDB\BSON\ObjectId('xx1234567890y1234567890z');
+}
+catch ( InvalidArgumentException $e )
+{
+	echo $e->getMessage(), "\n";
+}
+
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
@@ -14,7 +23,8 @@ $doc = [
 	'null' => null,
 	'float' => M_PI,
 	'binary' => new MongoDB\BSON\Binary("random binary\0data", MongoDB\BSON\Binary::TYPE_MD5),
-	'oid' => new MongoDB\BSON\ObjectId(),
+	'oid1' => new MongoDB\BSON\ObjectId(),
+	'oid2' => new MongoDB\BSON\ObjectId('456712341111222222333333'),
 ];
 
 for ( $i = 0; $i < 2; $i++ )
@@ -39,6 +49,8 @@ echo "Starting iteration\n";
 foreach ( $cursor as $key => $result )
 {
 	echo $result['_id'], ":\n";
+	echo ' - ', $result['oid1'], "\n";
+	echo ' - ', $result['oid2'], "\n";
 	var_dump($key, $result);
 }
 /*
