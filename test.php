@@ -25,6 +25,7 @@ $doc = [
 	'binary' => new MongoDB\BSON\Binary("random binary\0data", MongoDB\BSON\Binary::TYPE_MD5),
 	'oid1' => new MongoDB\BSON\ObjectId(),
 	'oid2' => new MongoDB\BSON\ObjectId('456712341111222222333333'),
+	'minkey' => new MongoDB\BSON\MinKey(),
 ];
 
 for ( $i = 0; $i < 2; $i++ )

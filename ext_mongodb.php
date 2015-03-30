@@ -351,6 +351,10 @@ class Binary implements Type
 	}
 }
 
+class MinKey implements Type
+{
+}
+
 <<__NativeData("MongoDBBsonObjectId")>>
 class ObjectId implements Type
 {
