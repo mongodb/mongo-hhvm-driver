@@ -22,6 +22,7 @@
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectId.h"
+#include "src/MongoDB/BSON/Timestamp.h"
 #include "src/MongoDB/BSON/UtcDatetime.h"
 
 extern "C" {
@@ -266,6 +267,15 @@ void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\Timestamp */
+void VariantToBsonConverter::_convertTimestamp(bson_t *bson, const char *key, Object v)
+{
+	int32_t timestamp = v.o_get(s_MongoBsonTimestamp_timestamp, false, s_MongoBsonTimestamp_className).toInt32();
+	int32_t increment = v.o_get(s_MongoBsonTimestamp_increment, false, s_MongoBsonTimestamp_className).toInt32();
+
+	bson_append_timestamp(bson, key, -1, timestamp, increment);
+}
+
 /* {{{ MongoDriver\BSON\UtcDatetime */
 void VariantToBsonConverter::_convertUtcDatetime(bson_t *bson, const char *key, Object v)
 {
@@ -297,6 +307,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 		}
 		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
 			_convertRegex(bson, key, v);
+		}
+		if (v.instanceof(s_MongoBsonTimestamp_className)) {
+			_convertTimestamp(bson, key, v);
 		}
 		if (v.instanceof(s_MongoBsonUtcDatetime_className)) {
 			_convertUtcDatetime(bson, key, v);
@@ -517,7 +530,20 @@ bool hippo_bson_visit_int32(const bson_iter_t *iter __attribute__((unused)), con
 
 bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)), const char *key, uint32_t v_timestamp, uint32_t v_increment, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_timestamp;
+
 	std::cout << "converting timestamp\n";
+
+	c_timestamp = Unit::lookupClass(s_MongoBsonTimestamp_className.get());
+	assert(c_timestamp);
+	ObjectData* obj = ObjectData::newInstance(c_timestamp);
+
+	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className.get());
+	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className.get());
+
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 

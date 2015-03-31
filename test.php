@@ -36,6 +36,7 @@ $doc = [
 	'codeWithScope1' => new MongoDB\BSON\Javascript("function() { return x + 1; }", [ 'foo' => 42, 'bar' => M_PI ] ),
 	'codeWithScope2' => new MongoDB\BSON\Javascript("function() { return x + 1; }", $map ),
 	'codeWithScope3' => new MongoDB\BSON\Javascript("function() { return x + 1; }", 42 ),
+	'timestamp' => new MongoDB\BSON\Timestamp(1234, 5678),
 ];
 
 for ( $i = 0; $i < 2; $i++ )

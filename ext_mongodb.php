@@ -398,6 +398,18 @@ class Regex implements Type
 	}
 }
 
+class Timestamp implements Type
+{
+	function __construct(private int $increment, private int $timestamp)
+	{
+	}
+
+	function __toString() : string
+	{
+		return sprintf( "[%d:%d]", $this->increment, $this->timestamp );
+	}
+}
+
 class UtcDatetime implements Type
 {
 	function __construct(private int $milliseconds)
