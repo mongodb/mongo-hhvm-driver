@@ -379,7 +379,7 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 
 	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
 	obj->o_set(s_MongoBsonBinary_subType, Variant(v_subtype), s_MongoBsonBinary_className.get());
-	
+
 	state->zchild->add(String(key), Variant(obj));
 
 	return false;
