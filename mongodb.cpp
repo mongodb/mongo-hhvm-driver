@@ -30,6 +30,7 @@
 #include "src/MongoDB/Driver/WriteResult.h"
 
 #include "src/MongoDB/BSON/Binary.h"
+#include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectId.h"
 #include "src/MongoDB/BSON/UtcDatetime.h"
 

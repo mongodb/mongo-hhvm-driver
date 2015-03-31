@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "src/MongoDB/BSON/Binary.h"
+#include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectId.h"
 #include "src/MongoDB/BSON/UtcDatetime.h"
 
@@ -204,6 +205,26 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\Javascript */
+void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, Object v)
+{
+	bson_t *scope_bson;
+	String code = v.o_get(s_MongoBsonJavascript_code, false, s_MongoBsonJavascript_className);
+	auto scope = v.o_get(s_MongoBsonJavascript_scope, false, s_MongoBsonJavascript_className);
+
+	if (scope.isObject() || scope.isArray()) {
+		/* Convert scope to document */
+		VariantToBsonConverter converter(scope);
+		scope_bson = bson_new();
+		converter.convert(scope_bson);
+
+		bson_append_code_with_scope(bson, key, -1, (const char*) code.c_str(), scope_bson);
+	} else {
+		bson_append_code(bson, key, -1, (const char*) code.c_str());
+	}
+}
+/* }}} */
+
 /* {{{ MongoDriver\BSON\MaxKey */
 const StaticString s_MongoBsonMaxKey_className("MongoDB\\BSON\\MaxKey");
 
@@ -261,6 +282,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
 		if (v.instanceof(s_MongoBsonBinary_className)) {
 			_convertBinary(bson, key, v);
+		}
+		if (v.instanceof(s_MongoBsonJavascript_className)) {
+			_convertJavascript(bson, key, v);
 		}
 		if (v.instanceof(s_MongoBsonMaxKey_className)) {
 			_convertMaxKey(bson, key, v);
@@ -424,13 +448,61 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 
 bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), const char *key, size_t v_code_len, const char *v_code, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_code;
+	String s;
+	unsigned char *data_s;
+
 	std::cout << "converting code\n";
+
+	s = String(v_code_len, ReserveString);
+	data_s = (unsigned char*) s.bufferSlice().ptr;
+	memcpy(data_s, v_code, v_code_len);
+	s.setSize(v_code_len);
+
+	c_code = Unit::lookupClass(s_MongoBsonJavascript_className.get());
+	assert(c_code);
+	ObjectData* obj = ObjectData::newInstance(c_code);
+
+	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
+
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 
 bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused)), const char *key, size_t v_code_len, const char *v_code, const bson_t *v_scope, void *data)
 {
-	std::cout << "converting codewscope\n";
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_code;
+	String s;
+	unsigned char *data_s;
+	Variant scope_v;
+
+	std::cout << "converting code with scope\n";
+
+	/* code */
+	s = String(v_code_len, ReserveString);
+	data_s = (unsigned char*) s.bufferSlice().ptr;
+	memcpy(data_s, v_code, v_code_len);
+	s.setSize(v_code_len);
+
+	/* scope */
+	BsonToVariantConverter converter(bson_get_data(v_scope), v_scope->len);
+	converter.convert(&scope_v);
+
+	/* create object */
+	c_code = Unit::lookupClass(s_MongoBsonJavascript_className.get());
+	assert(c_code);
+	ObjectData* obj = ObjectData::newInstance(c_code);
+
+	/* set properties */
+	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
+	obj->o_set(s_MongoBsonJavascript_scope, scope_v, s_MongoBsonJavascript_className.get());
+
+	/* add to array */
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 

@@ -351,6 +351,13 @@ class Binary implements Type
 	}
 }
 
+class Javascript implements Type
+{
+	function __construct(private string $code, private ?mixed $scope = NULL)
+	{
+	}
+}
+
 class MaxKey implements Type
 {
 }

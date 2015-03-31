@@ -15,6 +15,10 @@ $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
 $r = $m->executeCommand( 'demo', $c );
 
+$map = new StdClass;
+$map->bar = 52;
+$map->foo = true;
+
 $doc = [
 	'string' => 'bar',
 	'number_i' => 55,
@@ -28,6 +32,10 @@ $doc = [
 	'maxkey' => new MongoDB\BSON\MaxKey(),
 	'minkey' => new MongoDB\BSON\MinKey(),
 	'utcdatetime' => new MongoDB\BSON\UtcDatetime(time() * 1000),
+	'code' => new MongoDB\BSON\Javascript("function() { return x + 1; }"),
+	'codeWithScope1' => new MongoDB\BSON\Javascript("function() { return x + 1; }", [ 'foo' => 42, 'bar' => M_PI ] ),
+	'codeWithScope2' => new MongoDB\BSON\Javascript("function() { return x + 1; }", $map ),
+	'codeWithScope3' => new MongoDB\BSON\Javascript("function() { return x + 1; }", 42 ),
 ];
 
 for ( $i = 0; $i < 2; $i++ )
