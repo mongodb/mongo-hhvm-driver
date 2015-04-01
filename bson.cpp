@@ -22,6 +22,7 @@
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectId.h"
+#include "src/MongoDB/BSON/Regex.h"
 #include "src/MongoDB/BSON/Timestamp.h"
 #include "src/MongoDB/BSON/UtcDatetime.h"
 
@@ -254,14 +255,11 @@ void VariantToBsonConverter::_convertObjectId(bson_t *bson, const char *key, Obj
 /* }}} */
 
 /* {{{ MongoDriver\BSON\Regex */
-const StaticString s_MongoDriverBsonRegex_className("MongoDB\\BSON\\Regex");
-const StaticString s_MongoDriverBsonRegex_pattern("pattern");
-const StaticString s_MongoDriverBsonRegex_flags("flags");
 
 void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object v)
 {
-	String regex = v.o_get(s_MongoDriverBsonRegex_pattern, false, s_MongoDriverBsonRegex_className);
-	String flags = v.o_get(s_MongoDriverBsonRegex_flags, false, s_MongoDriverBsonRegex_className);
+	String regex = v.o_get(s_MongoBsonRegex_pattern, false, s_MongoBsonRegex_className);
+	String flags = v.o_get(s_MongoBsonRegex_flags, false, s_MongoBsonRegex_className);
 
 	bson_append_regex(bson, key, -1, regex.c_str(), flags.c_str());
 }
@@ -305,7 +303,7 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 		if (v.instanceof(s_MongoBsonObjectId_className)) {
 			_convertObjectId(bson, key, v);
 		}
-		if (v.instanceof(s_MongoDriverBsonRegex_className)) {
+		if (v.instanceof(s_MongoBsonRegex_className)) {
 			_convertRegex(bson, key, v);
 		}
 		if (v.instanceof(s_MongoBsonTimestamp_className)) {
@@ -455,7 +453,20 @@ bool hippo_bson_visit_null(const bson_iter_t *iter __attribute__((unused)), cons
 
 bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), const char *key, const char *v_regex, const char *v_options, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_regex;
+
 	std::cout << "converting regex\n";
+
+	c_regex = Unit::lookupClass(s_MongoBsonRegex_className.get());
+	assert(c_regex);
+	ObjectData* obj = ObjectData::newInstance(c_regex);
+
+	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className.get());
+	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className.get());
+
+	state->zchild->add(String(key), Variant(obj));
+
 	return false;
 }
 
