@@ -39,6 +39,8 @@ $doc = [
 	'timestamp' => new MongoDB\BSON\Timestamp(1234, 5678),
 	'regex' => new MongoDB\BSON\Regex('derick', 'im'),
 	'array' => [ 1, 5, 'foo', M_PI, true ],
+	'document' => $map,
+	'arraydocument' => [ 0, "foo" => 5, $map, $map ],
 ];
 
 for ( $i = 0; $i < 2; $i++ )

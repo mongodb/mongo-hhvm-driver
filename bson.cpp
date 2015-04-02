@@ -360,7 +360,16 @@ bool hippo_bson_visit_utf8(const bson_iter_t *iter __attribute__((unused)), cons
 
 bool hippo_bson_visit_document(const bson_iter_t *iter __attribute__((unused)), const char *key, const bson_t *v_document, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	Variant document_v;
+
 	std::cout << "converting document\n";
+
+	BsonToVariantConverter converter(bson_get_data(v_document), v_document->len);
+	converter.convert(&document_v);
+
+	state->zchild->add(String(key), document_v);
+
 	return false;
 }
 
