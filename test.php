@@ -38,6 +38,7 @@ $doc = [
 	'codeWithScope3' => new MongoDB\BSON\Javascript("function() { return x + 1; }", 42 ),
 	'timestamp' => new MongoDB\BSON\Timestamp(1234, 5678),
 	'regex' => new MongoDB\BSON\Regex('derick', 'im'),
+	'array' => [ 1, 5, 'foo', M_PI, true ],
 ];
 
 for ( $i = 0; $i < 2; $i++ )

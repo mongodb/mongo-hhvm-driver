@@ -366,7 +366,16 @@ bool hippo_bson_visit_document(const bson_iter_t *iter __attribute__((unused)), 
 
 bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), const char *key, const bson_t *v_array, void *data)
 {
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	Variant array_v;
+
 	std::cout << "converting array\n";
+
+	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len);
+	converter.convert(&array_v);
+
+	state->zchild->add(String(key), array_v);
+
 	return false;
 }
 
