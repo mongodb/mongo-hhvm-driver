@@ -24,7 +24,7 @@
 #include "Command.h"
 #include "Manager.h"
 #include "Query.h"
-#include "QueryResult.h"
+#include "Result.h"
 #include "WriteResult.h"
 
 namespace HPHP {
@@ -49,7 +49,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Object &command, Object &readPreference)
 {
-	static Class* c_queryResult;
+	static Class* c_result;
 	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	mongoc_cursor_t *cursor;
@@ -78,9 +78,9 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Objec
 	bson_destroy(bson);
 
 	/* Prepare result */
-	c_queryResult = Unit::lookupClass(s_MongoDriverQueryResult_className.get());
-	assert(c_queryResult);
-	ObjectData* obj = ObjectData::newInstance(c_queryResult);
+	c_result = Unit::lookupClass(s_MongoDriverResult_className.get());
+	assert(c_result);
+	ObjectData* obj = ObjectData::newInstance(c_result);
 
 	return Object(obj);
 }
@@ -134,7 +134,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 
 Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object &query, Object &readPreference)
 {
-	static Class* c_queryResult;
+	static Class* c_result;
 	bson_t *bson_query = NULL, *bson_fields = NULL;
 	const bson_t *doc;
 	MongoDBDriverManagerData* manager_data = Native::data<MongoDBDriverManagerData>(this_);
@@ -192,11 +192,11 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object 
 	}
 
 	/* Prepare result */
-	c_queryResult = Unit::lookupClass(s_MongoDriverQueryResult_className.get());
-	assert(c_queryResult);
-	ObjectData* obj = ObjectData::newInstance(c_queryResult);
+	c_result = Unit::lookupClass(s_MongoDriverResult_className.get());
+	assert(c_result);
+	ObjectData* obj = ObjectData::newInstance(c_result);
 
-	MongoDBDriverQueryResultData* result_data = Native::data<MongoDBDriverQueryResultData>(obj);
+	MongoDBDriverResultData* result_data = Native::data<MongoDBDriverResultData>(obj);
 
 	result_data->cursor = cursor;
 	result_data->hint = mongoc_cursor_get_hint(cursor);

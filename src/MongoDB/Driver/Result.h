@@ -26,9 +26,9 @@ extern "C" {
 
 namespace HPHP {
 
-extern const StaticString s_MongoDriverQueryResult_className;
+extern const StaticString s_MongoDriverResult_className;
 
-class MongoDBDriverQueryResultData
+class MongoDBDriverResultData
 {
 	public:
 		static Class* s_class;
@@ -44,13 +44,13 @@ class MongoDBDriverQueryResultData
 		void sweep() {
 		}
 
-		~MongoDBDriverQueryResultData() {
+		~MongoDBDriverResultData() {
 			sweep();
 		};
 };
 
-Object HHVM_METHOD(MongoDBDriverQueryResult, getIterator);
-Object HHVM_METHOD(MongoDBDriverQueryResult, getServer);
+Object HHVM_METHOD(MongoDBDriverResult, getIterator);
+Object HHVM_METHOD(MongoDBDriverResult, getServer);
 
 }
 #endif

@@ -7,10 +7,10 @@ class Manager {
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
-	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\CommandResult;
+	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Result;
 
 	<<__Native>>
-	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\QueryResult;
+	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Result;
 
 	function executeWriteBatch(string $namespace, MongoDB\Driver\WriteBatch $batch, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
 	{
@@ -207,9 +207,9 @@ final class Query {
 	}
 }
 
-<<__NativeData("MongoDBDriverQueryResult")>>
-final class QueryResult {
-	function __construct(private string $namespace, private Query $zquery, private ReadPreference $readPreference = null)
+<<__NativeData("MongoDBDriverResult")>>
+final class Result {
+	function __construct(private Server $server, private mixed $responseDocument)
 	{
 	}
 
@@ -221,12 +221,12 @@ final class QueryResult {
 	<<__Native>>
 	public function getIterator() : Cursor;
 
-	public function setIteratorClass() : QueryResult
+	public function setIteratorClass() : Result
 	{
 		throw new \Exception("setIteratorClass is not implemented yet");
 	}
 
-	public function setIteratorInitCallback() : QueryResult
+	public function setIteratorInitCallback() : Result
 	{
 		throw new \Exception("setIteratorInitCallback is not implemented yet");
 	}

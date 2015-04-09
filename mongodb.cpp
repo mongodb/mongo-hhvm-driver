@@ -24,7 +24,7 @@
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Manager.h"
 #include "src/MongoDB/Driver/Query.h"
-#include "src/MongoDB/Driver/QueryResult.h"
+#include "src/MongoDB/Driver/Result.h"
 #include "src/MongoDB/Driver/ReadPreference.h"
 #include "src/MongoDB/Driver/Server.h"
 #include "src/MongoDB/Driver/WriteResult.h"
@@ -141,11 +141,11 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY_PREFERRED"), (int64_t) MONGOC_READ_SECONDARY_PREFERRED);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_NEAREST"), (int64_t) MONGOC_READ_NEAREST);
 
-			/* MongoDb\Driver\QueryResult */
-			HHVM_MALIAS(MongoDB\\Driver\\QueryResult, getIterator, MongoDBDriverQueryResult, getIterator);
-			HHVM_MALIAS(MongoDB\\Driver\\QueryResult, getServer, MongoDBDriverQueryResult, getServer);
+			/* MongoDb\Driver\Result */
+			HHVM_MALIAS(MongoDB\\Driver\\Result, getIterator, MongoDBDriverResult, getIterator);
+			HHVM_MALIAS(MongoDB\\Driver\\Result, getServer, MongoDBDriverResult, getServer);
 
-			Native::registerNativeDataInfo<MongoDBDriverQueryResultData>(MongoDBDriverQueryResultData::s_className.get());
+			Native::registerNativeDataInfo<MongoDBDriverResultData>(MongoDBDriverResultData::s_className.get());
 
 			/* MongoDb\Driver\Server */
 			Native::registerNativeDataInfo<MongoDBDriverServerData>(MongoDBDriverServerData::s_className.get());

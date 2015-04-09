@@ -19,20 +19,20 @@
 
 #include "../../../mongodb.h"
 
-#include "QueryResult.h"
+#include "Result.h"
 
 namespace HPHP {
 
-const StaticString s_MongoDriverQueryResult_className("MongoDB\\Driver\\QueryResult");
-Class* MongoDBDriverQueryResultData::s_class = nullptr;
-const StaticString MongoDBDriverQueryResultData::s_className("MongoDBDriverQueryResult");
-IMPLEMENT_GET_CLASS(MongoDBDriverQueryResultData);
+const StaticString s_MongoDriverResult_className("MongoDB\\Driver\\Result");
+Class* MongoDBDriverResultData::s_class = nullptr;
+const StaticString MongoDBDriverResultData::s_className("MongoDBDriverResult");
+IMPLEMENT_GET_CLASS(MongoDBDriverResultData);
 
-Object HHVM_METHOD(MongoDBDriverQueryResult, getIterator)
+Object HHVM_METHOD(MongoDBDriverResult, getIterator)
 {
 	static Class* c_cursor;
 	mongoc_host_list_t host;
-	MongoDBDriverQueryResultData* data = Native::data<MongoDBDriverQueryResultData>(this_);
+	MongoDBDriverResultData* data = Native::data<MongoDBDriverResultData>(this_);
 
 	mongoc_cursor_get_host(data->cursor, &host);
 
@@ -56,11 +56,11 @@ std::cout << "E: zchild_active: " << cursor_data->zchild_active << "\n";
 	return Object(obj);
 }
 
-Object HHVM_METHOD(MongoDBDriverQueryResult, getServer)
+Object HHVM_METHOD(MongoDBDriverResult, getServer)
 {
 	static Class* c_server;
 	mongoc_host_list_t host;
-	MongoDBDriverQueryResultData* data = Native::data<MongoDBDriverQueryResultData>(this_);
+	MongoDBDriverResultData* data = Native::data<MongoDBDriverResultData>(this_);
 
 	mongoc_cursor_get_host(data->cursor, &host);
 

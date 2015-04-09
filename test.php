@@ -14,6 +14,7 @@ $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
 $r = $m->executeCommand( 'demo', $c );
+var_dump($r);
 
 $map = new StdClass;
 $map->bar = 52;
@@ -55,6 +56,7 @@ for ( $i = 0; $i < 2; $i++ )
 $q = new MongoDB\Driver\Query( [] );
 
 $r = $m->executeQuery( 'demo.test', $q );
+var_dump( $r );
 $cursor = $r->getIterator();
 $cursorId = $cursor->getId();
 
