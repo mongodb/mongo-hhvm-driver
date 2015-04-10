@@ -300,6 +300,10 @@ interface Unserializable
 	function bsonUnserialize(array $data) : void;
 }
 
+interface Persistable extends Serializable, Unserializable
+{
+}
+
 interface Type
 {
 }
