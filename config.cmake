@@ -11,7 +11,6 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/Driver/CursorId.cpp
  src/MongoDB/Driver/Manager.cpp
  src/MongoDB/Driver/Query.cpp
- src/MongoDB/Driver/Result.cpp
  src/MongoDB/Driver/ReadPreference.cpp
  src/MongoDB/Driver/Server.cpp
  src/MongoDB/Driver/WriteResult.cpp

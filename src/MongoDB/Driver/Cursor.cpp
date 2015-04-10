@@ -22,6 +22,7 @@
 
 #include "CursorId.h"
 #include "Cursor.h"
+#include "Server.h"
 
 namespace HPHP {
 
@@ -176,6 +177,27 @@ std::cout << "C: zchild_active: " << data->zchild_active << "\n";
 	}
 
 	return false;
+}
+
+Object HHVM_METHOD(MongoDBDriverCursor, getServer)
+{
+	static Class* c_server;
+	mongoc_host_list_t host;
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	mongoc_cursor_get_host(data->cursor, &host);
+
+	/* Prepare result */
+	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
+	assert(c_server);
+	ObjectData* obj = ObjectData::newInstance(c_server);
+
+	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
+
+	result_data->hint = data->hint;
+	result_data->host = &host;
+
+	return Object(obj);
 }
 
 

@@ -54,6 +54,7 @@ class MongoDBDriverCursorData
 };
 
 Object HHVM_METHOD(MongoDBDriverCursor, getId);
+Object HHVM_METHOD(MongoDBDriverCursor, getServer);
 
 Variant HHVM_METHOD(MongoDBDriverCursor, current);
 int64_t HHVM_METHOD(MongoDBDriverCursor, key);

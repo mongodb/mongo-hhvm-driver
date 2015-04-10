@@ -22,9 +22,9 @@
 #include "../../../mongodb.h"
 
 #include "Command.h"
+#include "Cursor.h"
 #include "Manager.h"
 #include "Query.h"
-#include "Result.h"
 #include "WriteResult.h"
 
 namespace HPHP {
@@ -78,7 +78,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Objec
 	bson_destroy(bson);
 
 	/* Prepare result */
-	c_result = Unit::lookupClass(s_MongoDriverResult_className.get());
+	c_result = Unit::lookupClass(s_MongoDriverCursor_className.get());
 	assert(c_result);
 	ObjectData* obj = ObjectData::newInstance(c_result);
 
@@ -192,16 +192,16 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object 
 	}
 
 	/* Prepare result */
-	c_result = Unit::lookupClass(s_MongoDriverResult_className.get());
+	c_result = Unit::lookupClass(s_MongoDriverCursor_className.get());
 	assert(c_result);
 	ObjectData* obj = ObjectData::newInstance(c_result);
 
-	MongoDBDriverResultData* result_data = Native::data<MongoDBDriverResultData>(obj);
+	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
 
-	result_data->cursor = cursor;
-	result_data->hint = mongoc_cursor_get_hint(cursor);
-	result_data->is_command_cursor = false;
-	result_data->first_batch = doc ? bson_copy(doc) : NULL;
+	cursor_data->cursor = cursor;
+	cursor_data->hint = mongoc_cursor_get_hint(cursor);
+	cursor_data->is_command_cursor = false;
+	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
 
 	return Object(obj);
 }

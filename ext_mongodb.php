@@ -7,10 +7,10 @@ class Manager {
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
-	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Result;
+	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Cursor;
 
 	<<__Native>>
-	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Result;
+	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Cursor;
 
 	function executeWriteBatch(string $namespace, MongoDB\Driver\WriteBatch $batch, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
 	{
@@ -85,7 +85,7 @@ final class CursorId {
 }
 
 <<__NativeData("MongoDBDriverCursor")>>
-final class Cursor implements Iterator {
+final class Cursor implements Traversable, Iterator {
 	public function __construct(MongoDB\Driver\Server $server, MongoDB\Driver\CursorId $cursorId, array $firstBatch)
 	{
 	}
@@ -93,29 +93,12 @@ final class Cursor implements Iterator {
 	<<__Native>>
 	public function getId() : MongoDB\Driver\CursorId;
 
-	public function getServer() : MongoDB\Driver\Server
-	{
-		throw new \Exception("getServer is not implemented yet");
-	}
+	<<__Native>>
+	public function getServer() : MongoDB\Driver\Server;
 
 	public function isDead() : bool
 	{
 		throw new \Exception("isDead is not implemented yet");
-	}
-
-	public function kill() : void
-	{
-		throw new \Exception("kill is not implemented yet");
-	}
-
-	public function setBatchSize(integer $batchSize) : integer
-	{
-		throw new \Exception("setBatchSize is not implemented yet");
-	}
-
-	public function getBatchSize() : integer
-	{
-		throw new \Exception("getBatchSize is not implemented yet");
 	}
 
 	/**
@@ -205,34 +188,6 @@ final class Query {
 
 		$this->query['query']['$query'] = $filter;
 	}
-}
-
-<<__NativeData("MongoDBDriverResult")>>
-final class Result {
-	function __construct(private Server $server, private mixed $responseDocument)
-	{
-	}
-
-	public function setTypemap(array $typemap) : void
-	{
-		throw new \Exception("getTypemap is not implemented yet");
-	}
-
-	<<__Native>>
-	public function getIterator() : Cursor;
-
-	public function setIteratorClass() : Result
-	{
-		throw new \Exception("setIteratorClass is not implemented yet");
-	}
-
-	public function setIteratorInitCallback() : Result
-	{
-		throw new \Exception("setIteratorInitCallback is not implemented yet");
-	}
-
-	<<__Native>>
-	public function getServer(): Server;
 }
 
 <<__NativeData("MongoDBDriverReadPreference")>>
