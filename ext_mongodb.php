@@ -295,6 +295,11 @@ interface Serializable
 	function bsonSerialize() : array;
 }
 
+interface Unserializable
+{
+	function bsonUnserialize(array $data) : void;
+}
+
 interface Type
 {
 }
