@@ -290,6 +290,11 @@ final class WriteResult {
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;
 
+interface Serializable
+{
+	function bsonSerialize() : array;
+}
+
 interface Type
 {
 }
