@@ -6,6 +6,7 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/BSON/Regex.cpp
  src/MongoDB/BSON/Timestamp.cpp
  src/MongoDB/BSON/UtcDatetime.cpp
+ src/MongoDB/Driver/BulkWrite.cpp
  src/MongoDB/Driver/Command.cpp
  src/MongoDB/Driver/Cursor.cpp
  src/MongoDB/Driver/CursorId.cpp

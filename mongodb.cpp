@@ -20,6 +20,7 @@
 #include "hphp/runtime/base/array-init.h"
 #endif
 
+#include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Manager.h"
@@ -101,6 +102,16 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeQuery, MongoDBDriverManager, executeQuery);
 
 			Native::registerNativeDataInfo<MongoDBDriverManagerData>(MongoDBDriverManagerData::s_className.get());
+
+			/* MongoDB\Driver\BulkWrite */
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, __construct, MongoDBDriverBulkWrite, __construct);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, insert, MongoDBDriverBulkWrite, insert);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, update, MongoDBDriverBulkWrite, update);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, delete, MongoDBDriverBulkWrite, delete);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, count, MongoDBDriverBulkWrite, count);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, __debugInfo, MongoDBDriverBulkWrite, __debugInfo);
+
+			Native::registerNativeDataInfo<MongoDBDriverBulkWriteData>(MongoDBDriverBulkWriteData::s_className.get());
 
 			/* MongoDb\Driver\CursorId */
 			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __construct, MongoDBDriverCursorId, __construct);

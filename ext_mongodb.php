@@ -12,7 +12,7 @@ class Manager {
 	<<__Native>>
 	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Cursor;
 
-	function executeWriteBatch(string $namespace, MongoDB\Driver\WriteBatch $batch, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
+	function executeBulkWrite(string $namespace, MongoDB\Driver\BulkWrite $bulk, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
 	{
 	}
 
@@ -189,6 +189,28 @@ final class Query {
 		$this->query['query']['$query'] = $filter;
 	}
 }
+
+<<__NativeData("MongoDBDriverBulkWrite")>>
+final class BulkWrite implements \Countable {
+	<<__Native>>
+	function __construct(boolean $ordered);
+
+	<<__Native>>
+	function insert(mixed $document) : ?MongoDB\BSON\ObjectId;
+
+	<<__Native>>
+	function update(mixed $query, mixed $newObj, array $updateOptions = array()) : void;
+
+	<<__Native>>
+	function delete(mixed $query, array $deleteOptions = array()) : void;
+
+	<<__Native>>
+	function count() : int;
+
+	<<__Native>>
+	function __debugInfo() : array;
+}
+
 
 <<__NativeData("MongoDBDriverReadPreference")>>
 final class ReadPreference {
