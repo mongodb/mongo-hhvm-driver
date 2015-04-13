@@ -29,8 +29,13 @@ Class* MongoDBDriverBulkWriteData::s_class = nullptr;
 const StaticString MongoDBDriverBulkWriteData::s_className("MongoDBDriverBulkWrite");
 IMPLEMENT_GET_CLASS(MongoDBDriverBulkWriteData);
 
-void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, bool ordered)
+void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered)
 {
+	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
+	bool b_ordered = ordered.toInt64();
+
+	std::cout << "ordered: " << b_ordered << "\n";
+	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
 }
 
 Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)

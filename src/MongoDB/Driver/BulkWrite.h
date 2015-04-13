@@ -42,7 +42,7 @@ class MongoDBDriverBulkWriteData
 		};
 };
 
-void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, bool ordered);
+void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered);
 Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document);
 Object HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &newObj, const Array &updateOptions);
 Object HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &qyert, const Array &deleteOptions);

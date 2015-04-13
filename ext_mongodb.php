@@ -193,7 +193,7 @@ final class Query {
 <<__NativeData("MongoDBDriverBulkWrite")>>
 final class BulkWrite implements \Countable {
 	<<__Native>>
-	function __construct(boolean $ordered);
+	function __construct(?boolean $ordered = true);
 
 	<<__Native>>
 	function insert(mixed $document) : ?MongoDB\BSON\ObjectId;
