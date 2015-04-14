@@ -58,11 +58,13 @@ for ( $i = 0; $i < 2; $i++ )
 	$r = $m->executeInsert( 'demo.test', $doc );
 	$r = $m->executeInsert( 'demo.test', $doc );
 }
+$m->executeInsert( 'demo.test', [ 'without_id' => true ] );
+$m->executeInsert( 'demo.test', [ '_id' => new MongoDB\Bson\ObjectId(), 'with_id' => true ] );
 
 $q = new MongoDB\Driver\Query( [] );
 
 $cursor = $m->executeQuery( 'demo.test', $q );
-var_dump( $r );
+var_dump( $cursor );
 $cursorId = $cursor->getId();
 
 var_dump($cursor, $cursorId);

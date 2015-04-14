@@ -41,7 +41,7 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Vari
 	bson_t *bson;
 
 	/* Convert argument */
-	VariantToBsonConverter converter(tagSets);
+	VariantToBsonConverter converter(tagSets, HIPPO_BSON_NO_FLAGS);
 	bson = bson_new();
 	converter.convert(bson);
 

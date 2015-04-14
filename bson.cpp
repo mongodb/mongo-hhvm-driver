@@ -55,10 +55,11 @@ int VariantToBsonConverter::_isPackedArray(const Array &a)
 	return true;
 }
 
-VariantToBsonConverter::VariantToBsonConverter(const Variant& document)
+VariantToBsonConverter::VariantToBsonConverter(const Variant& document, int flags)
 {
 	m_document = document;
 	m_level = 0;
+	m_flags = flags;
 }
 
 void VariantToBsonConverter::convert(bson_t *bson)
@@ -173,15 +174,35 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 	for (ArrayIter iter(v); iter; ++iter) {
 		Variant key(iter.first());
 		const Variant& data(iter.secondRef());
+		String s_key = key.toString();
 
+		if (m_level == 0 && (m_flags & HIPPO_BSON_ADD_ID)) {
+
+			if (strncmp(s_key.c_str(), "_id", s_key.length()) == 0) {
+				m_flags &= !HIPPO_BSON_ADD_ID;
+			}
+		}
+
+		m_level++;
 		if (unmangle) {
 			const char *unmangledName;
 
-			unmangledName = _getUnmangledPropertyName(key.toString());
+			unmangledName = _getUnmangledPropertyName(s_key);
 			convertPart(wrap ? &child : bson, unmangledName, data);
 			free((void*) unmangledName);
 		} else {
-			convertPart(wrap ? &child : bson, key.toString().c_str(), data);
+			convertPart(wrap ? &child : bson, s_key.c_str(), data);
+		}
+		m_level--;
+	}
+
+	if (m_level == 0 && (m_flags & HIPPO_BSON_ADD_ID)) {
+		bson_oid_t oid;
+
+		bson_oid_init(&oid, NULL);
+		bson_append_oid(bson, "_id", strlen("_id"), &oid);
+
+		{
 		}
 	}
 
@@ -216,7 +237,7 @@ void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, O
 
 	if (scope.isObject() || scope.isArray()) {
 		/* Convert scope to document */
-		VariantToBsonConverter converter(scope);
+		VariantToBsonConverter converter(scope, HIPPO_BSON_NO_FLAGS);
 		scope_bson = bson_new();
 		converter.convert(scope_bson);
 

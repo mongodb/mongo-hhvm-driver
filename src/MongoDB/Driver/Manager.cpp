@@ -57,7 +57,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Objec
 
 	auto zquery = command->o_get(String("command"), false, s_MongoDriverCommand_className);
 
-	VariantToBsonConverter converter(zquery);
+	VariantToBsonConverter converter(zquery, HIPPO_BSON_NO_FLAGS);
 	bson = bson_new();
 	converter.convert(bson);
 
@@ -97,7 +97,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	char *collection;
 	int hint;
 
-	VariantToBsonConverter converter(document);
+	VariantToBsonConverter converter(document, HIPPO_BSON_ADD_ID);
 	bson = bson_new();
 	converter.convert(bson);
 
@@ -163,12 +163,12 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object 
 		batch_size = aquery[String("batch_size")].toInt32();
 		flags = (mongoc_query_flags_t) aquery[String("flags")].toInt32();
 
-		VariantToBsonConverter converter(aquery[String("query")]);
+		VariantToBsonConverter converter(aquery[String("query")], HIPPO_BSON_NO_FLAGS);
 		bson_query = bson_new();
 		converter.convert(bson_query);
 
 		if (aquery.exists(String("fields"))) {
-			VariantToBsonConverter converter(aquery[String("fields")]);
+			VariantToBsonConverter converter(aquery[String("fields")], HIPPO_BSON_NO_FLAGS);
 			bson_fields = bson_new();
 			converter.convert(bson_fields);
 		}

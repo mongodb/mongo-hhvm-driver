@@ -24,13 +24,16 @@ extern "C" {
 
 namespace HPHP {
 
+#define HIPPO_BSON_NO_FLAGS   0x00
+#define HIPPO_BSON_ADD_ID     0x01
+
 class VariantToBsonConverter
 {
 	public:
 		Variant m_document;
-		int m_level;
+
 /* {{{ public methods */
-		VariantToBsonConverter(const Variant& document);
+		VariantToBsonConverter(const Variant& document, int flags);
 		void convert(bson_t *bson);
 
 		void convert(bson_t *bson, Variant v);
@@ -47,6 +50,10 @@ class VariantToBsonConverter
 		void convertPart(bson_t *bson, const char *key, Object v);
 /* }}} */
 	private:
+/* private properties {{{ */
+		int m_level;
+		int m_flags;
+/* }}} */
 /* private methods {{{ */
 		int _isPackedArray(const Array &a);
 		char *_getUnmangledPropertyName(String key);
