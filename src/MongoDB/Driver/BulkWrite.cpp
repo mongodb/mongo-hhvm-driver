@@ -21,6 +21,8 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+#include "../BSON/ObjectId.h"
+
 #include "BulkWrite.h"
 
 namespace HPHP {
@@ -40,6 +42,39 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered)
 
 Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 {
+	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
+	bson_t *bson;
+
+	VariantToBsonConverter converter(document, HIPPO_BSON_ADD_ID | HIPPO_BSON_RETURN_ID);
+	bson = bson_new();
+	converter.convert(bson);
+
+	mongoc_bulk_operation_insert(data->m_bulk, bson);
+
+	/* Should always trigger, because we set HIPPO_BSON_RETURN_ID. We would
+	 * like to do this only when the return value is used, but unlike PHP, this
+	 * is not detectable in HHVM */
+	if (converter.m_out) {
+		bson_iter_t iter;
+
+		if (bson_iter_init_find(&iter, converter.m_out, "_id")) {
+			static Class* c_objectId;
+			c_objectId = Unit::lookupClass(s_MongoBsonObjectId_className.get());
+			assert(c_objectId);
+			ObjectData* obj = ObjectData::newInstance(c_objectId);
+
+			MongoDBBsonObjectIdData* obj_data = Native::data<MongoDBBsonObjectIdData>(obj);
+			bson_oid_copy(bson_iter_oid(&iter), &obj_data->m_oid);
+
+			bson_clear(&converter.m_out);
+
+			return obj;
+		}
+
+		bson_clear(&converter.m_out);
+	}
+
+	return NULL;
 }
 
 Object HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &newObj, const Array &updateOptions)
