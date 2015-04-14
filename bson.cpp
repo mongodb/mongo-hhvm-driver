@@ -60,6 +60,7 @@ VariantToBsonConverter::VariantToBsonConverter(const Variant& document, int flag
 	m_document = document;
 	m_level = 0;
 	m_flags = flags;
+	m_out = NULL;
 }
 
 void VariantToBsonConverter::convert(bson_t *bson)
@@ -202,7 +203,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 		bson_oid_init(&oid, NULL);
 		bson_append_oid(bson, "_id", strlen("_id"), &oid);
 
-		{
+		if (m_flags & HIPPO_BSON_RETURN_ID) {
+			m_out = bson_new();
+			bson_append_oid(m_out, "_id", sizeof("_id")-1, &oid);
 		}
 	}
 

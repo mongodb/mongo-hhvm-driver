@@ -26,11 +26,13 @@ namespace HPHP {
 
 #define HIPPO_BSON_NO_FLAGS   0x00
 #define HIPPO_BSON_ADD_ID     0x01
+#define HIPPO_BSON_RETURN_ID  0x02
 
 class VariantToBsonConverter
 {
 	public:
 		Variant m_document;
+		bson_t *m_out;
 
 /* {{{ public methods */
 		VariantToBsonConverter(const Variant& document, int flags);
