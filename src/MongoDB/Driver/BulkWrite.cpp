@@ -21,6 +21,13 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+/* We need to access the internal bulk structure to access the bulk op count */
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
+
 #include "../BSON/ObjectId.h"
 
 #include "BulkWrite.h"
@@ -168,6 +175,9 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &query, const Var
 
 int64_t HHVM_METHOD(MongoDBDriverBulkWrite, count)
 {
+	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
+
+	return data->m_bulk->commands.len;
 }
 
 Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)

@@ -21,4 +21,7 @@ $bw->delete( [ 'test' => 'new' ] );
 $bw->delete( [ 'test' => 'new' ], [ 'limit' => true ] );
 
 $bw->delete( [ 'test' => 'ruby' ], [ 'limit' => false ] );
+
+echo $bw->count(), "\n";
+
 ?>
