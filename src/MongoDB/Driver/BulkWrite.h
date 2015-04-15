@@ -44,7 +44,7 @@ class MongoDBDriverBulkWriteData
 
 void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered);
 Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document);
-Object HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &newObj, const Array &updateOptions);
+void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &update, const Variant &updateOptions);
 Object HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &qyert, const Array &deleteOptions);
 int64_t HHVM_METHOD(MongoDBDriverBulkWrite, count);
 Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo);

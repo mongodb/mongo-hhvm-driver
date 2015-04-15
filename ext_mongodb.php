@@ -199,7 +199,7 @@ final class BulkWrite implements \Countable {
 	function insert(mixed $document) : MongoDB\BSON\ObjectId;
 
 	<<__Native>>
-	function update(mixed $query, mixed $newObj, array $updateOptions = array()) : void;
+	function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
 
 	<<__Native>>
 	function delete(mixed $query, array $deleteOptions = array()) : void;

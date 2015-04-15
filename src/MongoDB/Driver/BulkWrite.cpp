@@ -77,8 +77,67 @@ Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 	return NULL;
 }
 
-Object HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &newObj, const Array &updateOptions)
+void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &update, const Variant &updateOptions)
 {
+	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
+	bson_t *bquery;
+	bson_t *bupdate;
+	auto options = updateOptions.isNull() ? null_array : updateOptions.toArray();
+	int flags = MONGOC_UPDATE_NONE;
+
+	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
+	bquery = bson_new();
+	query_converter.convert(bquery);
+
+	VariantToBsonConverter update_converter(update, HIPPO_BSON_NO_FLAGS);
+	bupdate = bson_new();
+	update_converter.convert(bupdate);
+
+	if (!updateOptions.isNull()) {
+		if (options.exists(String("multi"))) {
+			Variant v_multi = options[String("multi")];
+			bool multi = v_multi.toBoolean();
+
+			if (multi) {
+				flags |= MONGOC_UPDATE_MULTI_UPDATE;
+			}
+		}
+
+		if (options.exists(String("upsert"))) {
+			Variant v_upsert = options[String("upsert")];
+			bool upsert = v_upsert.toBoolean();
+
+			if (upsert) {
+				flags |= MONGOC_UPDATE_UPSERT;
+			}
+		}
+	}
+
+	std::cout << "flags: " << flags << "\n";
+
+	if (flags & MONGOC_UPDATE_MULTI_UPDATE) {
+		mongoc_bulk_operation_update(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
+	} else {
+		bson_iter_t iter;
+		bool   replaced = 0;
+
+		if (bson_iter_init(&iter, bupdate)) {
+			while (bson_iter_next(&iter)) {
+				if (!strchr(bson_iter_key (&iter), '$')) {
+					mongoc_bulk_operation_replace_one(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
+					replaced = 1;
+					break;
+				}
+			}
+		}
+
+		if (!replaced) {
+			mongoc_bulk_operation_update_one(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
+		}
+	}
+
+	bson_clear(&bquery);
+	bson_clear(&bupdate);
 }
 
 Object HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &qyert, const Array &deleteOptions)
