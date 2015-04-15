@@ -202,7 +202,7 @@ final class BulkWrite implements \Countable {
 	function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
 
 	<<__Native>>
-	function delete(mixed $query, array $deleteOptions = array()) : void;
+	function delete(mixed $query, ?array $deleteOptions = array()) : void;
 
 	<<__Native>>
 	function count() : int;

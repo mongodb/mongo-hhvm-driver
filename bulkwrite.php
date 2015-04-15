@@ -15,4 +15,10 @@ $bw->update( [ 'test' => 'php' ], [ '$set' => [ 'test' => 'ruby' ] ], [ 'multi' 
 
 // upsert
 $bw->update( [ 'test' => 'new' ], [ '$set' => [ 'test' => 'ruby' ] ], [ 'upsert' => true ] );
+
+// delete
+$bw->delete( [ 'test' => 'new' ] );
+$bw->delete( [ 'test' => 'new' ], [ 'limit' => true ] );
+
+$bw->delete( [ 'test' => 'ruby' ], [ 'limit' => false ] );
 ?>

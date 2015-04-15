@@ -140,8 +140,30 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 	bson_clear(&bupdate);
 }
 
-Object HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &qyert, const Array &deleteOptions)
+void HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &query, const Variant &deleteOptions)
 {
+	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
+	bson_t *bquery;
+	auto options = deleteOptions.isNull() ? null_array : deleteOptions.toArray();
+
+	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
+	bquery = bson_new();
+	query_converter.convert(bquery);
+
+	if ((!deleteOptions.isNull()) && (options.exists(String("limit")))) {
+		Variant v_limit = options[String("limit")];
+		bool limit = v_limit.toBoolean();
+
+		if (limit) {
+			mongoc_bulk_operation_remove_one(data->m_bulk, bquery);
+		} else {
+			mongoc_bulk_operation_remove(data->m_bulk, bquery);
+		}
+	} else {
+		mongoc_bulk_operation_remove(data->m_bulk, bquery);
+	}
+
+	bson_clear(&bquery);
 }
 
 int64_t HHVM_METHOD(MongoDBDriverBulkWrite, count)
