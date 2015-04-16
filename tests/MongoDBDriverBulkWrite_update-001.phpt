@@ -1,8 +1,8 @@
+--TEST--
+MongoDB\Driver\BulkWrite::update
+--FILE--
 <?php
-$bw = new MongoDB\Driver\BulkWrite(true);
-
-//insert
-echo $bw->insert( [ 'test' => 'foo' ] ), "\n";
+$bw = new MongoDB\Driver\BulkWrite;
 
 // replace
 $bw->update( [ 'test' => 'php' ], [ 'test' => 'ruby' ] );
@@ -16,14 +16,7 @@ $bw->update( [ 'test' => 'php' ], [ '$set' => [ 'test' => 'ruby' ] ], [ 'multi' 
 // upsert
 $bw->update( [ 'test' => 'new' ], [ '$set' => [ 'test' => 'ruby' ] ], [ 'upsert' => true ] );
 
-// delete
-$bw->delete( [ 'test' => 'new' ] );
-$bw->delete( [ 'test' => 'new' ], [ 'limit' => true ] );
-
-$bw->delete( [ 'test' => 'ruby' ], [ 'limit' => false ] );
-
 echo $bw->count(), "\n";
-
-var_dump($bw->__debugInfo());
-
 ?>
+--EXPECT--
+4
