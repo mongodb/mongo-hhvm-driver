@@ -24,4 +24,6 @@ $bw->delete( [ 'test' => 'ruby' ], [ 'limit' => false ] );
 
 echo $bw->count(), "\n";
 
+var_dump($bw->__debugInfo());
+
 ?>

@@ -180,8 +180,43 @@ int64_t HHVM_METHOD(MongoDBDriverBulkWrite, count)
 	return data->m_bulk->commands.len;
 }
 
+const StaticString
+	s_database("database"),
+	s_collection("collection"),
+	s_ordered("ordered"),
+	s_executed("executed"),
+	s_server_id("server_id"),
+	s_write_concern("write_concern");
+
+
 Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 {
+	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
+	Array retval = Array::Create();
+
+	if (data->m_bulk->database) {
+		retval.set(s_database, data->m_bulk->database);
+	} else {
+		retval.set(s_database, Variant());
+	}
+
+	if (data->m_bulk->collection) {
+		retval.set(s_collection, data->m_bulk->collection);
+	} else {
+		retval.set(s_collection, Variant());
+	}
+
+	retval.set(s_ordered, data->m_bulk->ordered);
+	retval.set(s_executed, data->m_bulk->executed);
+	retval.set(s_server_id, (int64_t) data->m_bulk->hint);
+
+	if (data->m_bulk->write_concern) {
+		retval.set(s_write_concern, Variant(true));
+	} else {
+		retval.set(s_write_concern, Variant());
+	}
+
+	return retval;
 }
 
 }
