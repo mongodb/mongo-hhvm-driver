@@ -43,7 +43,6 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered)
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 	bool b_ordered = ordered.toInt64();
 
-	std::cout << "ordered: " << b_ordered << "\n";
 	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
 }
 
@@ -119,8 +118,6 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 			}
 		}
 	}
-
-	std::cout << "flags: " << flags << "\n";
 
 	if (flags & MONGOC_UPDATE_MULTI_UPDATE) {
 		mongoc_bulk_operation_update(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
