@@ -368,7 +368,6 @@ bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), co
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	std::cout << "converting double: " << key << ": " << v_double << "\n";
 	state->zchild->add(String(key), Variant(v_double));
 	return false;
 }
@@ -377,7 +376,6 @@ bool hippo_bson_visit_utf8(const bson_iter_t *iter __attribute__((unused)), cons
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	std::cout << "converting utf8: " << key << ": " << v_utf8 << "\n";
 	state->zchild->add(String(key), Variant(v_utf8));
 	return false;
 }
@@ -386,8 +384,6 @@ bool hippo_bson_visit_document(const bson_iter_t *iter __attribute__((unused)), 
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	Variant document_v;
-
-	std::cout << "converting document\n";
 
 	BsonToVariantConverter converter(bson_get_data(v_document), v_document->len);
 	converter.convert(&document_v);
@@ -401,8 +397,6 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	Variant array_v;
-
-	std::cout << "converting array\n";
 
 	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len);
 	converter.convert(&array_v);
@@ -418,8 +412,6 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 	static Class* c_binary;
 	String s;
 	unsigned char *data_s;
-
-	std::cout << "converting binary\n";
 
 	s = String(v_binary_len, ReserveString);
 	data_s = (unsigned char*) s.bufferSlice().ptr;
@@ -443,8 +435,6 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_objectId;
 
-	std::cout << "converting oid\n";
-
 	c_objectId = Unit::lookupClass(s_MongoBsonObjectId_className.get());
 	assert(c_objectId);
 	ObjectData* obj = ObjectData::newInstance(c_objectId);
@@ -461,7 +451,6 @@ bool hippo_bson_visit_bool(const bson_iter_t *iter __attribute__((unused)), cons
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	std::cout << "converting bool: " << key << ": " << v_bool << "\n";
 	state->zchild->add(String(key), Variant(v_bool));
 	return false;
 }
@@ -470,8 +459,6 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_datetime;
-
-	std::cout << "converting date_time\n";
 
 	c_datetime = Unit::lookupClass(s_MongoBsonUtcDatetime_className.get());
 	assert(c_datetime);
@@ -488,7 +475,6 @@ bool hippo_bson_visit_null(const bson_iter_t *iter __attribute__((unused)), cons
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	std::cout << "converting null: " << key << "\n";
 	state->zchild->add(String(key), Variant(Variant::NullInit()));
 	return false;
 }
@@ -497,8 +483,6 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_regex;
-
-	std::cout << "converting regex\n";
 
 	c_regex = Unit::lookupClass(s_MongoBsonRegex_className.get());
 	assert(c_regex);
@@ -518,8 +502,6 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 	static Class* c_code;
 	String s;
 	unsigned char *data_s;
-
-	std::cout << "converting code\n";
 
 	s = String(v_code_len, ReserveString);
 	data_s = (unsigned char*) s.bufferSlice().ptr;
@@ -544,8 +526,6 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	String s;
 	unsigned char *data_s;
 	Variant scope_v;
-
-	std::cout << "converting code with scope\n";
 
 	/* code */
 	s = String(v_code_len, ReserveString);
@@ -576,7 +556,6 @@ bool hippo_bson_visit_int32(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	std::cout << "converting int32: " << key << ": " << v_int32 << "\n";
 	state->zchild->add(String(key), Variant(v_int32));
 	return false;
 }
@@ -585,8 +564,6 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_timestamp;
-
-	std::cout << "converting timestamp\n";
 
 	c_timestamp = Unit::lookupClass(s_MongoBsonTimestamp_className.get());
 	assert(c_timestamp);
@@ -604,7 +581,6 @@ bool hippo_bson_visit_int64(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	std::cout << "converting int64: " << key << ": " << v_int64 << "\n";
 	state->zchild->add(String(key), Variant(v_int64));
 	return false;
 }
@@ -613,8 +589,6 @@ bool hippo_bson_visit_maxkey(const bson_iter_t *iter __attribute__((unused)), co
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_objectId;
-
-	std::cout << "converting maxkey\n";
 
 	c_objectId = Unit::lookupClass(s_MongoBsonMaxKey_className.get());
 	assert(c_objectId);
@@ -629,8 +603,6 @@ bool hippo_bson_visit_minkey(const bson_iter_t *iter __attribute__((unused)), co
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_objectId;
-
-	std::cout << "converting minkey\n";
 
 	c_objectId = Unit::lookupClass(s_MongoBsonMinKey_className.get());
 	assert(c_objectId);
