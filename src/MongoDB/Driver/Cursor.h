@@ -45,7 +45,7 @@ class MongoDBDriverCursorData
 		Variant zchild;
 
 		void sweep() {
-			std::cout << "sweep\n";
+			/* Do nothing, for now */
 		}
 
 		~MongoDBDriverCursorData() {

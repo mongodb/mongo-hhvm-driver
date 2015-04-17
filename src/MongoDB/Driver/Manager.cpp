@@ -70,19 +70,30 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Objec
 		if (mongoc_cursor_error(cursor, &error)) {
 			mongoc_cursor_destroy(cursor);
 //			MongoDriver::Utils::throwExceptionFromBsonError(&error);
+
+			throw Object(SystemLib::AllocInvalidArgumentExceptionObject(error.message));
 			return NULL;
 		}
 	}
-
-	/* Destroy */
-	bson_destroy(bson);
 
 	/* Prepare result */
 	c_result = Unit::lookupClass(s_MongoDriverCursor_className.get());
 	assert(c_result);
 	ObjectData* obj = ObjectData::newInstance(c_result);
 
-	return Object(obj);
+	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
+
+	cursor_data->cursor = cursor;
+	cursor_data->hint = mongoc_cursor_get_hint(cursor);
+	cursor_data->is_command_cursor = false;
+	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
+std::cout << "EC cursor_data: " << cursor_data << "\n";
+std::cout << "EC first batch: " << cursor_data->first_batch << "\n";
+
+	/* Destroy */
+	bson_destroy(bson);
+
+	return obj;
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
@@ -202,8 +213,10 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object 
 	cursor_data->hint = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
+std::cout << "EQ cursor_data: " << cursor_data << "\n";
+std::cout << "EQ first batch: " << cursor_data->first_batch << "\n";
 
-	return Object(obj);
+	return obj;
 }
 
 }
