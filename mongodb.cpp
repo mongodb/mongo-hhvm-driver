@@ -77,7 +77,7 @@ static class MongoDBExtension : public Extension {
 		MongoDBExtension() : Extension("mongodb") {}
 
 		virtual void moduleInit() {
-			/* MongoDB\BSON\Binary */
+			/* BSON\Binary */
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_GENERIC"), (int64_t) BSON_SUBTYPE_BINARY);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_FUNCTION"), (int64_t) BSON_SUBTYPE_FUNCTION);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_OLD_BINARY"), (int64_t) BSON_SUBTYPE_BINARY_DEPRECATED);
@@ -86,14 +86,14 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_MD5"), (int64_t) BSON_SUBTYPE_MD5);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_USER_DEFINED"), (int64_t) BSON_SUBTYPE_USER);
 
-			/* MongoDB\BSON\ObjectId */
-			HHVM_MALIAS(MongoDB\\BSON\\ObjectId, __construct, MongoDBBsonObjectId, __construct);
-			HHVM_MALIAS(MongoDB\\BSON\\ObjectId, __toString, MongoDBBsonObjectId, __toString);
+			/* BSON\ObjectId */
+			HHVM_MALIAS(BSON\\ObjectId, __construct, MongoDBBsonObjectId, __construct);
+			HHVM_MALIAS(BSON\\ObjectId, __toString, MongoDBBsonObjectId, __toString);
 			
 			Native::registerNativeDataInfo<MongoDBBsonObjectIdData>(MongoDBBsonObjectIdData::s_className.get());
 
-			/* MongoDB\BSON\UtcDatetime */
-			HHVM_MALIAS(MongoDB\\BSON\\UtcDatetime, toDateTime, MongoDBBsonUtcDatetime, toDateTime);
+			/* BSON\UtcDatetime */
+			HHVM_MALIAS(BSON\\UtcDatetime, toDateTime, MongoDBBsonUtcDatetime, toDateTime);
 
 			/* MongoDB\Driver\Manager */
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, __construct, MongoDBDriverManager, __construct);

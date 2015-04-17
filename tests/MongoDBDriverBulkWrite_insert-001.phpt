@@ -10,6 +10,6 @@ echo strlen( $_id ), "\n";
 echo $bw->count(), "\n";
 ?>
 --EXPECT--
-MongoDB\BSON\ObjectId
+BSON\ObjectId
 24
 1

@@ -219,9 +219,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 }
 
 /* {{{ Serialization of types */
-const StaticString s_MongoDriverBsonType_className("MongoDB\\BSON\\Type");
+const StaticString s_MongoDriverBsonType_className("BSON\\Type");
 
-/* {{{ MongoDriver\BSON\Binary */
+/* {{{ BSON\Binary */
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
 {
 	String data = v.o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className);
@@ -231,7 +231,7 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\Javascript */
+/* {{{ BSON\Javascript */
 void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, Object v)
 {
 	bson_t *scope_bson;
@@ -251,8 +251,8 @@ void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, O
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\MaxKey */
-const StaticString s_MongoBsonMaxKey_className("MongoDB\\BSON\\MaxKey");
+/* {{{ BSON\MaxKey */
+const StaticString s_MongoBsonMaxKey_className("BSON\\MaxKey");
 
 void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Object v)
 {
@@ -260,8 +260,8 @@ void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\MinKey */
-const StaticString s_MongoBsonMinKey_className("MongoDB\\BSON\\MinKey");
+/* {{{ BSON\MinKey */
+const StaticString s_MongoBsonMinKey_className("BSON\\MinKey");
 
 void VariantToBsonConverter::_convertMinKey(bson_t *bson, const char *key, Object v)
 {
@@ -269,7 +269,7 @@ void VariantToBsonConverter::_convertMinKey(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\ObjectId */
+/* {{{ BSON\ObjectId */
 void VariantToBsonConverter::_convertObjectId(bson_t *bson, const char *key, Object v)
 {
     MongoDBBsonObjectIdData* data = Native::data<MongoDBBsonObjectIdData>(v.get());
@@ -278,7 +278,7 @@ void VariantToBsonConverter::_convertObjectId(bson_t *bson, const char *key, Obj
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\Regex */
+/* {{{ BSON\Regex */
 
 void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object v)
 {
@@ -289,7 +289,7 @@ void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\Timestamp */
+/* {{{ BSON\Timestamp */
 void VariantToBsonConverter::_convertTimestamp(bson_t *bson, const char *key, Object v)
 {
 	int32_t timestamp = v.o_get(s_MongoBsonTimestamp_timestamp, false, s_MongoBsonTimestamp_className).toInt32();
@@ -298,7 +298,7 @@ void VariantToBsonConverter::_convertTimestamp(bson_t *bson, const char *key, Ob
 	bson_append_timestamp(bson, key, -1, timestamp, increment);
 }
 
-/* {{{ MongoDriver\BSON\UtcDatetime */
+/* {{{ BSON\UtcDatetime */
 void VariantToBsonConverter::_convertUtcDatetime(bson_t *bson, const char *key, Object v)
 {
 	int64_t milliseconds = v.o_get(s_MongoBsonUtcDatetime_milliseconds, false, s_MongoBsonUtcDatetime_className).toInt64();
