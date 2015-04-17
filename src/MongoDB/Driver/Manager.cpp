@@ -21,6 +21,7 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+#include "BulkWrite.h"
 #include "Command.h"
 #include "Cursor.h"
 #include "Manager.h"
@@ -217,6 +218,46 @@ std::cout << "EQ cursor_data: " << cursor_data << "\n";
 std::cout << "EQ first batch: " << cursor_data->first_batch << "\n";
 
 	return obj;
+}
+
+Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, Object &bulk, const Object &writeConcern)
+{
+	static Class* c_writeResult;
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	MongoDBDriverBulkWriteData* bulk_data = Native::data<MongoDBDriverBulkWriteData>(bulk.get());
+	bson_error_t error;
+	bson_t reply;
+	char *database;
+	char *collection;
+	int success;
+
+	/* Prepare */
+	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		return NULL;
+	}
+
+	mongoc_bulk_operation_set_database(bulk_data->m_bulk, database);
+	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, collection);
+	mongoc_bulk_operation_set_client(bulk_data->m_bulk, data->m_client);
+
+	/* Run operation */
+	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);
+
+	/* Prepare result */
+	if (!success) {
+		/* throw exception */
+		throw Object(SystemLib::AllocExceptionObject("FIXME EXCEPTION"));
+	} else {
+		c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
+		assert(c_writeResult);
+		ObjectData* obj = ObjectData::newInstance(c_writeResult);
+
+		obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
+		obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
+
+		return Object(obj);
+	}
 }
 
 }

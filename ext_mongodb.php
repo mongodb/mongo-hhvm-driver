@@ -12,9 +12,8 @@ class Manager {
 	<<__Native>>
 	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Cursor;
 
-	function executeBulkWrite(string $namespace, MongoDB\Driver\BulkWrite $bulk, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
-	{
-	}
+	<<__Native>>
+	function executeBulkWrite(string $namespace, MongoDB\Driver\BulkWrite $bulk, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
 
 	<<__Native>>
 	function executeInsert(string $namespace, mixed $document, ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
@@ -141,6 +140,8 @@ final class Cursor implements Traversable, Iterator {
 	<<__Native>>
 	public function valid(): bool;
 
+	<<__Native>>
+	public function toArray(): array;
 }
 /* }}} */
 
