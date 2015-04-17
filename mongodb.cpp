@@ -127,6 +127,7 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, next, MongoDBDriverCursor, next);
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, rewind, MongoDBDriverCursor, rewind);
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, valid, MongoDBDriverCursor, valid);
+			HHVM_MALIAS(MongoDB\\Driver\\Cursor, toArray, MongoDBDriverCursor, toArray);
 
 			Native::registerNativeDataInfo<MongoDBDriverCursorData>(MongoDBDriverCursorData::s_className.get());
 

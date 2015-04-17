@@ -13,11 +13,17 @@ catch ( InvalidArgumentException $e )
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
-$cursor = $m->executeCommand( 'demo', $c );
-var_dump($cursor);
-foreach( $cursor as $result )
+try {
+	$cursor = $m->executeCommand( 'demo', $c );
+
+	foreach( $cursor->toArray() as $result )
+	{
+		var_dump($result);
+	}
+}
+catch ( InvalidArgumentException $e )
 {
-	var_dump($result);
+	echo $e->getMessage(), "\n";
 }
 
 echo "================\n";
@@ -64,14 +70,10 @@ $m->executeInsert( 'demo.test', [ '_id' => new MongoDB\Bson\ObjectId(), 'with_id
 $q = new MongoDB\Driver\Query( [] );
 
 $cursor = $m->executeQuery( 'demo.test', $q );
-var_dump( $cursor );
-$cursorId = $cursor->getId();
-
-var_dump($cursor, $cursorId);
 
 echo "Starting iteration\n";
 
-foreach ( $cursor as $key => $result )
+foreach ( $cursor->toArray() as $key => $result )
 {
 	echo $result['_id'], ":\n";
 	echo ' - ', $result['oid1'], "\n";

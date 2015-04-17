@@ -141,6 +141,8 @@ final class Cursor implements Traversable, Iterator {
 	<<__Native>>
 	public function valid(): bool;
 
+	<<__Native>>
+	public function toArray(): array;
 }
 /* }}} */
 

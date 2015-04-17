@@ -181,6 +181,21 @@ std::cout << "valid\n";
 	return false;
 }
 
+Array HHVM_METHOD(MongoDBDriverCursor, toArray)
+{
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+	Array retval = Array::Create();
+
+	hippo_cursor_rewind(data);
+
+	while (data->zchild_active) {
+		retval.add(data->current, data->zchild);
+		hippo_cursor_next(data);
+	}
+
+	return retval;
+}
+
 Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 {
 	static Class* c_server;

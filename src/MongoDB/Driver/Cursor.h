@@ -62,5 +62,7 @@ Variant HHVM_METHOD(MongoDBDriverCursor, next);
 void HHVM_METHOD(MongoDBDriverCursor, rewind);
 bool HHVM_METHOD(MongoDBDriverCursor, valid);
 
+Array HHVM_METHOD(MongoDBDriverCursor, toArray);
+
 }
 #endif
