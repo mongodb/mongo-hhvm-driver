@@ -296,7 +296,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	char *database;
 	char *collection;
 	int hint;
-	int flags;
+	int flags = MONGOC_UPDATE_NONE;
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
 	bquery = bson_new();
