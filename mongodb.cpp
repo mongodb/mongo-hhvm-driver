@@ -72,6 +72,11 @@ ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
 }
 #endif
 
+void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, const char *message, void *user_data)
+{
+	std::cerr << "log: " << log_domain << "; msg: " << message << "\n";
+}
+
 static class MongoDBExtension : public Extension {
 	public:
 		MongoDBExtension() : Extension("mongodb") {}
@@ -159,6 +164,7 @@ static class MongoDBExtension : public Extension {
 
 			loadSystemlib("mongodb");
 			mongoc_init();
+			mongoc_log_set_handler(hippo_log_handler, NULL);
 		}
 } s_mongodb_extension;
 
