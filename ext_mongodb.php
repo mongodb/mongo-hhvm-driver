@@ -21,9 +21,8 @@ class Manager {
 	<<__Native>>
 	function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
 
-	function executeDelete(string $namespace, $query, array $deleteOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
-	{
-	}
+	<<__Native>>
+	function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
 
 	function getServers(): void
 	{

@@ -97,6 +97,70 @@ std::cerr << "EC first batch: " << cursor_data->first_batch << "\n";
 	return obj;
 }
 
+Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const Variant &query, const Variant &deleteOptions, const Object &writeConcern)
+{
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	static Class* c_writeResult;
+	bson_t *bquery;
+	auto options = deleteOptions.isNull() ? null_array : deleteOptions.toArray();
+	bson_error_t error;
+	bson_t reply;
+	mongoc_bulk_operation_t *batch;
+	char *database;
+	char *collection;
+	int hint;
+	int flags = MONGOC_DELETE_NONE;
+
+	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
+	bquery = bson_new();
+	query_converter.convert(bquery);
+
+	/* Prepare */
+	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		return NULL;
+	}
+
+	if (!options.isNull()) {
+		if (options.exists(String("limit"))) {
+			Variant v_multi = options[String("limit")];
+			bool multi = v_multi.toBoolean();
+
+			if (multi) {
+				flags |= MONGOC_DELETE_SINGLE_REMOVE;
+			}
+		}
+	}
+
+	/* Run operation */
+	batch = mongoc_bulk_operation_new(true);
+	mongoc_bulk_operation_set_database(batch, database);
+	mongoc_bulk_operation_set_collection(batch, collection);
+	mongoc_bulk_operation_set_client(batch, data->m_client);
+
+	if (flags & MONGOC_DELETE_SINGLE_REMOVE) {
+		mongoc_bulk_operation_remove_one(batch, bquery);
+	} else {
+		mongoc_bulk_operation_remove(batch, bquery);
+	}
+
+	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
+
+	/* Destroy */
+	bson_clear(&bquery);
+	mongoc_bulk_operation_destroy(batch);
+
+	/* Prepare result */
+	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
+	assert(c_writeResult);
+	ObjectData* obj = ObjectData::newInstance(c_writeResult);
+
+	obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
+
+	return Object(obj);
+}
+
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
 {
 	static Class* c_writeResult;
