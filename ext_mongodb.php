@@ -18,9 +18,8 @@ class Manager {
 	<<__Native>>
 	function executeInsert(string $namespace, mixed $document, ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
 
-	function executeUpdate(string $namespace, $query, $newObj, array $updateOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
-	{
-	}
+	<<__Native>>
+	function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
 
 	function executeDelete(string $namespace, $query, array $deleteOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult
 	{

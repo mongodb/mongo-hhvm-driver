@@ -47,6 +47,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, Obj
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Object &command, Object &readPreference);
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern);
 Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object &query, Object &readPreference);
+Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const Variant &query, const Variant &newObj, const Variant &updateOptions, const Object &writeConcern);
 
 }
 #endif
