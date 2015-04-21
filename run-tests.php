@@ -1785,7 +1785,7 @@ TEST $file
 		$env['CONTENT_TYPE']   = '';
 		$env['CONTENT_LENGTH'] = '';
 
-		$cmd = "$php $pass_options $ini_settings -f \"$test_file\" $args 2>&1";
+		$cmd = "$php $pass_options $ini_settings -f \"$test_file\" $args 2>/dev/null";
 	}
 
 	if ($leak_check) {
