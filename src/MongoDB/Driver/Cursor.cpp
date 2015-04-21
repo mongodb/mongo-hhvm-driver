@@ -81,7 +81,7 @@ static bool hippo_cursor_load_next(MongoDBDriverCursorData* data)
 	if (mongoc_cursor_next(data->cursor, &doc)) {
 		Variant v;
 
-		BsonToVariantConverter convertor(bson_get_data(doc), doc->len);
+		BsonToVariantConverter convertor(bson_get_data(doc), doc->len, true);
 		convertor.convert(&v);
 		data->zchild_active = true;
 		data->zchild = v;
@@ -145,7 +145,7 @@ std::cerr << "first batch: " << data->first_batch << "\n";
 
 					bson_iter_document(&data->first_batch_iter, &document_len, &document);
 
-					BsonToVariantConverter convertor(document, document_len);
+					BsonToVariantConverter convertor(document, document_len, true);
 					convertor.convert(&v);
 					data->zchild_active = true;
 					data->zchild = v;
@@ -154,7 +154,7 @@ std::cerr << "first batch: " << data->first_batch << "\n";
 		} else {
 			Variant v;
 
-			BsonToVariantConverter convertor(bson_get_data(data->first_batch), data->first_batch->len);
+			BsonToVariantConverter convertor(bson_get_data(data->first_batch), data->first_batch->len, true);
 			convertor.convert(&v);
 			data->zchild_active = true;
 			data->zchild = v;

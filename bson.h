@@ -48,7 +48,7 @@ class VariantToBsonConverter
 		void convertPart(bson_t *bson, const char *key, int64_t v);
 		void convertPart(bson_t *bson, const char *key, double v);
 		void convertPart(bson_t *bson, const char *key, String v);
-		void convertPart(bson_t *bson, const char *key, Array v, bool wrap);
+		void convertPart(bson_t *bson, const char *key, Array v, bool wrap, bool from_object);
 		void convertPart(bson_t *bson, const char *key, Object v);
 /* }}} */
 	private:
@@ -71,16 +71,18 @@ class VariantToBsonConverter
 };
 
 typedef struct {
-	Array *zchild;
+	Array zchild;
 } hippo_bson_state;
 
 class BsonToVariantConverter
 {
 	public:
 		BsonToVariantConverter(const unsigned char *data, int data_len);
+		BsonToVariantConverter(const unsigned char *data, int data_len, bool top_level);
 		bool convert(Variant *v);
 	private:
 		bson_reader_t *m_reader;
+		bool           m_top_level;
 };
 
 }

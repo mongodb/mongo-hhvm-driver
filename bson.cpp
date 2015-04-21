@@ -100,7 +100,7 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant 
 			convertPart(bson, key, v.toString());
 			break;
 		case KindOfArray:
-			convertPart(bson, key, v.toArray(), true);
+			convertPart(bson, key, v.toArray(), true, false);
 			break;
 		case KindOfObject:
 			convertPart(bson, key, v.toObject());
@@ -156,12 +156,12 @@ char *VariantToBsonConverter::_getUnmangledPropertyName(String key)
 	}
 }
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v, bool wrap)
+void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v, bool wrap, bool from_object)
 {
 	bson_t child;
 	int unmangle = 0;
 
-	if (_isPackedArray(v)) {
+	if (_isPackedArray(v) && !from_object) {
 		if (wrap) {
 			bson_append_array_begin(bson, key, -1, &child);
 		}
@@ -337,13 +337,13 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 			_convertUtcDatetime(bson, key, v);
 		}
 	} else {
-		convertPart(bson, key, v.toArray());
+		convertPart(bson, key, v.toArray(), true, true);
 	}
 }
 
 void VariantToBsonConverter::convert(bson_t *bson, Array a)
 {
-	convertPart(bson, NULL, a, false);
+	convertPart(bson, NULL, a, false, false);
 }
 
 void VariantToBsonConverter::convert(bson_t *bson, Object o)
@@ -356,6 +356,13 @@ void VariantToBsonConverter::convert(bson_t *bson, Object o)
 BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int data_len)
 {
 	m_reader = bson_reader_new_from_data(data, data_len);
+	m_top_level = false;
+}
+
+BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int data_len, bool top_level)
+{
+	m_reader = bson_reader_new_from_data(data, data_len);
+	m_top_level = top_level;
 }
 
 /* {{{ Visitors */
@@ -368,7 +375,7 @@ bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), co
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	state->zchild->add(String(key), Variant(v_double));
+	state->zchild.add(String(key), Variant(v_double));
 	return false;
 }
 
@@ -376,7 +383,7 @@ bool hippo_bson_visit_utf8(const bson_iter_t *iter __attribute__((unused)), cons
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	state->zchild->add(String(key), Variant(v_utf8));
+	state->zchild.add(String(key), Variant(v_utf8));
 	return false;
 }
 
@@ -388,7 +395,7 @@ bool hippo_bson_visit_document(const bson_iter_t *iter __attribute__((unused)), 
 	BsonToVariantConverter converter(bson_get_data(v_document), v_document->len);
 	converter.convert(&document_v);
 
-	state->zchild->add(String(key), document_v);
+	state->zchild.add(String(key), Variant(Variant(document_v).toObject()));
 
 	return false;
 }
@@ -401,7 +408,7 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len);
 	converter.convert(&array_v);
 
-	state->zchild->add(String(key), array_v);
+	state->zchild.add(String(key), array_v);
 
 	return false;
 }
@@ -425,7 +432,7 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
 	obj->o_set(s_MongoBsonBinary_subType, Variant(v_subtype), s_MongoBsonBinary_className.get());
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -442,7 +449,7 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 	MongoDBBsonObjectIdData* obj_data = Native::data<MongoDBBsonObjectIdData>(obj);
 	bson_oid_copy(v_oid, &obj_data->m_oid);
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -451,7 +458,7 @@ bool hippo_bson_visit_bool(const bson_iter_t *iter __attribute__((unused)), cons
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	state->zchild->add(String(key), Variant(v_bool));
+	state->zchild.add(String(key), Variant(v_bool));
 	return false;
 }
 
@@ -466,7 +473,7 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 
 	obj->o_set(s_MongoBsonUtcDatetime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUtcDatetime_className.get());
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -475,7 +482,7 @@ bool hippo_bson_visit_null(const bson_iter_t *iter __attribute__((unused)), cons
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	state->zchild->add(String(key), Variant(Variant::NullInit()));
+	state->zchild.add(String(key), Variant(Variant::NullInit()));
 	return false;
 }
 
@@ -491,7 +498,7 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className.get());
 	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className.get());
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -514,7 +521,7 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 
 	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -547,7 +554,7 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	obj->o_set(s_MongoBsonJavascript_scope, scope_v, s_MongoBsonJavascript_className.get());
 
 	/* add to array */
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -556,7 +563,7 @@ bool hippo_bson_visit_int32(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	state->zchild->add(String(key), Variant(v_int32));
+	state->zchild.add(String(key), Variant(v_int32));
 	return false;
 }
 
@@ -572,7 +579,7 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className.get());
 	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className.get());
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -581,7 +588,7 @@ bool hippo_bson_visit_int64(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-	state->zchild->add(String(key), Variant(v_int64));
+	state->zchild.add(String(key), Variant(v_int64));
 	return false;
 }
 
@@ -594,7 +601,7 @@ bool hippo_bson_visit_maxkey(const bson_iter_t *iter __attribute__((unused)), co
 	assert(c_objectId);
 	ObjectData* obj = ObjectData::newInstance(c_objectId);
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -608,7 +615,7 @@ bool hippo_bson_visit_minkey(const bson_iter_t *iter __attribute__((unused)), co
 	assert(c_objectId);
 	ObjectData* obj = ObjectData::newInstance(c_objectId);
 
-	state->zchild->add(String(key), Variant(obj));
+	state->zchild.add(String(key), Variant(obj));
 
 	return false;
 }
@@ -663,7 +670,8 @@ bool BsonToVariantConverter::convert(Variant *v)
 			return false;
 		}
 
-		state.zchild = new Array;
+		state.zchild = Array::Create();
+
 		bson_iter_visit_all(&iter, &hippo_bson_visitors, &state);
 /*
 		if (state->map.array || state->odm) {
@@ -678,7 +686,11 @@ bool BsonToVariantConverter::convert(Variant *v)
 */
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
-	*v = Variant(state.zchild->get());
+	if (m_top_level) {
+		*v = Variant(Variant(state.zchild).toObject());
+	} else {
+		*v = Variant(state.zchild.get());
+	}
 
 	return true;
 }
