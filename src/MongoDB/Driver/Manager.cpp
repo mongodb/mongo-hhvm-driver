@@ -21,6 +21,12 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
+
 #include "BulkWrite.h"
 #include "Command.h"
 #include "Cursor.h"
@@ -97,10 +103,29 @@ std::cerr << "EC first batch: " << cursor_data->first_batch << "\n";
 	return obj;
 }
 
+ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id)
+{
+	static Class* c_writeResult;
+
+	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
+	assert(c_writeResult);
+	ObjectData* obj = ObjectData::newInstance(c_writeResult);
+
+	obj->o_set(String("nUpserted"), Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("nMatched"), Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("nRemoved"), Variant((int64_t) write_result->nRemoved), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("nInserted"), Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("nModified"), Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("omit_nModified"), Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className.get());
+
+	return obj;
+}
+
 Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const Variant &query, const Variant &deleteOptions, const Object &writeConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
-	static Class* c_writeResult;
 	bson_t *bquery;
 	auto options = deleteOptions.isNull() ? null_array : deleteOptions.toArray();
 	bson_error_t error;
@@ -146,17 +171,12 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 
 	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
 
+	/* Prepare result */
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, hint);
+
 	/* Destroy */
 	bson_clear(&bquery);
 	mongoc_bulk_operation_destroy(batch);
-
-	/* Prepare result */
-	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
-	assert(c_writeResult);
-	ObjectData* obj = ObjectData::newInstance(c_writeResult);
-
-	obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
 
 	return Object(obj);
 }

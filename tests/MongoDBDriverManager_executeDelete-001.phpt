@@ -2,6 +2,8 @@
 MongoDB\Driver\Manager::executeDelete
 --FILE--
 <?php
+include 'utils.inc';
+
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
@@ -18,15 +20,18 @@ $m->executeInsert( 'demo.test', [ 'd' => 8 ] );
 $m->executeInsert( 'demo.test', [ 'd' => 9 ] );
 
 // delete one
-$m->executeDelete( 'demo.test', [ 'd' => 2 ], [ 'limit' => true ] );
+show_obj_properties( $m->executeDelete( 'demo.test', [ 'd' => [ '$gte' => 2, '$lte' => 3 ] ], [ 'limit' => true ] ), [ 'deleted', 'matched' ] );
 
 // multi delete
-$m->executeDelete( 'demo.test', [ 'd' => [ '$gte' => 4, '$lte' => 5 ] ], [ 'limit' => false ] );
-$m->executeDelete( 'demo.test', [ 'd' => [ '$gte' => 7, '$lte' => 8 ] ] );
+show_obj_properties( $m->executeDelete( 'demo.test', [ 'd' => [ '$gte' => 4, '$lte' => 5 ] ], [ 'limit' => false ] ), [ 'deleted', 'matched' ] );
+show_obj_properties( $m->executeDelete( 'demo.test', [ 'd' => [ '$gte' => 7, '$lte' => 8 ] ] ), [ 'deleted', 'matched' ] );
 
 var_dump( $m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>
 --EXPECTF--
+deleted: 1; 
+deleted: 2; 
+deleted: 2; 
 array(3) {
   [0]=>
   object(stdClass)#7 (2) {
