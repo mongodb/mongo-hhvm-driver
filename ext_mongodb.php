@@ -252,21 +252,32 @@ final class ReadPreference {
 final class Server {
 }
 
+<<__NativeData("MongoDBDriverWriteResult")>>
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;
 	private $nRemoved = 0;
 	private $nInserted = 0;
-	protected $nModified = 0;
+	private $nModified = 0;
 	private $upsertedIds = null;
 	private $writeErrors = null;
 	private $writeConcernError = null;
 	private $info = null;
 
+	private function __construct()
+	{
+		throw new RunTimeException("Accessing private constructor");
+	}
+
+	public function __wakeup()
+	{
+		throw new RunTimeException("MongoDB\\Driver objects cannot be serialized");
+	}
+
 	public function getInsertedCount() { return $this->nInserted; }
 	public function getMatchedCount()  { return $this->nMatched; }
 	public function getModifiedCount() { return $this->nModified; }
-	public function getDeletedCount()  { return $this->nDeleted; }
+	public function getDeletedCount()  { return $this->nRemoved; }
 	public function getUpsertedCount() { return $this->nUpserted; }
 
 	public function getInfo()
@@ -277,10 +288,8 @@ final class WriteResult {
 		return [];
 	}
 
-	public function getServer()
-	{
-		throw new \Exception("getServer is not implemented yet");
-	}
+	<<__Native>>
+	public function getServer() : MongoDB\Driver\Server;
 
 	public function getUpsertedIds(): array
 	{
@@ -305,6 +314,9 @@ final class WriteResult {
 		}
 		return [];
 	}
+
+	<<__Native>>
+	public function isAcknowledged() : bool;
 }
 /* }}} */
 

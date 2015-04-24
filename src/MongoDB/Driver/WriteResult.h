@@ -19,5 +19,27 @@ namespace HPHP {
 
 extern const StaticString s_MongoDriverWriteResult_className;
 
+class MongoDBDriverWriteResultData
+{
+	public:
+		static Class* s_class;
+		static const StaticString s_className;
+
+		/* properties go here */
+
+		static Class* getClass();
+
+		void sweep() {
+			/* do nothing */
+		}
+
+		~MongoDBDriverWriteResultData() {
+			sweep();
+		};
+};
+
+Object HHVM_METHOD(MongoDBDriverWriteResult, getServer);
+bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged);
+
 }
 #endif

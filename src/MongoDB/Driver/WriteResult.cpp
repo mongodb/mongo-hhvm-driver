@@ -17,10 +17,23 @@
 #include "hphp/runtime/base/base-includes.h"
 #include "hphp/runtime/vm/native-data.h"
 
+#include "../../../mongodb.h"
+
 #include "WriteResult.h"
 
 namespace HPHP {
 
 const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteResult");
+Class* MongoDBDriverWriteResultData::s_class = nullptr;
+const StaticString MongoDBDriverWriteResultData::s_className("MongoDBDriverWriteResult");
+IMPLEMENT_GET_CLASS(MongoDBDriverWriteResultData);
+
+Object HHVM_METHOD(MongoDBDriverWriteResult, getServer)
+{
+}
+
+bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged)
+{
+}
 
 }

@@ -164,6 +164,12 @@ static class MongoDBExtension : public Extension {
 			/* MongoDb\Driver\Server */
 			Native::registerNativeDataInfo<MongoDBDriverServerData>(MongoDBDriverServerData::s_className.get());
 
+			/* MongoDb\Driver\WriteResult */
+			HHVM_MALIAS(MongoDB\\Driver\\WriteResult, getServer, MongoDBDriverWriteResult, getServer);
+			HHVM_MALIAS(MongoDB\\Driver\\WriteResult, isAcknowledged, MongoDBDriverWriteResult, isAcknowledged);
+
+			Native::registerNativeDataInfo<MongoDBDriverWriteResultData>(MongoDBDriverWriteResultData::s_className.get());
+
 			loadSystemlib("mongodb");
 			mongoc_init();
 			mongoc_log_set_handler(hippo_log_handler, NULL);
