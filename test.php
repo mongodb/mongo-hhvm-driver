@@ -56,6 +56,8 @@ $doc = [
 	'arraydocument' => [ 0, "foo" => 5, $map, $map ],
 ];
 
+$m->executeInsert( 'demo.test', [ 'empty_array' => [], 'empty_class' => new stdclass ] );
+
 for ( $i = 0; $i < 2; $i++ )
 {
 	$r = $m->executeInsert( 'demo.test', $doc );
