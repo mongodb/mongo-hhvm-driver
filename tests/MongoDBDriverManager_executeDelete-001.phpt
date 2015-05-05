@@ -34,25 +34,25 @@ deleted: 2; matched: 0;
 deleted: 2; matched: 0; 
 array(3) {
   [0]=>
-  object(stdClass)#7 (2) {
+  object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#6 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(3)
   }
   [1]=>
-  object(stdClass)#9 (2) {
+  object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#8 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(6)
   }
   [2]=>
-  object(stdClass)#11 (2) {
+  object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#10 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(9)

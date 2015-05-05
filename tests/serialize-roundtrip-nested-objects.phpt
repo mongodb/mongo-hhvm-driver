@@ -19,43 +19,43 @@ $m->executeInsert( 'demo.test', [ 'd' => 3, 'empty_class' => $map2 ] );
 
 var_dump($m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>
---EXPECT--
+--EXPECTF--
 array(3) {
   [0]=>
-  object(stdClass)#10 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#8 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(1)
     ["empty_class"]=>
-    object(stdClass)#9 (0) {
+    object(stdClass)#%d (0) {
     }
   }
   [1]=>
-  object(stdClass)#13 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#11 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(2)
     ["empty_class"]=>
-    object(stdClass)#12 (1) {
+    object(stdClass)#%d (1) {
       ["foo"]=>
       int(42)
     }
   }
   [2]=>
-  object(stdClass)#17 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#14 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(3)
     ["empty_class"]=>
-    object(stdClass)#16 (1) {
+    object(stdClass)#%d (1) {
       ["bar"]=>
-      object(stdClass)#15 (1) {
+      object(stdClass)#%d (1) {
         ["foo"]=>
         int(42)
       }

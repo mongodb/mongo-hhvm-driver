@@ -11,12 +11,12 @@ $m->executeInsert( 'demo.test', [ 'd' => 1, 'empty_array' => [], 'empty_class' =
 
 var_dump( $m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>
---EXPECT--
+--EXPECTF--
 array(1) {
   [0]=>
-  object(stdClass)#8 (4) {
+  object(stdClass)#%d (4) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#6 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(1)
@@ -24,7 +24,7 @@ array(1) {
     array(0) {
     }
     ["empty_class"]=>
-    object(stdClass)#7 (0) {
+    object(stdClass)#%d (0) {
     }
   }
 }

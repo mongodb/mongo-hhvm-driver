@@ -50,9 +50,9 @@ n_commands: 16; offset: 11
 13: %s
 array(7) {
   [0]=>
-  object(stdClass)#13 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#12 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["test"]=>
     string(3) "foo"
@@ -60,9 +60,9 @@ array(7) {
     int(1)
   }
   [1]=>
-  object(stdClass)#15 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#14 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["test"]=>
     string(3) "foo"
@@ -70,9 +70,9 @@ array(7) {
     int(2)
   }
   [2]=>
-  object(stdClass)#17 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#16 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["test"]=>
     string(3) "foo"
@@ -80,17 +80,17 @@ array(7) {
     int(3)
   }
   [3]=>
-  object(stdClass)#19 (2) {
+  object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#18 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["j"]=>
     int(3)
   }
   [4]=>
-  object(stdClass)#21 (5) {
+  object(stdClass)#%d (5) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#20 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["test"]=>
     string(3) "foo"
@@ -102,9 +102,9 @@ array(7) {
     int(5)
   }
   [5]=>
-  object(stdClass)#23 (4) {
+  object(stdClass)#%d (4) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#22 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["test"]=>
     string(3) "foo"
@@ -114,9 +114,9 @@ array(7) {
     int(5)
   }
   [6]=>
-  object(stdClass)#25 (3) {
+  object(stdClass)#%d (3) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#24 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["i"]=>
     int(9)

@@ -18,9 +18,9 @@ var_dump( $m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArr
 inserted: 1; 
 array(1) {
   [0]=>
-  object(stdClass)#7 (2) {
+  object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#6 (0) {
+    object(MongoDB\BSON\ObjectId)#%d (0) {
     }
     ["d"]=>
     int(2)
