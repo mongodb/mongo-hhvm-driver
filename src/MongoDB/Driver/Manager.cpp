@@ -183,7 +183,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
 {
-	static Class* c_writeResult;
 	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	bson_error_t error;
@@ -212,18 +211,12 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	/* Run operation */
 	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
 
+	/* Prepare result */
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, hint);
+
 	/* Destroy */
 	bson_destroy(bson);
 	mongoc_bulk_operation_destroy(batch);
-
-	/* Prepare result */
-
-	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
-	assert(c_writeResult);
-	ObjectData* obj = ObjectData::newInstance(c_writeResult);
-
-	obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
 
 	return Object(obj);
 }
