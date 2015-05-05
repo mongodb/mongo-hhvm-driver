@@ -293,8 +293,8 @@ final class WriteResult {
 
 	public function getUpsertedIds(): array
 	{
-		if ($this->upsertedIds && gettype($this->upsertedIds) == 'array') {
-			return $this->upsertedIds;
+		if ($this->upsertedIds && gettype($this->upsertedIds) == 'object') {
+			return (array) $this->upsertedIds;
 		}
 		return [];
 	}
