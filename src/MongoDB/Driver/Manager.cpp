@@ -392,11 +392,9 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 
 Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, Object &bulk, const Object &writeConcern)
 {
-	static Class* c_writeResult;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	MongoDBDriverBulkWriteData* bulk_data = Native::data<MongoDBDriverBulkWriteData>(bulk.get());
 	bson_error_t error;
-	bson_t reply;
 	char *database;
 	char *collection;
 	int success;
@@ -419,12 +417,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, Obj
 		/* throw exception */
 		throw Object(SystemLib::AllocExceptionObject("FIXME EXCEPTION"));
 	} else {
-		c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
-		assert(c_writeResult);
-		ObjectData* obj = ObjectData::newInstance(c_writeResult);
-
-		obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
-		obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
+		ObjectData* obj = hippo_write_result_init(&bulk_data->m_bulk->result, data->m_client, success);
 
 		return Object(obj);
 	}
