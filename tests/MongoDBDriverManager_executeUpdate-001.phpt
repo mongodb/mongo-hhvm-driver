@@ -2,6 +2,8 @@
 MongoDB\Driver\Manager::executeUpdate
 --FILE--
 <?php
+include 'utils.inc';
+
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
@@ -16,20 +18,24 @@ $m->executeInsert( 'demo.test', [ 'd' => 8 ] );
 $m->executeInsert( 'demo.test', [ 'd' => 9 ] );
 
 // replace
-$m->executeUpdate( 'demo.test', [ 'd' => 4 ], [ 'test' => 'four' ] );
+show_obj_properties( $m->executeUpdate( 'demo.test', [ 'd' => 4 ], [ 'test' => 'four' ] ), [ 'matched', 'modified', 'upserted' ] );
 
 // update
-$m->executeUpdate( 'demo.test', [ 'd' => 5 ], [ '$set' => [ 'test' => 'five' ] ] );
+show_obj_properties( $m->executeUpdate( 'demo.test', [ 'd' => 5 ], [ '$set' => [ 'test' => 'five' ] ] ), [ 'matched', 'modified', 'upserted' ] );
 
 // multi update
-$m->executeUpdate( 'demo.test', [ 'd' => [ '$gte' => 7 ] ], [ '$set' => [ 'test' => '>seven' ] ], [ 'multi' => true ]  );
+show_obj_properties( $m->executeUpdate( 'demo.test', [ 'd' => [ '$gte' => 7 ] ], [ '$set' => [ 'test' => '>seven' ] ], [ 'multi' => true ] ), [ 'matched', 'modified', 'upserted' ] );
 
 // upsert
-$m->executeUpdate( 'demo.test', [ 'd' => 10 ], [ '$set' => [ 'test' => 'ten' ] ], [ 'upsert' => true ] );
+show_obj_properties( $m->executeUpdate( 'demo.test', [ 'd' => 10 ], [ '$set' => [ 'test' => 'ten' ] ], [ 'upsert' => true ] ), [ 'matched', 'modified', 'upserted' ] );
 
 var_dump( $m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>
 --EXPECTF--
+matched: 1; modified: 1; upserted: 0; 
+matched: 1; modified: 1; upserted: 0; 
+matched: 3; modified: 3; upserted: 0; 
+matched: 0; modified: 0; upserted: 1; 
 array(7) {
   [0]=>
   object(stdClass)#%d (2) {

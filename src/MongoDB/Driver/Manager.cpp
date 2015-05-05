@@ -300,7 +300,6 @@ std::cerr << "EQ first batch: " << cursor_data->first_batch << "\n";
 Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const Variant &query, const Variant &newObj, const Variant &updateOptions, const Object &writeConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
-	static Class* c_writeResult;
 	bson_t *bquery, *bupdate;
 	auto options = updateOptions.isNull() ? null_array : updateOptions.toArray();
 	bson_error_t error;
@@ -380,12 +379,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	mongoc_bulk_operation_destroy(batch);
 
 	/* Prepare result */
-	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
-	assert(c_writeResult);
-	ObjectData* obj = ObjectData::newInstance(c_writeResult);
-
-	obj->o_set(String("nInserted"), Variant(52), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nModified"), Variant(77), s_MongoDriverWriteResult_className.get());
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, hint);
 
 	return Object(obj);
 }
