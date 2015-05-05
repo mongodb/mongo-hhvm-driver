@@ -29,9 +29,9 @@ show_obj_properties( $m->executeDelete( 'demo.test', [ 'd' => [ '$gte' => 7, '$l
 var_dump( $m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>
 --EXPECTF--
-deleted: 1; 
-deleted: 2; 
-deleted: 2; 
+deleted: 1; matched: 0; 
+deleted: 2; matched: 0; 
+deleted: 2; matched: 0; 
 array(3) {
   [0]=>
   object(stdClass)#7 (2) {
