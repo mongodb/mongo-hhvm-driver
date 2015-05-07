@@ -13,12 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
+#include "hphp/runtime/base/base-includes.h"
+
+extern "C" {
+#include "libbson/src/bson/bson.h"
+#include "libmongoc/src/mongoc/mongoc.h"
+}
+
 namespace MongoDriver {
 
 class Utils
 {
+	private:
+		static HPHP::ObjectData *CreateAndConstruct(const HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code);
+
 	public:
 		static bool splitNamespace(HPHP::String ns, char **db, char **col);
+		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
 };
 
 }

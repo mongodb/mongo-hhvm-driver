@@ -67,7 +67,12 @@ class Utils {
 }
 
 /* {{{ Exception Classes */
-class Exception {}
+class Exception extends \Exception {}
+class AuthenticationException extends Exception {}
+class ConnectionException extends Exception {}
+class ConnectionTimeoutException extends Exception {}
+class DuplicateKeyException extends Exception {}
+class ExecutionTimeoutException extends Exception {}
 class RuntimeException extends Exception {}
 /* }}} */
 

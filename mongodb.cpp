@@ -45,33 +45,6 @@ extern "C" {
 
 namespace HPHP {
 
-#if 0
-class Utils
-{
-	public:
-		ObjectData* AllocInvalidArgumentException(const Variant& message);
-}
-
-ObjectData* Utils::AllocInvalidArgumentException(const Variant& message) {
-	ObjectData* inst;
-	TypedValue ret;
-
-	c_invalidArgumentException = Unit::lookupClass(s_MongoDBInvalidArgumentException.get());
-	inst = ObjectData::newInstance(c_invalidArgumentException);
-
-	{
-		CountableHelper cnt(inst);
-		g_context->invokeFunc(
-			&ret,
-			->getCtor(),
-			make_packed_array(message),
-			inst
-		);
-	}
-	tvRefcountedDecRef(&ret);
-}
-#endif
-
 void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, const char *message, void *user_data)
 {
 	std::cerr << "log: " << log_domain << "; msg: " << message << "\n";

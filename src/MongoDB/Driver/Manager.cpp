@@ -76,9 +76,8 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Objec
 
 		if (mongoc_cursor_error(cursor, &error)) {
 			mongoc_cursor_destroy(cursor);
-//			MongoDriver::Utils::throwExceptionFromBsonError(&error);
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
 
-			throw Object(SystemLib::AllocInvalidArgumentExceptionObject(error.message));
 			return NULL;
 		}
 	}
