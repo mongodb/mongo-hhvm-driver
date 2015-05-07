@@ -279,8 +279,9 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object 
 
 		/* Could simply be no docs, which is not an error */
 		if (mongoc_cursor_error(cursor, &error)) {
-//			MongoDriver::Utils::throwExceptionFromBsonError(&error);
 			mongoc_cursor_destroy(cursor);
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+
 			return NULL;
 		}
 	}

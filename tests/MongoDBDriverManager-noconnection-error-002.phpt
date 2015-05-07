@@ -1,13 +1,13 @@
 --TEST--
-MongoDB\Driver\Manager - no connection (command)
+MongoDB\Driver\Manager - no connection (query)
 --FILE--
 <?php
 $m = new MongoDB\Driver\Manager("mongodb://localhost:44444");
 
-$c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
+$c = new MongoDB\Driver\Query( [] );
 
 try {
-	$m->executeCommand( 'demo', $c );
+	$m->executeQuery( 'demo.test', $c );
 	echo "Expected exception not thrown\n";
 }
 catch ( MongoDB\Driver\Exception\ConnectionException $e )
