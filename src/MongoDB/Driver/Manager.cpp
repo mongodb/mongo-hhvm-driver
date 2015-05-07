@@ -147,7 +147,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
 		return NULL;
 	}
 
@@ -203,7 +203,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
 		return NULL;
 	}
 
@@ -242,7 +242,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object 
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
 		return NULL;
 	}
 
@@ -326,7 +326,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
 		return NULL;
 	}
 
@@ -401,7 +401,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, Obj
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace"));
+		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace" + ns));
 		return NULL;
 	}
 
