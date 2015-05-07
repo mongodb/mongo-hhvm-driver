@@ -60,31 +60,31 @@ HPHP::ObjectData *Utils::CreateAndConstruct(HPHP::StaticString classname, const 
 	return inst;
 }
 
-const HPHP::StaticString s_MongoDriverAuthenticationException_className("MongoDB\\Driver\\AuthenticationException");
-const HPHP::StaticString s_MongoDriverConnectionException_className("MongoDB\\Driver\\ConnectionException");
-const HPHP::StaticString s_MongoDriverConnectionTimeoutException_className("MongoDB\\Driver\\ConnectionTimeoutException");
-const HPHP::StaticString s_MongoDriverDuplicateKeyException_className("MongoDB\\Driver\\DuplicateKeyException");
-const HPHP::StaticString s_MongoDriverExecutionTimeoutException_className("MongoDB\\Driver\\ExecutionTimeoutException");
-const HPHP::StaticString s_MongoDriverRuntimeException_className("MongoDB\\Driver\\RuntimeException");
+const HPHP::StaticString s_MongoDriverExceptionAuthenticationException_className("MongoDB\\Driver\\Exception\\AuthenticationException");
+const HPHP::StaticString s_MongoDriverExceptionConnectionException_className("MongoDB\\Driver\\Exception\\ConnectionException");
+const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_className("MongoDB\\Driver\\Exception\\ConnectionTimeoutException");
+const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className("MongoDB\\Driver\\Exception\\DuplicateKeyException");
+const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className("MongoDB\\Driver\\Exception\\ExecutionTimeoutException");
+const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className("MongoDB\\Driver\\Exception\\RuntimeException");
 
 HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 {
 	switch (error->code) {
 		case 50: /* ExceededTimeLimit */
-			return Utils::CreateAndConstruct(s_MongoDriverExecutionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionExecutionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case MONGOC_ERROR_STREAM_SOCKET:
-			return Utils::CreateAndConstruct(s_MongoDriverConnectionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionConnectionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case 11000: /* DuplicateKey */
-			return Utils::CreateAndConstruct(s_MongoDriverDuplicateKeyException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionDuplicateKeyException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case MONGOC_ERROR_CLIENT_AUTHENTICATE:
-			return Utils::CreateAndConstruct(s_MongoDriverAuthenticationException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionAuthenticationException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 
 		case MONGOC_ERROR_STREAM_INVALID_TYPE:
 		case MONGOC_ERROR_STREAM_INVALID_STATE:
 		case MONGOC_ERROR_STREAM_NAME_RESOLUTION:
 		case MONGOC_ERROR_STREAM_CONNECT:
 		case MONGOC_ERROR_STREAM_NOT_ESTABLISHED:
-			return Utils::CreateAndConstruct(s_MongoDriverConnectionException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionConnectionException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case MONGOC_ERROR_CLIENT_NOT_READY:
 		case MONGOC_ERROR_CLIENT_TOO_BIG:
 		case MONGOC_ERROR_CLIENT_TOO_SMALL:
@@ -104,7 +104,7 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 		case MONGOC_ERROR_GRIDFS_INVALID_FILENAME:
 		case MONGOC_ERROR_QUERY_COMMAND_NOT_FOUND:
 		case MONGOC_ERROR_QUERY_NOT_TAILABLE:
-			return Utils::CreateAndConstruct(s_MongoDriverRuntimeException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionRuntimeException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 	}
 	switch (error->domain) {
 		case MONGOC_ERROR_CLIENT:

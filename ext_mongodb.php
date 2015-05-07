@@ -44,13 +44,13 @@ class Utils {
 
 			case self::ERROR_RUNTIME:
 			case self::ERROR_MONGOC_FAILED:
-				throw new RuntimeException($mssage);
+				throw new Exception\RuntimeException($mssage);
 
 			case self::ERROR_WRITE_FAILED:
-				throw new WriteException($message);
+				throw new Exception\WriteException($message);
 
 			case self::ERROR_CONNECTION_FAILED:
-				throw new ConnectionException($message);
+				throw new Exception\ConnectionException($message);
 		}
 	}
 
@@ -65,16 +65,6 @@ class Utils {
 		}
 	}
 }
-
-/* {{{ Exception Classes */
-class Exception extends \Exception {}
-class AuthenticationException extends Exception {}
-class ConnectionException extends Exception {}
-class ConnectionTimeoutException extends Exception {}
-class DuplicateKeyException extends Exception {}
-class ExecutionTimeoutException extends Exception {}
-class RuntimeException extends Exception {}
-/* }}} */
 
 /* {{{ Cursor Classes */
 <<__NativeData("MongoDBDriverCursorId")>>
@@ -271,12 +261,12 @@ final class WriteResult {
 
 	private function __construct()
 	{
-		throw new RunTimeException("Accessing private constructor");
+		throw new Exception\RunTimeException("Accessing private constructor");
 	}
 
 	public function __wakeup()
 	{
-		throw new RunTimeException("MongoDB\\Driver objects cannot be serialized");
+		throw new Exception\RunTimeException("MongoDB\\Driver objects cannot be serialized");
 	}
 
 	public function getInsertedCount() { return $this->nInserted; }
@@ -324,6 +314,20 @@ final class WriteResult {
 	public function isAcknowledged() : bool;
 }
 /* }}} */
+
+
+/* {{{ Exception Classes */
+namespace MongoDB\Driver\Exception;
+
+class Exception extends \Exception {}
+class AuthenticationException extends Exception {}
+class ConnectionException extends Exception {}
+class ConnectionTimeoutException extends Exception {}
+class DuplicateKeyException extends Exception {}
+class ExecutionTimeoutException extends Exception {}
+class RuntimeException extends Exception {}
+/* }}} */
+
 
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;

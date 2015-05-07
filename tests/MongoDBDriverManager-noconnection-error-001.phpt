@@ -10,7 +10,7 @@ try {
 	$m->executeCommand( 'demo', $c );
 	echo "Expected exception not thrown\n";
 }
-catch ( MongoDB\Driver\ConnectionException $e )
+catch ( MongoDB\Driver\Exception\ConnectionException $e )
 {
 	echo $e->getMessage(), "\n";
 }
