@@ -1,5 +1,5 @@
 --TEST--
-MongoDB\Driver\Manager - no connection (query)
+MongoDB\Driver\Manager - invalid namespace
 --FILE--
 <?php
 $m = new MongoDB\Driver\Manager("mongodb://localhost:44444");
