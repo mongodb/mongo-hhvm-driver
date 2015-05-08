@@ -10,10 +10,10 @@ try {
 	$m->executeCommand( 'demo', $c );
 	echo "Expected exception not thrown\n";
 }
-catch ( MongoDB\Driver\Exception\ConnectionException $e )
+catch ( MongoDB\Driver\Exception\ConnectionTimeoutException $e )
 {
 	echo $e->getMessage(), "\n";
 }
 ?>
 --EXPECTF--
-Failed to connect to target host: localhost:44444
+Timed out trying to select a server

@@ -2,10 +2,10 @@
 Serialization: empty array and empty class
 --FILE--
 <?php
-$m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+include 'tests/utils.inc';
 
-$c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
-$m->executeCommand( 'demo', $c );
+$m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+cleanup( $m );
 
 $m->executeInsert( 'demo.test', [ 'd' => 1, 'empty_array' => [], 'empty_class' => new stdclass ] );
 

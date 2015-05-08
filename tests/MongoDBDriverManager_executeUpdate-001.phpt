@@ -5,9 +5,7 @@ MongoDB\Driver\Manager::executeUpdate
 include 'utils.inc';
 
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-
-$c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
-$cursor = $m->executeCommand( 'demo', $c );
+cleanup( $m );
 
 /* Inserting some data */
 $m->executeInsert( 'demo.test', [ 'd' => 4 ] );

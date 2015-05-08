@@ -73,6 +73,7 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 		case 50: /* ExceededTimeLimit */
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionExecutionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case MONGOC_ERROR_STREAM_SOCKET:
+		case MONGOC_ERROR_SERVER_SELECTION_TIMEOUT:
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionConnectionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case 11000: /* DuplicateKey */
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionDuplicateKeyException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));

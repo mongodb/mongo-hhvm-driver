@@ -5,9 +5,7 @@ MongoDB\Driver\Manager::executeBulkWrite
 include 'tests/utils.inc';
 
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-
-$c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
-$m->executeCommand( 'demo', $c );
+cleanup( $m );
 
 $bw = new MongoDB\Driver\BulkWrite( false );
 $_id = $bw->insert( [ 'test' => 'foo', 'i' => 1 ] );

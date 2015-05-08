@@ -1,0 +1,7 @@
+[submodule "libbson"]
+	path = libbson
+	url = https://github.com/mongodb/libbson.git
+[submodule "libmongoc"]
+	path = libmongoc
+	url = https://github.com/mongodb/mongo-c-driver.git
+	branch = 1.2.0-dev

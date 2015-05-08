@@ -5,9 +5,7 @@ MongoDB\Driver\Manager::executeInsert
 include 'utils.inc';
 
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-
-$c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
-$cursor = $m->executeCommand( 'demo', $c );
+cleanup( $m );
 
 /* Inserting some data */
 show_obj_properties( $m->executeInsert( 'demo.test', [ 'd' => 2 ] ), [ 'inserted' ] );
