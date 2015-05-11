@@ -190,7 +190,7 @@ final class BulkWrite implements \Countable {
 	function __construct(?boolean $ordered = true);
 
 	<<__Native>>
-	function insert(mixed $document) : MongoDB\BSON\ObjectId;
+	function insert(mixed $document) : BSON\ObjectId;
 
 	<<__Native>>
 	function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
@@ -330,7 +330,7 @@ class RuntimeException extends Exception {}
 
 
 /* {{{ BSON and Serialization Classes */
-namespace MongoDB\BSON;
+namespace BSON;
 
 interface Serializable
 {

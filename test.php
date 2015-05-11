@@ -3,7 +3,7 @@ var_dump(extension_loaded("mongodb"));
 
 try
 {
-	$falseOid = new MongoDB\BSON\ObjectId('xx1234567890y1234567890z');
+	$falseOid = new BSON\ObjectId('xx1234567890y1234567890z');
 }
 catch ( InvalidArgumentException $e )
 {
@@ -39,18 +39,18 @@ $doc = [
 	'bool' => true,
 	'null' => null,
 	'float' => M_PI,
-	'binary' => new MongoDB\BSON\Binary("random binary\0data", MongoDB\BSON\Binary::TYPE_MD5),
-	'oid1' => new MongoDB\BSON\ObjectId(),
-	'oid2' => new MongoDB\BSON\ObjectId('456712341111222222333333'),
-	'maxkey' => new MongoDB\BSON\MaxKey(),
-	'minkey' => new MongoDB\BSON\MinKey(),
-	'utcdatetime' => new MongoDB\BSON\UtcDatetime(time() * 1000),
-	'code' => new MongoDB\BSON\Javascript("function() { return x + 1; }"),
-	'codeWithScope1' => new MongoDB\BSON\Javascript("function() { return x + 1; }", [ 'foo' => 42, 'bar' => M_PI ] ),
-	'codeWithScope2' => new MongoDB\BSON\Javascript("function() { return x + 1; }", $map ),
-	'codeWithScope3' => new MongoDB\BSON\Javascript("function() { return x + 1; }", 42 ),
-	'timestamp' => new MongoDB\BSON\Timestamp(1234, 5678),
-	'regex' => new MongoDB\BSON\Regex('derick', 'im'),
+	'binary' => new BSON\Binary("random binary\0data", BSON\Binary::TYPE_MD5),
+	'oid1' => new BSON\ObjectId(),
+	'oid2' => new BSON\ObjectId('456712341111222222333333'),
+	'maxkey' => new BSON\MaxKey(),
+	'minkey' => new BSON\MinKey(),
+	'utcdatetime' => new BSON\UtcDatetime(time() * 1000),
+	'code' => new BSON\Javascript("function() { return x + 1; }"),
+	'codeWithScope1' => new BSON\Javascript("function() { return x + 1; }", [ 'foo' => 42, 'bar' => M_PI ] ),
+	'codeWithScope2' => new BSON\Javascript("function() { return x + 1; }", $map ),
+	'codeWithScope3' => new BSON\Javascript("function() { return x + 1; }", 42 ),
+	'timestamp' => new BSON\Timestamp(1234, 5678),
+	'regex' => new BSON\Regex('derick', 'im'),
 	'array' => [ 1, 5, 'foo', M_PI, true ],
 	'document' => $map,
 	'arraydocument' => [ 0, "foo" => 5, $map, $map ],
@@ -67,7 +67,7 @@ for ( $i = 0; $i < 2; $i++ )
 	$r = $m->executeInsert( 'demo.test', $doc );
 }
 $m->executeInsert( 'demo.test', [ 'without_id' => true ] );
-$m->executeInsert( 'demo.test', [ '_id' => new MongoDB\Bson\ObjectId(), 'with_id' => true ] );
+$m->executeInsert( 'demo.test', [ '_id' => new Bson\ObjectId(), 'with_id' => true ] );
 
 $q = new MongoDB\Driver\Query( [] );
 
@@ -101,7 +101,7 @@ $testClass = new StdClass;
 $testClass->true = "ja";
 $testClass->false = "nee";
 
-$re = new MongoDB\BSON\Regex("^name=", "");
+$re = new BSON\Regex("^name=", "");
 
 $doc = [
 	'name' => 'Derick',
