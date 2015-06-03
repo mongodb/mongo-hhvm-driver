@@ -54,7 +54,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	data->m_client = client;
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, Object &command, Object &readPreference)
+Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference)
 {
 	static Class* c_result;
 	bson_t *bson;
@@ -128,7 +128,7 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	return obj;
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const Variant &query, const Variant &deleteOptions, const Object &writeConcern)
+Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const Variant &query, const Variant &deleteOptions, const Variant &writeConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	bson_t *bquery;
@@ -186,7 +186,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	return Object(obj);
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Object &writeConcern)
+Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Variant &writeConcern)
 {
 	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
@@ -226,7 +226,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	return Object(obj);
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, Object &query, Object &readPreference)
+Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const Object &query, const Variant &readPreference)
 {
 	static Class* c_result;
 	bson_t *bson_query = NULL, *bson_fields = NULL;
@@ -303,7 +303,7 @@ std::cerr << "EQ first batch: " << cursor_data->first_batch << "\n";
 	return obj;
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const Variant &query, const Variant &newObj, const Variant &updateOptions, const Object &writeConcern)
+Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const Variant &query, const Variant &newObj, const Variant &updateOptions, const Variant &writeConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	bson_t *bquery, *bupdate;
@@ -390,7 +390,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	return Object(obj);
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, Object &bulk, const Object &writeConcern)
+Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	MongoDBDriverBulkWriteData* bulk_data = Native::data<MongoDBDriverBulkWriteData>(bulk.get());

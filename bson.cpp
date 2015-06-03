@@ -15,6 +15,7 @@
  */
 
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/runtime/base/array-iterator.h"
 
 #include "bson.h"
 #include <iostream>

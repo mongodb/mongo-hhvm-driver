@@ -35,7 +35,7 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPrefer
 	data->m_read_preference = mongoc_read_prefs_new((mongoc_read_mode_t) readPreference);
 }
 
-void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Variant &tagSets)
+void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Array &tagSets)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 	bson_t *bson;

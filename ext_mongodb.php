@@ -123,7 +123,7 @@ final class Cursor implements Traversable, Iterator {
 	* @return ReturnType -
 	*/
 	<<__Native>>
-	public function rewind(): mixed;
+	public function rewind(): void;
 
 	/**
 	* Check if current position is valid
