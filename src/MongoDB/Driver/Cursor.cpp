@@ -125,13 +125,10 @@ Variant HHVM_METHOD(MongoDBDriverCursor, next)
 
 static void hippo_cursor_rewind(MongoDBDriverCursorData* data)
 {
-std::cerr << "rewind\n";
 	invalidate_current(data);
 	data->current = 0;
 	data->zchild_active = false;
 
-std::cerr << "cursor_data: " << data << "\n";
-std::cerr << "first batch: " << data->first_batch << "\n";
 	if (data->first_batch) {
 		if (data->is_command_cursor) {
 			if (!bson_iter_init(&data->first_batch_iter, data->first_batch)) {
@@ -171,7 +168,6 @@ void HHVM_METHOD(MongoDBDriverCursor, rewind)
 
 bool HHVM_METHOD(MongoDBDriverCursor, valid)
 {
-std::cerr << "valid\n";
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
 	if (data->zchild_active) {

@@ -93,8 +93,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 	cursor_data->hint = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
-std::cerr << "EC cursor_data: " << cursor_data << "\n";
-std::cerr << "EC first batch: " << cursor_data->first_batch << "\n";
 
 	/* Destroy */
 	bson_destroy(bson);
@@ -297,8 +295,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const O
 	cursor_data->hint = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
-std::cerr << "EQ cursor_data: " << cursor_data << "\n";
-std::cerr << "EQ first batch: " << cursor_data->first_batch << "\n";
 
 	return obj;
 }
