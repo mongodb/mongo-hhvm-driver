@@ -77,9 +77,9 @@ echo "Starting iteration\n";
 
 foreach ( $cursor->toArray() as $key => $result )
 {
-	echo $result['_id'], ":\n";
-	echo ' - ', $result['oid1'], "\n";
-	echo ' - ', $result['oid2'], "\n";
+	echo $result->_id, ":\n";
+	echo ' - ', $result->oid1, "\n";
+	echo ' - ', $result->oid2, "\n";
 	var_dump($key, $result);
 }
 /*
