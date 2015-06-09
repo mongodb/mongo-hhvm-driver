@@ -52,7 +52,7 @@ void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, con
 
 static class MongoDBExtension : public Extension {
 	public:
-		MongoDBExtension() : Extension("mongodb") {}
+		MongoDBExtension() : Extension("mongodb", "0.6.0") {}
 
 		virtual void moduleInit() {
 			/* MongoDB\BSON\Binary */
