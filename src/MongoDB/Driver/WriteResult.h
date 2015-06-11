@@ -15,6 +15,13 @@
  */
 #ifndef __MONGODB_DRIVER_WRITERESULT_H__
 #define __MONGODB_DRIVER_WRITERESULT_H__
+
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
+
 namespace HPHP {
 
 extern const StaticString s_MongoDriverWriteResult_className;
