@@ -33,7 +33,7 @@ class MongoDBDriverCursorData
 		static Class* getClass();
 
 		mongoc_cursor_t *cursor;
-		int              hint;
+		int              m_server_id;
 		bool             is_command_cursor;
 		bson_t          *first_batch;
 		int64_t          current;

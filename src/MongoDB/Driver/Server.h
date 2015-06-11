@@ -32,8 +32,8 @@ class MongoDBDriverServerData
 
 		static Class* getClass();
 
-		int                 hint;
-		mongoc_host_list_t *host;
+		mongoc_client_t    *m_client;
+		uint32_t            m_server_id;
 
 		void sweep() {
 		}

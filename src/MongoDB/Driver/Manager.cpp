@@ -24,6 +24,8 @@
 #define MONGOC_I_AM_A_DRIVER
 #define delete not_delete
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-client-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-cluster-private.h"
 #undef delete
 #undef MONGOC_I_AM_A_DRIVER
 
@@ -90,7 +92,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
 
 	cursor_data->cursor = cursor;
-	cursor_data->hint = mongoc_cursor_get_hint(cursor);
+	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
 
@@ -136,7 +138,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	mongoc_bulk_operation_t *batch;
 	char *database;
 	char *collection;
-	int hint;
+	int server_id;
 	int flags = MONGOC_DELETE_NONE;
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
@@ -172,10 +174,10 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 		mongoc_bulk_operation_remove(batch, bquery);
 	}
 
-	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
+	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, hint);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
 
 	/* Destroy */
 	bson_clear(&bquery);
@@ -193,7 +195,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	mongoc_bulk_operation_t *batch;
 	char *database;
 	char *collection;
-	int hint;
+	int server_id;
 
 	VariantToBsonConverter converter(document, HIPPO_BSON_ADD_ID);
 	bson = bson_new();
@@ -212,10 +214,10 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	mongoc_bulk_operation_set_client(batch, data->m_client);
 
 	/* Run operation */
-	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
+	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, hint);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
 
 	/* Destroy */
 	bson_destroy(bson);
@@ -292,7 +294,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const O
 	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
 
 	cursor_data->cursor = cursor;
-	cursor_data->hint = mongoc_cursor_get_hint(cursor);
+	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
 
@@ -309,7 +311,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	mongoc_bulk_operation_t *batch;
 	char *database;
 	char *collection;
-	int hint;
+	int server_id;
 	int flags = MONGOC_UPDATE_NONE;
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
@@ -373,7 +375,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 		}
 	}
 
-	hint = mongoc_bulk_operation_execute(batch, &reply, &error);
+	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Destroy */
 	bson_clear(&bquery);
@@ -381,7 +383,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	mongoc_bulk_operation_destroy(batch);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, hint);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
 
 	return Object(obj);
 }

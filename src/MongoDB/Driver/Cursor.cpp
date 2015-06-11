@@ -17,6 +17,12 @@
 #include "hphp/runtime/base/base-includes.h"
 #include "hphp/runtime/vm/native-data.h"
 
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "../../../libmongoc/src/mongoc/mongoc-cursor-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
+
 #include "../../../bson.h"
 #include "../../../mongodb.h"
 
@@ -207,8 +213,8 @@ Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 
 	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
 
-	result_data->hint = data->hint;
-	result_data->host = &host;
+	result_data->m_client = data->cursor->client;
+	result_data->m_server_id = data->m_server_id;
 
 	return Object(obj);
 }
