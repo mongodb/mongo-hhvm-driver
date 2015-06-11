@@ -248,6 +248,8 @@ final class ReadPreference {
 
 <<__NativeData("MongoDBDriverServer")>>
 final class Server {
+	<<__Native>>
+	final public function getInfo(): array;
 }
 
 <<__NativeData("MongoDBDriverWriteResult")>>

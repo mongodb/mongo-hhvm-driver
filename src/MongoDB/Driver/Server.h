@@ -51,6 +51,8 @@ class MongoDBDriverServerData
 		};
 };
 
+Array HHVM_METHOD(MongoDBDriverServer, getInfo);
+
 }
 #endif
 
