@@ -23,12 +23,17 @@ extern "C" {
 
 namespace MongoDriver {
 
+extern const HPHP::StaticString s_MongoDriverExceptionAuthenticationException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionConnectionException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className;
+
 class Utils
 {
-	private:
-		static HPHP::ObjectData *CreateAndConstruct(const HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code);
-
 	public:
+		static HPHP::ObjectData *CreateAndConstruct(const HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code);
 		static bool splitNamespace(HPHP::String ns, char **db, char **col);
 		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
 };
