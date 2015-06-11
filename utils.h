@@ -36,6 +36,8 @@ class Utils
 		static HPHP::ObjectData *CreateAndConstruct(const HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code);
 		static bool splitNamespace(HPHP::String ns, char **db, char **col);
 		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
+
+		static HPHP::Object doExecuteCommand(const char *db, mongoc_client_t *client, bson_t *command, mongoc_read_prefs_t *read_pref);
 };
 
 }

@@ -61,11 +61,8 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference)
 {
-	static Class* c_result;
 	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
-	mongoc_cursor_t *cursor;
-	const bson_t *doc;
 
 	auto zquery = command->o_get(String("command"), false, s_MongoDriverCommand_className);
 
@@ -73,36 +70,12 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 	bson = bson_new();
 	converter.convert(bson);
 
-	/* Run operation */
-	cursor = mongoc_client_command(data->m_client, db.c_str(), MONGOC_QUERY_NONE, 0, 1, 0, bson, NULL, NULL);
-
-	if (!mongoc_cursor_next(cursor, &doc)) {
-		bson_error_t error;
-
-		if (mongoc_cursor_error(cursor, &error)) {
-			mongoc_cursor_destroy(cursor);
-			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
-
-			return NULL;
-		}
-	}
-
-	/* Prepare result */
-	c_result = Unit::lookupClass(s_MongoDriverCursor_className.get());
-	assert(c_result);
-	ObjectData* obj = ObjectData::newInstance(c_result);
-
-	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
-
-	cursor_data->cursor = cursor;
-	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
-	cursor_data->is_command_cursor = false;
-	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
-
-	/* Destroy */
-	bson_destroy(bson);
-
-	return obj;
+	return MongoDriver::Utils::doExecuteCommand(
+		db.c_str(),
+		data->m_client,
+		bson,
+		NULL
+	);
 }
 
 ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id)

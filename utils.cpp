@@ -17,8 +17,11 @@
 #include "hphp/runtime/base/base-includes.h"
 #include "hphp/runtime/base/array-init.h"
 #include "hphp/runtime/base/execution-context.h"
+#include "hphp/runtime/vm/native-data.h"
 
 #include "utils.h"
+
+#include "src/MongoDB/Driver/Cursor.h"
 
 namespace MongoDriver
 {
@@ -128,6 +131,44 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 		default:
 			return HPHP::Object(HPHP::SystemLib::AllocRuntimeExceptionObject(error->message));
 	}
+}
+
+HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bson_t *command, mongoc_read_prefs_t *read_pref)
+{
+	static HPHP::Class* c_result;
+	mongoc_cursor_t *cursor;
+	const bson_t *doc;
+
+	/* Run operation */
+	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, NULL);
+
+	if (!mongoc_cursor_next(cursor, &doc)) {
+		bson_error_t error;
+
+		if (mongoc_cursor_error(cursor, &error)) {
+			mongoc_cursor_destroy(cursor);
+			throw Utils::throwExceptionFromBsonError(&error);
+
+			return NULL;
+		}
+	}
+
+	/* Prepare result */
+	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
+	assert(c_result);
+	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_result);
+
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj);
+
+	cursor_data->cursor = cursor;
+	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
+	cursor_data->is_command_cursor = false;
+	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
+
+	/* Destroy */
+	bson_destroy(command);
+
+	return obj;
 }
 
 }
