@@ -13,34 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-#ifndef __MONGODB_DRIVER_WRITERESULT_H__
-#define __MONGODB_DRIVER_WRITERESULT_H__
+
+#include "hphp/runtime/base/base-includes.h"
+#include "hphp/runtime/vm/native-data.h"
+
+#include "../../../mongodb.h"
+
+#include "WriteConcern.h"
+
 namespace HPHP {
 
-extern const StaticString s_MongoDriverWriteResult_className;
-
-class MongoDBDriverWriteResultData
-{
-	public:
-		static Class* s_class;
-		static const StaticString s_className;
-
-		/* properties go here */
-		mongoc_write_concern_t *m_write_concern;
-
-		static Class* getClass();
-
-		void sweep() {
-			/* do nothing */
-		}
-
-		~MongoDBDriverWriteResultData() {
-			sweep();
-		};
-};
-
-Object HHVM_METHOD(MongoDBDriverWriteResult, getServer);
-bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged);
+const StaticString s_MongoDriverWriteConcern_className("MongoDB\\Driver\\WriteConcern");
+Class* MongoDBDriverWriteConcernData::s_class = nullptr;
+const StaticString MongoDBDriverWriteConcernData::s_className("MongoDBDriverWriteConcern");
+IMPLEMENT_GET_CLASS(MongoDBDriverWriteConcernData);
 
 }
-#endif

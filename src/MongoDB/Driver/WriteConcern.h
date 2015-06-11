@@ -13,13 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-#ifndef __MONGODB_DRIVER_WRITERESULT_H__
-#define __MONGODB_DRIVER_WRITERESULT_H__
+#ifndef __MONGODB_DRIVER_WRITECONCERN_H__
+#define __MONGODB_DRIVER_WRITECONCERN_H__
+
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
+
 namespace HPHP {
 
-extern const StaticString s_MongoDriverWriteResult_className;
+extern const StaticString s_MongoDriverWriteConcern_className;
 
-class MongoDBDriverWriteResultData
+class MongoDBDriverWriteConcernData
 {
 	public:
 		static Class* s_class;
@@ -34,13 +41,10 @@ class MongoDBDriverWriteResultData
 			/* do nothing */
 		}
 
-		~MongoDBDriverWriteResultData() {
+		~MongoDBDriverWriteConcernData() {
 			sweep();
 		};
 };
-
-Object HHVM_METHOD(MongoDBDriverWriteResult, getServer);
-bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged);
 
 }
 #endif

@@ -36,6 +36,7 @@
 #include "Query.h"
 #include "ReadPreference.h"
 #include "Server.h"
+#include "WriteConcern.h"
 #include "WriteResult.h"
 
 namespace HPHP {
@@ -142,6 +143,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	char *collection;
 	int server_id;
 	int flags = MONGOC_DELETE_NONE;
+	const mongoc_write_concern_t *write_concern = NULL;
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
 	bquery = bson_new();
@@ -176,10 +178,23 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 		mongoc_bulk_operation_remove(batch, bquery);
 	}
 
+	/* Deal with write concerns */
+	if (!writeConcern.isNull()) {
+		MongoDBDriverWriteConcernData* wc_data = Native::data<MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
+		write_concern = wc_data->m_write_concern;
+	}
+	if (write_concern) {
+		mongoc_bulk_operation_set_write_concern(batch, write_concern);
+	} else {
+		write_concern = mongoc_client_get_write_concern(data->m_client);
+	}
+
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
 	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
+	MongoDBDriverWriteResultData* wr_data = Native::data<MongoDBDriverWriteResultData>(obj);
+	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
 	/* Destroy */
 	bson_clear(&bquery);

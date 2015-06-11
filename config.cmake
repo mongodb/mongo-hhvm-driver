@@ -14,6 +14,7 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/Driver/Query.cpp
  src/MongoDB/Driver/ReadPreference.cpp
  src/MongoDB/Driver/Server.cpp
+ src/MongoDB/Driver/WriteConcern.cpp
  src/MongoDB/Driver/WriteResult.cpp
  libbson/src/yajl/yajl.c libbson/src/yajl/yajl_alloc.c
  libbson/src/yajl/yajl_buf.c libbson/src/yajl/yajl_encode.c
