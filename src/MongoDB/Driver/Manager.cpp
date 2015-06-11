@@ -34,6 +34,8 @@
 #include "Cursor.h"
 #include "Manager.h"
 #include "Query.h"
+#include "ReadPreference.h"
+#include "Server.h"
 #include "WriteResult.h"
 
 namespace HPHP {
@@ -419,6 +421,28 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 
 		return Object(obj);
 	}
+}
+
+Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPreference)
+{
+	static Class* c_server;
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	MongoDBDriverReadPreferenceData *rp_data = Native::data<MongoDBDriverReadPreferenceData>(readPreference.get());
+	uint32_t server_id;
+
+	server_id = mongoc_cluster_preselect(&data->m_client->cluster, MONGOC_OPCODE_QUERY, rp_data->m_read_preference, NULL);
+
+	/* Prepare result */
+	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
+	assert(c_server);
+	ObjectData* obj = ObjectData::newInstance(c_server);
+
+	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
+
+	result_data->m_client = data->m_client;
+	result_data->m_server_id = server_id;
+
+	return Object(obj);
 }
 
 }

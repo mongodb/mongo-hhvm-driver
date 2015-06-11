@@ -27,6 +27,9 @@ class Manager {
 	function getServers(): void
 	{
 	}
+
+	<<__Native>>
+	function selectServer(ReadPreference $readPreference): Server;
 }
 
 class Utils {

@@ -18,6 +18,14 @@
 
 extern "C" {
 #include "../../../libmongoc/src/mongoc/mongoc.h"
+
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "../../../libmongoc/src/mongoc/mongoc-client-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-server-description-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-topology-description-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
 }
 
 namespace HPHP {
