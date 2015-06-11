@@ -319,13 +319,31 @@ final class WriteResult {
 /* {{{ Exception Classes */
 namespace MongoDB\Driver\Exception;
 
-class Exception extends \Exception {}
-class AuthenticationException extends Exception {}
-class ConnectionException extends Exception {}
-class ConnectionTimeoutException extends Exception {}
-class DuplicateKeyException extends Exception {}
-class ExecutionTimeoutException extends Exception {}
-class RuntimeException extends Exception {}
+interface Exception {}
+
+class ConnectionException extends RuntimeException {}
+
+class AuthenticationException extends ConnectionException {}
+class BulkWriteException extends WriteException {}
+final class ConnectionTimeoutException extends ConnectionException {}
+final class DuplicateKeyException extends WriteException {}
+final class ExecutionTimeoutException extends RuntimeException {}
+class InvalidArgumentException extends \InvalidArgumentException implements Exception {}
+class LogicException extends \LogicException implements Exception {}
+class RuntimeException extends \RunTimeException implements Exception {}
+final class SSLConnectionException extends ConnectionException {}
+class UnexpectedValueException extends \UnexpectedValueException implements Exception {}
+class WriteConcernException extends WriteException {}
+class WriteException extends RunTimeException
+{
+	protected $writeResult = null;
+
+	final public function getWriteResult() : \MongoDB\Driver\WriteResult
+	{
+		return $this->writeResult;
+	}
+}
+
 /* }}} */
 
 
