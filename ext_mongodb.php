@@ -138,6 +138,10 @@ final class Cursor implements Traversable, Iterator {
 
 	<<__Native>>
 	public function toArray(): array;
+
+	public function setTypeMap(?array $typemap = array()): void
+	{
+	}
 }
 /* }}} */
 
