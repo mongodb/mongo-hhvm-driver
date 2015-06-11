@@ -7,22 +7,22 @@ class Manager {
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
-	function executeCommand(string $db, MongoDB\Driver\Command $command, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Cursor;
+	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>
-	function executeQuery(string $namespace, MongoDB\Driver\Query $query, MongoDB\Driver\ReadPreference $readPreference = null): MongoDB\Driver\Cursor;
+	function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>
-	function executeBulkWrite(string $namespace, MongoDB\Driver\BulkWrite $bulk, MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
+	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeInsert(string $namespace, mixed $document, ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
+	function executeInsert(string $namespace, mixed $document, ?WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
+	function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), MongoDB\Driver\WriteConcern $writeConcern = null): MongoDB\Driver\WriteResult;
+	function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), WriteConcern $writeConcern = null): WriteResult;
 
 	function getServers(): void
 	{
@@ -78,15 +78,15 @@ final class CursorId {
 
 <<__NativeData("MongoDBDriverCursor")>>
 final class Cursor implements Traversable, Iterator {
-	public function __construct(MongoDB\Driver\Server $server, MongoDB\Driver\CursorId $cursorId, array $firstBatch)
+	public function __construct(Server $server, CursorId $cursorId, array $firstBatch)
 	{
 	}
 
 	<<__Native>>
-	public function getId() : MongoDB\Driver\CursorId;
+	public function getId() : CursorId;
 
 	<<__Native>>
-	public function getServer() : MongoDB\Driver\Server;
+	public function getServer() : Server;
 
 	public function isDead() : bool
 	{
@@ -190,7 +190,7 @@ final class BulkWrite implements \Countable {
 	function __construct(?boolean $ordered = true);
 
 	<<__Native>>
-	function insert(mixed $document) : MongoDB\BSON\ObjectId;
+	function insert(mixed $document) : \MongoDB\BSON\ObjectId;
 
 	<<__Native>>
 	function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
@@ -284,7 +284,7 @@ final class WriteResult {
 	}
 
 	<<__Native>>
-	public function getServer() : MongoDB\Driver\Server;
+	public function getServer() : Server;
 
 	public function getUpsertedIds(): array
 	{
@@ -294,7 +294,7 @@ final class WriteResult {
 		return [];
 	}
 
-	public function getWriteConcernError(): MongoDB\WriteConcernError
+	public function getWriteConcernError(): WriteConcernError
 	{
 		if ($this->writeConcernError && gettype($this->writeConcernError) == 'object') {
 			return $this->writeConcernError;
