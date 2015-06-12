@@ -19,6 +19,12 @@
 extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
+
+#define MONGOC_I_AM_A_DRIVER
+#define delete not_delete
+#include "libmongoc/src/mongoc/mongoc-cursor-cursorid-private.h"
+#undef delete
+#undef MONGOC_I_AM_A_DRIVER
 }
 
 namespace MongoDriver {

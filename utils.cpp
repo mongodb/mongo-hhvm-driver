@@ -138,6 +138,8 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bs
 	static HPHP::Class* c_result;
 	mongoc_cursor_t *cursor;
 	const bson_t *doc;
+	bson_iter_t iter;
+	bson_iter_t child;
 
 	/* Run operation */
 	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, NULL);
@@ -151,6 +153,43 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bs
 
 			return NULL;
 		}
+	}
+
+	/* This code is copied from phongo, which has it adapated from
+	 * _mongoc_cursor_cursorid_prime(), but we avoid * advancing the cursor,
+	 * since we are already positioned at the first result * after the error
+	 * checking above. */
+	if (bson_iter_init_find(&iter, doc, "cursor") && BSON_ITER_HOLDS_DOCUMENT(&iter) && bson_iter_recurse(&iter, &child)) {
+		mongoc_cursor_cursorid_t *cid;
+
+		_mongoc_cursor_cursorid_init(cursor);
+		cursor->limit = 0;
+
+		cid = (mongoc_cursor_cursorid_t*) cursor->iface_data;
+		cid->has_cursor = true;
+
+		while (bson_iter_next(&child)) {
+			if (BSON_ITER_IS_KEY(&child, "id")) {
+				cursor->rpc.reply.cursor_id = bson_iter_as_int64(&child);
+			} else if (BSON_ITER_IS_KEY(&child, "ns")) {
+				const char *ns;
+
+				ns = bson_iter_utf8(&child, &cursor->nslen);
+				bson_strncpy(cursor->ns, ns, sizeof cursor->ns);
+			} else if (BSON_ITER_IS_KEY(&child, "firstBatch")) {
+				if (BSON_ITER_HOLDS_ARRAY(&child) && bson_iter_recurse(&child, &cid->first_batch_iter)) {
+					cid->in_first_batch = true;
+				}
+			}
+		}
+
+		cursor->is_command = false;
+
+		/* The cursor's current element is the command's response document.
+		 * Advance once so that the cursor is positioned at the first document
+		 * within the command cursor's result set.
+		 */
+		mongoc_cursor_next(cursor, &doc);
 	}
 
 	/* Prepare result */
