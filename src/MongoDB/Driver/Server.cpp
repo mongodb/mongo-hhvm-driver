@@ -21,6 +21,7 @@
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 
+#include "Command.h"
 #include "Server.h"
 
 namespace HPHP {
@@ -45,6 +46,25 @@ Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 	}
 
 	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+}
+
+Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference)
+{
+	bson_t *bson;
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+
+	auto zquery = command->o_get(String("command"), false, s_MongoDriverCommand_className);
+
+	VariantToBsonConverter converter(zquery, HIPPO_BSON_NO_FLAGS);
+	bson = bson_new();
+	converter.convert(bson);
+
+	return MongoDriver::Utils::doExecuteCommand(
+		db.c_str(),
+		data->m_client,
+		bson,
+		NULL
+	);
 }
 
 }

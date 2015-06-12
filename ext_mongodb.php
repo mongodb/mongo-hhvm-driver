@@ -254,6 +254,9 @@ final class ReadPreference {
 final class Server {
 	<<__Native>>
 	final public function getInfo(): array;
+
+	<<__Native>>
+	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
 }
 
 <<__NativeData("MongoDBDriverWriteResult")>>
