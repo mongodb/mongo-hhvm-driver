@@ -20,6 +20,8 @@ extern "C" {
 #include "../../../libmongoc/src/mongoc/mongoc.h"
 }
 
+#include "../../../bson.h"
+
 namespace HPHP {
 
 extern const StaticString s_MongoDriverCursor_className;
@@ -41,11 +43,18 @@ class MongoDBDriverCursorData
 		/* Iterators */
 		bson_iter_t      first_batch_iter;
 
+		/* Conversion & Flags */
 		int zchild_active;
 		Variant zchild;
+		hippo_bson_conversion_options_t bson_options;
 
 		void sweep() {
 			/* Do nothing, for now */
+		}
+
+		MongoDBDriverCursorData() {
+			bson_options.document_type = HIPPO_TYPEMAP_STDCLASS;
+			bson_options.array_type =    HIPPO_TYPEMAP_ARRAY;
 		}
 
 		~MongoDBDriverCursorData() {
@@ -55,6 +64,7 @@ class MongoDBDriverCursorData
 
 Object HHVM_METHOD(MongoDBDriverCursor, getId);
 Object HHVM_METHOD(MongoDBDriverCursor, getServer);
+void HHVM_METHOD(MongoDBDriverCursor, setTypeMap, const Array &typemap);
 
 Variant HHVM_METHOD(MongoDBDriverCursor, current);
 int64_t HHVM_METHOD(MongoDBDriverCursor, key);

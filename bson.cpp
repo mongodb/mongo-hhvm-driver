@@ -354,16 +354,10 @@ void VariantToBsonConverter::convert(bson_t *bson, Object o)
 /* }}} */
 
 /* {{{ BSON → HHVM */
-BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int data_len)
+BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int data_len, hippo_bson_conversion_options_t options)
 {
 	m_reader = bson_reader_new_from_data(data, data_len);
-	m_top_level = false;
-}
-
-BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int data_len, bool top_level)
-{
-	m_reader = bson_reader_new_from_data(data, data_len);
-	m_top_level = top_level;
+	m_options = options;
 }
 
 /* {{{ Visitors */
@@ -393,10 +387,14 @@ bool hippo_bson_visit_document(const bson_iter_t *iter __attribute__((unused)), 
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	Variant document_v;
 
-	BsonToVariantConverter converter(bson_get_data(v_document), v_document->len);
+	BsonToVariantConverter converter(bson_get_data(v_document), v_document->len, state->options);
 	converter.convert(&document_v);
 
-	state->zchild.add(String(key), Variant(Variant(document_v).toObject()));
+	if (state->options.document_type == HIPPO_TYPEMAP_ARRAY) {
+		state->zchild.add(String(key), document_v);
+	} else {
+		state->zchild.add(String(key), Variant(Variant(document_v).toObject()));
+	}
 
 	return false;
 }
@@ -406,10 +404,14 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	Variant array_v;
 
-	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len);
+	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len, state->options);
 	converter.convert(&array_v);
 
-	state->zchild.add(String(key), array_v);
+	if (state->options.array_type == HIPPO_TYPEMAP_ARRAY) {
+		state->zchild.add(String(key), array_v);
+	} else {
+		state->zchild.add(String(key), Variant(Variant(array_v).toObject()));
+	}
 
 	return false;
 }
@@ -542,7 +544,7 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	s.setSize(v_code_len);
 
 	/* scope */
-	BsonToVariantConverter converter(bson_get_data(v_scope), v_scope->len);
+	BsonToVariantConverter converter(bson_get_data(v_scope), v_scope->len, state->options);
 	converter.convert(&scope_v);
 
 	/* create object */
@@ -672,6 +674,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 		}
 
 		state.zchild = Array::Create();
+		state.options = m_options;
 
 		bson_iter_visit_all(&iter, &hippo_bson_visitors, &state);
 /*
@@ -687,10 +690,10 @@ bool BsonToVariantConverter::convert(Variant *v)
 */
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
-	if (m_top_level) {
-		*v = Variant(Variant(state.zchild).toObject());
-	} else {
+	if (m_options.document_type == HIPPO_TYPEMAP_ARRAY) {
 		*v = Variant(state.zchild.get());
+	} else {
+		*v = Variant(Variant(state.zchild).toObject());
 	}
 
 	return true;

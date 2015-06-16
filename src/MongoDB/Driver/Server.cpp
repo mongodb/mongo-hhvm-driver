@@ -38,8 +38,9 @@ Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 
 	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
 		Variant v;
+		hippo_bson_conversion_options_t options = { 0, 0 };
 
-		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, NULL);
+		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
 		convertor.convert(&v);
 
 		return v.toArray();

@@ -96,8 +96,9 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className.get());
 
 	Variant v;
+	hippo_bson_conversion_options_t options = { 0, 0 };
 
-	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, true);
+	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
 	convertor.convert(&v);
 	obj->o_set(String("upsertedIds"), v, s_MongoDriverWriteResult_className);
 

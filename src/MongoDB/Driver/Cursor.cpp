@@ -87,7 +87,7 @@ static bool hippo_cursor_load_next(MongoDBDriverCursorData* data)
 	if (mongoc_cursor_next(data->cursor, &doc)) {
 		Variant v;
 
-		BsonToVariantConverter convertor(bson_get_data(doc), doc->len, true);
+		BsonToVariantConverter convertor(bson_get_data(doc), doc->len, data->bson_options);
 		convertor.convert(&v);
 		data->zchild_active = true;
 		data->zchild = v;
@@ -148,7 +148,7 @@ static void hippo_cursor_rewind(MongoDBDriverCursorData* data)
 
 					bson_iter_document(&data->first_batch_iter, &document_len, &document);
 
-					BsonToVariantConverter convertor(document, document_len, true);
+					BsonToVariantConverter convertor(document, document_len, data->bson_options);
 					convertor.convert(&v);
 					data->zchild_active = true;
 					data->zchild = v;
@@ -157,7 +157,7 @@ static void hippo_cursor_rewind(MongoDBDriverCursorData* data)
 		} else {
 			Variant v;
 
-			BsonToVariantConverter convertor(bson_get_data(data->first_batch), data->first_batch->len, true);
+			BsonToVariantConverter convertor(bson_get_data(data->first_batch), data->first_batch->len, data->bson_options);
 			convertor.convert(&v);
 			data->zchild_active = true;
 			data->zchild = v;
@@ -219,5 +219,41 @@ Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 	return Object(obj);
 }
 
+const StaticString
+	s_document("document"),
+	s_object("object"),
+	s_stdClass("stdClass"),
+	s_array("array");
+
+#define CASECMP(a,b) (bstrcasecmp((a).data(), (a).size(), (b).data(), (b).size()) == 0)
+
+void HHVM_METHOD(MongoDBDriverCursor, setTypeMap, const Array &typemap)
+{
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	if (typemap.exists(s_document)) {
+		String document_type;
+
+		document_type = typemap[s_document].toString();
+
+		if (CASECMP(document_type, s_object) || CASECMP(document_type, s_stdClass)) {
+			data->bson_options.document_type = HIPPO_TYPEMAP_STDCLASS;
+		} else if (CASECMP(document_type, s_array)) {
+			data->bson_options.document_type = HIPPO_TYPEMAP_ARRAY;
+		}
+	}
+
+	if (typemap.exists(s_array)) {
+		String array_type;
+
+		array_type = typemap[s_array].toString();
+
+		if (CASECMP(array_type, s_object) || CASECMP(array_type, s_stdClass)) {
+			data->bson_options.array_type = HIPPO_TYPEMAP_STDCLASS;
+		} else if (CASECMP(array_type, s_array)) {
+			data->bson_options.array_type = HIPPO_TYPEMAP_ARRAY;
+		}
+	}
+}
 
 }

@@ -28,6 +28,9 @@ namespace HPHP {
 #define HIPPO_BSON_ADD_ID     0x01
 #define HIPPO_BSON_RETURN_ID  0x02
 
+#define HIPPO_TYPEMAP_STDCLASS 0x04
+#define HIPPO_TYPEMAP_ARRAY    0x05
+
 class VariantToBsonConverter
 {
 	public:
@@ -71,18 +74,24 @@ class VariantToBsonConverter
 };
 
 typedef struct {
+	int array_type;
+	int document_type;
+} hippo_bson_conversion_options_t;
+
+typedef struct {
 	Array zchild;
+	hippo_bson_conversion_options_t options;
 } hippo_bson_state;
 
 class BsonToVariantConverter
 {
 	public:
-		BsonToVariantConverter(const unsigned char *data, int data_len);
-		BsonToVariantConverter(const unsigned char *data, int data_len, bool top_level);
+		BsonToVariantConverter(const unsigned char *data, int data_len, hippo_bson_conversion_options_t options);
 		bool convert(Variant *v);
 	private:
 		bson_reader_t *m_reader;
-		bool           m_top_level;
+
+		hippo_bson_conversion_options_t m_options;
 };
 
 }

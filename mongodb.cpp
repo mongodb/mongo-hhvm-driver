@@ -104,6 +104,7 @@ static class MongoDBExtension : public Extension {
 			/* MongoDb\Driver\Cursor */
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, getId, MongoDBDriverCursor, getId);
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, getServer, MongoDBDriverCursor, getServer);
+			HHVM_MALIAS(MongoDB\\Driver\\Cursor, setTypeMap, MongoDBDriverCursor, setTypeMap);
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, current, MongoDBDriverCursor, current);
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, key, MongoDBDriverCursor, key);
 			HHVM_MALIAS(MongoDB\\Driver\\Cursor, next, MongoDBDriverCursor, next);
