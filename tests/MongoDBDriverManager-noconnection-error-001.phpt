@@ -2,7 +2,7 @@
 MongoDB\Driver\Manager - no connection (command)
 --FILE--
 <?php
-$m = new MongoDB\Driver\Manager("mongodb://localhost:44444");
+$m = new MongoDB\Driver\Manager("mongodb://localhost:44444/?serverselectiontimeoutms=500");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
 
