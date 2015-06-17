@@ -408,7 +408,7 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 	converter.convert(&array_v);
 
 	if (state->options.array_type == HIPPO_TYPEMAP_ARRAY) {
-		state->zchild.add(String(key), array_v);
+		state->zchild.add(String(key), array_v.toArray());
 	} else {
 		state->zchild.add(String(key), Variant(Variant(array_v).toObject()));
 	}
@@ -690,10 +690,10 @@ bool BsonToVariantConverter::convert(Variant *v)
 */
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
-	if (m_options.document_type == HIPPO_TYPEMAP_ARRAY) {
-		*v = Variant(state.zchild.get());
-	} else {
+	if (m_options.document_type == HIPPO_TYPEMAP_STDCLASS) {
 		*v = Variant(Variant(state.zchild).toObject());
+	} else {
+		*v = Variant(state.zchild);
 	}
 
 	return true;

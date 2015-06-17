@@ -65,8 +65,8 @@ foreach ( $typemaps as $typemap )
 	echo "\n=================\n\n";
 }
 ?>
---EXPECT--
-object(stdClass)#4 (3) {
+--EXPECTF--
+object(stdClass)#%d (3) {
   ["ns"]=>
   string(9) "demo.test"
   ["nIndexesWas"]=>
@@ -76,12 +76,12 @@ object(stdClass)#4 (3) {
 }
 ================
 
-object(stdClass)#13 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#10 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#11 (3) {
+  array(3) {
     [0]=>
     int(1)
     [1]=>
@@ -90,7 +90,7 @@ object(stdClass)#13 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#12 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -101,12 +101,12 @@ object(stdClass)#13 (3) {
 =================
 
 array: array  
-object(stdClass)#18 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#15 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#16 (3) {
+  array(3) {
     [0]=>
     int(1)
     [1]=>
@@ -115,7 +115,7 @@ object(stdClass)#18 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#17 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -126,12 +126,12 @@ object(stdClass)#18 (3) {
 =================
 
 document: object  
-object(stdClass)#23 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#20 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#21 (3) {
+  array(3) {
     [0]=>
     int(1)
     [1]=>
@@ -140,7 +140,7 @@ object(stdClass)#23 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#22 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -151,12 +151,12 @@ object(stdClass)#23 (3) {
 =================
 
 document: stdClass  
-object(stdClass)#28 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#25 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#26 (3) {
+  array(3) {
     [0]=>
     int(1)
     [1]=>
@@ -165,7 +165,7 @@ object(stdClass)#28 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#27 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -176,12 +176,12 @@ object(stdClass)#28 (3) {
 =================
 
 array: object  
-object(stdClass)#33 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#30 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#31 (3) {
+  object(stdClass)#%d (3) {
     [0]=>
     int(1)
     [1]=>
@@ -190,7 +190,7 @@ object(stdClass)#33 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#32 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -201,12 +201,12 @@ object(stdClass)#33 (3) {
 =================
 
 array: stdClass  
-object(stdClass)#38 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#35 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#36 (3) {
+  object(stdClass)#%d (3) {
     [0]=>
     int(1)
     [1]=>
@@ -215,7 +215,7 @@ object(stdClass)#38 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#37 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -228,7 +228,7 @@ object(stdClass)#38 (3) {
 document: array  
 array(3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#40 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -251,12 +251,12 @@ array(3) {
 =================
 
 array: object  document: object  
-object(stdClass)#45 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#42 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#43 (3) {
+  object(stdClass)#%d (3) {
     [0]=>
     int(1)
     [1]=>
@@ -265,7 +265,7 @@ object(stdClass)#45 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#44 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -276,12 +276,12 @@ object(stdClass)#45 (3) {
 =================
 
 array: array  document: object  
-object(stdClass)#50 (3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#47 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#48 (3) {
+  array(3) {
     [0]=>
     int(1)
     [1]=>
@@ -290,7 +290,7 @@ object(stdClass)#50 (3) {
     string(3) "foo"
   }
   ["document"]=>
-  object(stdClass)#49 (2) {
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -303,10 +303,10 @@ object(stdClass)#50 (3) {
 array: object  document: array  
 array(3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#52 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
-  object(stdClass)#53 (3) {
+  object(stdClass)#%d (3) {
     [0]=>
     int(1)
     [1]=>
@@ -328,7 +328,7 @@ array(3) {
 array: array  document: array  
 array(3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#55 (0) {
+  object(MongoDB\BSON\ObjectId)#%d (0) {
   }
   ["array"]=>
   array(3) {
