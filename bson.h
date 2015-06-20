@@ -16,7 +16,7 @@
 #ifndef __MONGODB_BSON_H__
 #define __MONGODB_BSON_H__
 
-#include "hphp/runtime/base/base-includes.h"
+#include "hphp/runtime/ext/extension.h"
 
 extern "C" {
 #include "libbson/src/bson/bson.h"
