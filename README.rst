@@ -7,7 +7,12 @@ extension "phongo".
 Building
 --------
 
-To build::
+Compiling this extension requires the ``hphpize`` command, which is available by
+installing the ``hhvm-dev`` package from the
+`HHVM repositories <https://github.com/facebook/hhvm/wiki/Prebuilt-Packages-for-HHVM>`_
+or `building HHVM from source <https://github.com/facebook/hhvm/wiki/Building-and-Installing-HHVM>`_.
+
+After cloning the repository, the extension may be built like so::
 
 	git submodule init
 	git submodule update
