@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-#include "hphp/runtime/base/base-includes.h"
+#include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 
 #include "Timestamp.h"
