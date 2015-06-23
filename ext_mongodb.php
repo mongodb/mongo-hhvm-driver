@@ -376,6 +376,9 @@ function fromArray(array $data) : string;
 function fromJson(string $data) : mixed;
 
 <<__Native>>
+function toArray(string $data, ?array $typemap = array()) : mixed;
+
+<<__Native>>
 function toJson(string $data) : mixed;
 
 interface Serializable

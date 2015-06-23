@@ -65,6 +65,17 @@ Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
 	}
 }
 
+Variant HHVM_FUNCTION(MongoDBBsonToArray, const String &data, const Variant &typemap)
+{
+	Variant v;
+	hippo_bson_conversion_options_t options = { HIPPO_TYPEMAP_ARRAY, HIPPO_TYPEMAP_STDCLASS };
+
+	BsonToVariantConverter convertor((const unsigned char*) data.c_str(), data.length(), options);
+	convertor.convert(&v);
+
+	return v;
+}
+
 Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 {
 	const bson_t  *b;
