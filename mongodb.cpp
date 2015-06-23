@@ -29,6 +29,7 @@
 #include "src/MongoDB/Driver/Server.h"
 #include "src/MongoDB/Driver/WriteResult.h"
 
+#include "src/MongoDB/BSON/functions.h"
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectId.h"
@@ -55,6 +56,9 @@ static class MongoDBExtension : public Extension {
 		MongoDBExtension() : Extension("mongodb", "0.6.0") {}
 
 		virtual void moduleInit() {
+			/* MongoDB\BSON functions */
+			HHVM_FALIAS(MongoDB\\BSON\\fromArray, MongoDBBsonFromArray);
+
 			/* MongoDB\BSON\Binary */
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_GENERIC"), (int64_t) BSON_SUBTYPE_BINARY);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_FUNCTION"), (int64_t) BSON_SUBTYPE_FUNCTION);

@@ -369,6 +369,9 @@ class WriteException extends RunTimeException
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;
 
+<<__Native>>
+function fromArray(array $data) : string;
+
 interface Serializable
 {
 	function bsonSerialize() : array;
