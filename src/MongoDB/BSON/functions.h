@@ -18,6 +18,7 @@
 namespace HPHP {
 
 String HHVM_FUNCTION(MongoDBBsonFromArray, const Array &data);
+Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data);
 }
 #endif
 

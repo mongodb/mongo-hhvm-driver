@@ -45,4 +45,25 @@ String HHVM_FUNCTION(MongoDBBsonFromArray, const Array &data)
 	return s;
 }
 
+Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
+{
+	bson_t bson = BSON_INITIALIZER;
+	bson_error_t error;
+
+	if (bson_init_from_json(&bson, (const char *)data.c_str(), data.length(), &error)) {
+		String s;
+		unsigned char *data_s;
+
+		s = String(bson.len, ReserveString);
+		data_s = (unsigned char*) s.bufferSlice().ptr;
+		memcpy(data_s, bson_get_data(&bson), bson.len);
+		s.setSize(bson.len);
+
+		return s;
+	} else {
+		return Variant();
+	}
+}
+
+
 }

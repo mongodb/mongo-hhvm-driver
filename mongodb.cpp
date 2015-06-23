@@ -58,6 +58,7 @@ static class MongoDBExtension : public Extension {
 		virtual void moduleInit() {
 			/* MongoDB\BSON functions */
 			HHVM_FALIAS(MongoDB\\BSON\\fromArray, MongoDBBsonFromArray);
+			HHVM_FALIAS(MongoDB\\BSON\\fromJson, MongoDBBsonFromJson);
 
 			/* MongoDB\BSON\Binary */
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_GENERIC"), (int64_t) BSON_SUBTYPE_BINARY);

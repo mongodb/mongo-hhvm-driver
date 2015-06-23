@@ -372,6 +372,9 @@ namespace MongoDB\BSON;
 <<__Native>>
 function fromArray(array $data) : string;
 
+<<__Native>>
+function fromJson(string $data) : mixed;
+
 interface Serializable
 {
 	function bsonSerialize() : array;
