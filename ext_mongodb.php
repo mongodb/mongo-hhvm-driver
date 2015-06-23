@@ -375,6 +375,9 @@ function fromArray(array $data) : string;
 <<__Native>>
 function fromJson(string $data) : mixed;
 
+<<__Native>>
+function toJson(string $data) : mixed;
+
 interface Serializable
 {
 	function bsonSerialize() : array;

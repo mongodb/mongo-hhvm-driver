@@ -65,5 +65,35 @@ Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
 	}
 }
 
+Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
+{
+	const bson_t  *b;
+	bson_reader_t *reader;
+	String         s;
+
+	reader = bson_reader_new_from_data((const unsigned char *)data.c_str(), data.length());
+	b = bson_reader_read(reader, NULL);
+
+	if (b) {
+		char   *str;
+		size_t  str_len;
+		unsigned char *data_s;
+
+		str = bson_as_json(b, &str_len);
+
+		s = String(str_len, ReserveString);
+		data_s = (unsigned char*) s.bufferSlice().ptr;
+		memcpy(data_s, str, str_len);
+		s.setSize(str_len);
+
+		bson_free(str);
+	} else {
+		return Variant();
+	}
+	bson_reader_destroy(reader);
+
+	return Variant(s);
+}
+
 
 }
