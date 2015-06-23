@@ -407,6 +407,11 @@ class Binary implements Type
 
 	function getSubType()
 	{
+		$func_args = func_num_args();
+		if ($func_args != 0) {
+			trigger_error("MongoDB\BSON\Binary::getSubType() expects exactly 0 parameters, {$func_args} given", E_WARNING);
+			return NULL;
+		}
 		return $this->subType;
 	}
 }
