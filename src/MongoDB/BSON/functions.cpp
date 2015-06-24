@@ -73,7 +73,7 @@ Variant HHVM_FUNCTION(MongoDBBsonToArray, const String &data, const Variant &typ
 	BsonToVariantConverter convertor((const unsigned char*) data.c_str(), data.length(), options);
 	convertor.convert(&v);
 
-	return v;
+	return Variant(v.toArray());
 }
 
 Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
