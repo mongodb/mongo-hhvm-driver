@@ -18,6 +18,7 @@
 #include "hphp/runtime/base/array-iterator.h"
 
 #include "bson.h"
+#include "utils.h"
 #include <iostream>
 
 #include "src/MongoDB/BSON/Binary.h"
@@ -106,6 +107,9 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant 
 		case KindOfObject:
 			convertPart(bson, key, v.toObject());
 			break;
+		case KindOfResource:
+			throw MongoDriver::Utils::throwUnexpectedValueException("Got unsupported type 'resource'");
+			return;
 		default:
 			break;
 	}

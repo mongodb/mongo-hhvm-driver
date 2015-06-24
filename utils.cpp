@@ -69,6 +69,12 @@ const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_classN
 const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className("MongoDB\\Driver\\Exception\\DuplicateKeyException");
 const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className("MongoDB\\Driver\\Exception\\ExecutionTimeoutException");
 const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className("MongoDB\\Driver\\Exception\\RuntimeException");
+const HPHP::StaticString s_MongoDriverExceptionUnexpectedValueException_className("MongoDB\\Driver\\Exception\\UnexpectedValueException");
+
+HPHP::Object Utils::throwUnexpectedValueException(char *errormessage)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionUnexpectedValueException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
+}
 
 HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 {
