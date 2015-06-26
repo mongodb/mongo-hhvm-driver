@@ -17,6 +17,8 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 
+#include "hphp/runtime/ext/datetime/ext_datetime.h"
+
 #include "UtcDatetime.h"
 
 namespace HPHP {
@@ -25,11 +27,23 @@ const StaticString s_MongoBsonUtcDatetime_className("MongoDB\\BSON\\UtcDatetime"
 
 const StaticString s_MongoBsonUtcDatetime_milliseconds("milliseconds");
 
+const StaticString s_DateTime("DateTime");
+
 Object HHVM_METHOD(MongoDBBsonUtcDatetime, toDateTime)
 {
-	//int64_t milliseconds = _this.o_get(s_MongoBsonUtcDatetime_milliseconds, false, s_MongoBsonUtcDatetime_className).toInt64();
+	static HPHP::Class* c_dt;
+	int64_t milliseconds = this_->o_get(s_MongoBsonUtcDatetime_milliseconds, false, s_MongoBsonUtcDatetime_className).toInt64();
 
-	return NULL;
+	/* Prepare result */
+	c_dt = HPHP::Unit::lookupClass(HPHP::s_DateTime.get());
+	assert(c_dt);
+	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_dt);
+
+	DateTimeData* data = Native::data<DateTimeData>(obj);
+	data->m_dt = makeSmartPtr<DateTime>(0, false);
+	data->m_dt->fromTimeStamp(milliseconds / 1000, true);
+
+	return obj;
 }
 
 }
