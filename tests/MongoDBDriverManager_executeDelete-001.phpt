@@ -34,7 +34,7 @@ array(3) {
   [0]=>
   object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#%d (0) {
+    object(MongoDB\BSON\ObjectID)#%d (0) {
     }
     ["d"]=>
     int(3)
@@ -42,7 +42,7 @@ array(3) {
   [1]=>
   object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#%d (0) {
+    object(MongoDB\BSON\ObjectID)#%d (0) {
     }
     ["d"]=>
     int(6)
@@ -50,7 +50,7 @@ array(3) {
   [2]=>
   object(stdClass)#%d (2) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#%d (0) {
+    object(MongoDB\BSON\ObjectID)#%d (0) {
     }
     ["d"]=>
     int(9)

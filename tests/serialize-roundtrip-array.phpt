@@ -16,7 +16,7 @@ array(1) {
   [0]=>
   object(stdClass)#%d (4) {
     ["_id"]=>
-    object(MongoDB\BSON\ObjectId)#%d (0) {
+    object(MongoDB\BSON\ObjectID)#%d (0) {
     }
     ["d"]=>
     int(1)

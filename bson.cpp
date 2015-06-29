@@ -23,7 +23,7 @@
 
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/Javascript.h"
-#include "src/MongoDB/BSON/ObjectId.h"
+#include "src/MongoDB/BSON/ObjectID.h"
 #include "src/MongoDB/BSON/Regex.h"
 #include "src/MongoDB/BSON/Timestamp.h"
 #include "src/MongoDB/BSON/UtcDatetime.h"
@@ -274,10 +274,10 @@ void VariantToBsonConverter::_convertMinKey(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\ObjectId */
-void VariantToBsonConverter::_convertObjectId(bson_t *bson, const char *key, Object v)
+/* {{{ MongoDriver\BSON\ObjectID */
+void VariantToBsonConverter::_convertObjectID(bson_t *bson, const char *key, Object v)
 {
-    MongoDBBsonObjectIdData* data = Native::data<MongoDBBsonObjectIdData>(v.get());
+    MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(v.get());
 
 	bson_append_oid(bson, key, -1, &data->m_oid);
 }
@@ -329,8 +329,8 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 		if (v.instanceof(s_MongoBsonMinKey_className)) {
 			_convertMinKey(bson, key, v);
 		}
-		if (v.instanceof(s_MongoBsonObjectId_className)) {
-			_convertObjectId(bson, key, v);
+		if (v.instanceof(s_MongoBsonObjectID_className)) {
+			_convertObjectID(bson, key, v);
 		}
 		if (v.instanceof(s_MongoBsonRegex_className)) {
 			_convertRegex(bson, key, v);
@@ -449,11 +449,11 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_objectId;
 
-	c_objectId = Unit::lookupClass(s_MongoBsonObjectId_className.get());
+	c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
 	assert(c_objectId);
 	ObjectData* obj = ObjectData::newInstance(c_objectId);
 
-	MongoDBBsonObjectIdData* obj_data = Native::data<MongoDBBsonObjectIdData>(obj);
+	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj);
 	bson_oid_copy(v_oid, &obj_data->m_oid);
 
 	state->zchild.add(String(key), Variant(obj));

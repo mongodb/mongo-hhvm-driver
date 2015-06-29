@@ -196,7 +196,7 @@ final class BulkWrite implements \Countable {
 	function __construct(?boolean $ordered = true);
 
 	<<__Native>>
-	function insert(mixed $document) : \MongoDB\BSON\ObjectId;
+	function insert(mixed $document) : \MongoDB\BSON\ObjectID;
 
 	<<__Native>>
 	function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
@@ -431,8 +431,8 @@ class MinKey implements Type
 {
 }
 
-<<__NativeData("MongoDBBsonObjectId")>>
-class ObjectId implements Type
+<<__NativeData("MongoDBBsonObjectID")>>
+class ObjectID implements Type
 {
 	<<__Native>>
 	function __construct(string $objectId = null);

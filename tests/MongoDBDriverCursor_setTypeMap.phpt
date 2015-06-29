@@ -78,7 +78,7 @@ object(stdClass)#%d (3) {
 
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -103,7 +103,7 @@ object(stdClass)#%d (3) {
 array: array  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -128,7 +128,7 @@ object(stdClass)#%d (3) {
 document: object  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -153,7 +153,7 @@ object(stdClass)#%d (3) {
 document: stdClass  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -178,7 +178,7 @@ object(stdClass)#%d (3) {
 array: object  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   object(stdClass)#%d (3) {
@@ -203,7 +203,7 @@ object(stdClass)#%d (3) {
 array: stdClass  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   object(stdClass)#%d (3) {
@@ -228,7 +228,7 @@ object(stdClass)#%d (3) {
 document: array  
 array(3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -253,7 +253,7 @@ array(3) {
 array: object  document: object  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   object(stdClass)#%d (3) {
@@ -278,7 +278,7 @@ object(stdClass)#%d (3) {
 array: array  document: object  
 object(stdClass)#%d (3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {
@@ -303,7 +303,7 @@ object(stdClass)#%d (3) {
 array: object  document: array  
 array(3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   object(stdClass)#%d (3) {
@@ -328,7 +328,7 @@ array(3) {
 array: array  document: array  
 array(3) {
   ["_id"]=>
-  object(MongoDB\BSON\ObjectId)#%d (0) {
+  object(MongoDB\BSON\ObjectID)#%d (0) {
   }
   ["array"]=>
   array(3) {

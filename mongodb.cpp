@@ -32,7 +32,7 @@
 #include "src/MongoDB/BSON/functions.h"
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/Javascript.h"
-#include "src/MongoDB/BSON/ObjectId.h"
+#include "src/MongoDB/BSON/ObjectID.h"
 #include "src/MongoDB/BSON/UtcDatetime.h"
 
 #include "mongodb.h"
@@ -71,11 +71,11 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_MD5"), (int64_t) BSON_SUBTYPE_MD5);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_USER_DEFINED"), (int64_t) BSON_SUBTYPE_USER);
 
-			/* MongoDB\BSON\ObjectId */
-			HHVM_MALIAS(MongoDB\\BSON\\ObjectId, __construct, MongoDBBsonObjectId, __construct);
-			HHVM_MALIAS(MongoDB\\BSON\\ObjectId, __toString, MongoDBBsonObjectId, __toString);
+			/* MongoDB\BSON\ObjectID */
+			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __construct, MongoDBBsonObjectID, __construct);
+			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __toString, MongoDBBsonObjectID, __toString);
 			
-			Native::registerNativeDataInfo<MongoDBBsonObjectIdData>(MongoDBBsonObjectIdData::s_className.get());
+			Native::registerNativeDataInfo<MongoDBBsonObjectIDData>(MongoDBBsonObjectIDData::s_className.get());
 
 			/* MongoDB\BSON\UtcDatetime */
 			HHVM_MALIAS(MongoDB\\BSON\\UtcDatetime, toDateTime, MongoDBBsonUtcDatetime, toDateTime);

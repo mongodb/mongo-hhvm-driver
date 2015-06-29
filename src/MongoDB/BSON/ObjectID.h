@@ -21,9 +21,9 @@ extern "C" {
 #include "../../../libbson/src/bson/bson.h"
 }
 
-extern const StaticString s_MongoBsonObjectId_className;
+extern const StaticString s_MongoBsonObjectID_className;
 
-class MongoDBBsonObjectIdData
+class MongoDBBsonObjectIDData
 {
 	public:
 		static Class* s_class;
@@ -36,13 +36,13 @@ class MongoDBBsonObjectIdData
 		void sweep() {
 		}
 
-		~MongoDBBsonObjectIdData() {
+		~MongoDBBsonObjectIDData() {
 			sweep();
 		};
 };
 
-void HHVM_METHOD(MongoDBBsonObjectId, __construct, const Variant &objectId = null_variant);
-String HHVM_METHOD(MongoDBBsonObjectId, __toString);
+void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId = null_variant);
+String HHVM_METHOD(MongoDBBsonObjectID, __toString);
 
 }
 #endif

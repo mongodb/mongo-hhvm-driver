@@ -66,7 +66,7 @@ class VariantToBsonConverter
 		void _convertJavascript(bson_t *bson, const char *key, Object v);
 		void _convertMaxKey(bson_t *bson, const char *key, Object v);
 		void _convertMinKey(bson_t *bson, const char *key, Object v);
-		void _convertObjectId(bson_t *bson, const char *key, Object v);
+		void _convertObjectID(bson_t *bson, const char *key, Object v);
 		void _convertRegex(bson_t *bson, const char *key, Object v);
 		void _convertTimestamp(bson_t *bson, const char *key, Object v);
 		void _convertUtcDatetime(bson_t *bson, const char *key, Object v);

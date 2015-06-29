@@ -3,7 +3,7 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/BSON/functions.cpp
  src/MongoDB/BSON/Binary.cpp
  src/MongoDB/BSON/Javascript.cpp
- src/MongoDB/BSON/ObjectId.cpp
+ src/MongoDB/BSON/ObjectID.cpp
  src/MongoDB/BSON/Regex.cpp
  src/MongoDB/BSON/Timestamp.cpp
  src/MongoDB/BSON/UtcDatetime.cpp

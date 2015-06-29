@@ -3,7 +3,7 @@ var_dump(extension_loaded("mongodb"));
 
 try
 {
-	$falseOid = new MongoDB\BSON\ObjectId('xx1234567890y1234567890z');
+	$falseOid = new MongoDB\BSON\ObjectID('xx1234567890y1234567890z');
 }
 catch ( InvalidArgumentException $e )
 {
@@ -40,8 +40,8 @@ $doc = [
 	'null' => null,
 	'float' => M_PI,
 	'binary' => new MongoDB\BSON\Binary("random binary\0data", MongoDB\BSON\Binary::TYPE_MD5),
-	'oid1' => new MongoDB\BSON\ObjectId(),
-	'oid2' => new MongoDB\BSON\ObjectId('456712341111222222333333'),
+	'oid1' => new MongoDB\BSON\ObjectID(),
+	'oid2' => new MongoDB\BSON\ObjectID('456712341111222222333333'),
 	'maxkey' => new MongoDB\BSON\MaxKey(),
 	'minkey' => new MongoDB\BSON\MinKey(),
 	'utcdatetime' => new MongoDB\BSON\UtcDatetime(time() * 1000),
@@ -67,7 +67,7 @@ for ( $i = 0; $i < 2; $i++ )
 	$r = $m->executeInsert( 'demo.test', $doc );
 }
 $m->executeInsert( 'demo.test', [ 'without_id' => true ] );
-$m->executeInsert( 'demo.test', [ '_id' => new MongoDB\Bson\ObjectId(), 'with_id' => true ] );
+$m->executeInsert( 'demo.test', [ '_id' => new MongoDB\Bson\ObjectID(), 'with_id' => true ] );
 
 $q = new MongoDB\Driver\Query( [] );
 

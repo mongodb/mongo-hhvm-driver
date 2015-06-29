@@ -19,18 +19,18 @@
 
 #include "../../../mongodb.h"
 
-#include "ObjectId.h"
+#include "ObjectID.h"
 
 namespace HPHP {
 
-const StaticString s_MongoBsonObjectId_className("MongoDB\\BSON\\ObjectId");
-Class* MongoDBBsonObjectIdData::s_class = nullptr;
-const StaticString MongoDBBsonObjectIdData::s_className("MongoDBBsonObjectId");
-IMPLEMENT_GET_CLASS(MongoDBBsonObjectIdData);
+const StaticString s_MongoBsonObjectID_className("MongoDB\\BSON\\ObjectID");
+Class* MongoDBBsonObjectIDData::s_class = nullptr;
+const StaticString MongoDBBsonObjectIDData::s_className("MongoDBBsonObjectID");
+IMPLEMENT_GET_CLASS(MongoDBBsonObjectIDData);
 
-void HHVM_METHOD(MongoDBBsonObjectId, __construct, const Variant &objectId)
+void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 {
-	MongoDBBsonObjectIdData* data = Native::data<MongoDBBsonObjectIdData>(this_);
+	MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(this_);
 	const String& str_objectId = objectId.isNull() ? null_string : objectId.toString();
 
 	if (!objectId.isNull()) {
@@ -44,11 +44,11 @@ void HHVM_METHOD(MongoDBBsonObjectId, __construct, const Variant &objectId)
 	}
 }
 
-String HHVM_METHOD(MongoDBBsonObjectId, __toString)
+String HHVM_METHOD(MongoDBBsonObjectID, __toString)
 {
 	String s;
 	char *data_s;
-	MongoDBBsonObjectIdData* data = Native::data<MongoDBBsonObjectIdData>(this_);
+	MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(this_);
 
 	s = String(24, ReserveString);
 	data_s = s.bufferSlice().ptr;

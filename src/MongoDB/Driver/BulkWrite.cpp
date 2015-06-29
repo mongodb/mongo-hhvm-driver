@@ -28,7 +28,7 @@
 #undef delete
 #undef MONGOC_I_AM_A_DRIVER
 
-#include "../BSON/ObjectId.h"
+#include "../BSON/ObjectID.h"
 
 #include "BulkWrite.h"
 
@@ -65,11 +65,11 @@ Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 
 		if (bson_iter_init_find(&iter, converter.m_out, "_id")) {
 			static Class* c_objectId;
-			c_objectId = Unit::lookupClass(s_MongoBsonObjectId_className.get());
+			c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
 			assert(c_objectId);
 			ObjectData* obj = ObjectData::newInstance(c_objectId);
 
-			MongoDBBsonObjectIdData* obj_data = Native::data<MongoDBBsonObjectIdData>(obj);
+			MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj);
 			bson_oid_copy(bson_iter_oid(&iter), &obj_data->m_oid);
 
 			bson_clear(&converter.m_out);
