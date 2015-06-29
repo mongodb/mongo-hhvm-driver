@@ -31,9 +31,9 @@ $bw->delete( [ 'i' => [ '$gte' => 8 ] ], [ 'limit' => 1 ] );
 $result = $m->executeBulkWrite( 'demo.test', $bw );
 show_obj_properties( $result, [ 'inserted', 'matched', 'modified', 'deleted', 'upserted' ] );
 echo 'n_commands: ', $result->n_commands, '; offset: ', $result->offset, "\n";
-foreach ( $result->getUpsertedIds() as $upsertedId )
+foreach ( $result->getUpsertedIds() as $key => $upsertedId )
 {
-	echo $upsertedId->index, ': ', $upsertedId->_id, "\n";
+	echo $key, ': ', $upsertedId, "\n";
 }
 
 $q = new MongoDB\Driver\Query( [] );
