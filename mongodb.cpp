@@ -74,7 +74,7 @@ static class MongoDBExtension : public Extension {
 			/* MongoDB\BSON\ObjectID */
 			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __construct, MongoDBBsonObjectID, __construct);
 			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __toString, MongoDBBsonObjectID, __toString);
-			
+
 			Native::registerNativeDataInfo<MongoDBBsonObjectIDData>(MongoDBBsonObjectIDData::s_className.get());
 
 			/* MongoDB\BSON\UtcDatetime */
