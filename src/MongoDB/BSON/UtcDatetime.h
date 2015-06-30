@@ -20,6 +20,7 @@ namespace HPHP {
 extern const StaticString s_MongoBsonUtcDatetime_className;
 extern const StaticString s_MongoBsonUtcDatetime_milliseconds;
 
+void HHVM_METHOD(MongoDBBsonUtcDatetime, __construct, const Variant &milliseconds);
 Object HHVM_METHOD(MongoDBBsonUtcDatetime, toDateTime);
 }
 #endif

@@ -29,6 +29,11 @@ const StaticString s_MongoBsonUtcDatetime_milliseconds("milliseconds");
 
 const StaticString s_DateTime("DateTime");
 
+void HHVM_METHOD(MongoDBBsonUtcDatetime, __construct, const Variant &milliseconds)
+{
+	this_->o_set(s_MongoBsonUtcDatetime_milliseconds, milliseconds.toInt64(), s_MongoBsonUtcDatetime_className);
+}
+
 Object HHVM_METHOD(MongoDBBsonUtcDatetime, toDateTime)
 {
 	static HPHP::Class* c_dt;

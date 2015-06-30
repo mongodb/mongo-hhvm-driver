@@ -477,9 +477,10 @@ class Timestamp implements Type
 
 class UtcDatetime implements Type
 {
-	function __construct(private int $milliseconds)
-	{
-	}
+	private int $milliseconds;
+
+	<<__Native>>
+	function __construct(mixed $milliseconds);
 
 	function __toString() : string
 	{
