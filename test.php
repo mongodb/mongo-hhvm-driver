@@ -44,7 +44,7 @@ $doc = [
 	'oid2' => new MongoDB\BSON\ObjectID('456712341111222222333333'),
 	'maxkey' => new MongoDB\BSON\MaxKey(),
 	'minkey' => new MongoDB\BSON\MinKey(),
-	'utcdatetime' => new MongoDB\BSON\UtcDatetime(time() * 1000),
+	'utcdatetime' => new MongoDB\BSON\UTCDateTime(time() * 1000),
 	'code' => new MongoDB\BSON\Javascript("function() { return x + 1; }"),
 	'codeWithScope1' => new MongoDB\BSON\Javascript("function() { return x + 1; }", [ 'foo' => 42, 'bar' => M_PI ] ),
 	'codeWithScope2' => new MongoDB\BSON\Javascript("function() { return x + 1; }", $map ),

@@ -33,7 +33,7 @@
 #include "src/MongoDB/BSON/Binary.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectID.h"
-#include "src/MongoDB/BSON/UtcDatetime.h"
+#include "src/MongoDB/BSON/UTCDateTime.h"
 
 #include "mongodb.h"
 #include "bson.h"
@@ -77,9 +77,9 @@ static class MongoDBExtension : public Extension {
 
 			Native::registerNativeDataInfo<MongoDBBsonObjectIDData>(MongoDBBsonObjectIDData::s_className.get());
 
-			/* MongoDB\BSON\UtcDatetime */
-			HHVM_MALIAS(MongoDB\\BSON\\UtcDatetime, __construct, MongoDBBsonUtcDatetime, __construct);
-			HHVM_MALIAS(MongoDB\\BSON\\UtcDatetime, toDateTime, MongoDBBsonUtcDatetime, toDateTime);
+			/* MongoDB\BSON\UTCDateTime */
+			HHVM_MALIAS(MongoDB\\BSON\\UTCDateTime, __construct, MongoDBBsonUTCDateTime, __construct);
+			HHVM_MALIAS(MongoDB\\BSON\\UTCDateTime, toDateTime, MongoDBBsonUTCDateTime, toDateTime);
 
 			/* MongoDB\Driver\Manager */
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, __construct, MongoDBDriverManager, __construct);

@@ -69,7 +69,7 @@ class VariantToBsonConverter
 		void _convertObjectID(bson_t *bson, const char *key, Object v);
 		void _convertRegex(bson_t *bson, const char *key, Object v);
 		void _convertTimestamp(bson_t *bson, const char *key, Object v);
-		void _convertUtcDatetime(bson_t *bson, const char *key, Object v);
+		void _convertUTCDateTime(bson_t *bson, const char *key, Object v);
 /* }}} */
 };
 

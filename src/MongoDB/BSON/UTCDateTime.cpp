@@ -19,25 +19,25 @@
 
 #include "hphp/runtime/ext/datetime/ext_datetime.h"
 
-#include "UtcDatetime.h"
+#include "UTCDateTime.h"
 
 namespace HPHP {
 
-const StaticString s_MongoBsonUtcDatetime_className("MongoDB\\BSON\\UtcDatetime");
+const StaticString s_MongoBsonUTCDateTime_className("MongoDB\\BSON\\UTCDateTime");
 
-const StaticString s_MongoBsonUtcDatetime_milliseconds("milliseconds");
+const StaticString s_MongoBsonUTCDateTime_milliseconds("milliseconds");
 
 const StaticString s_DateTime("DateTime");
 
-void HHVM_METHOD(MongoDBBsonUtcDatetime, __construct, const Variant &milliseconds)
+void HHVM_METHOD(MongoDBBsonUTCDateTime, __construct, const Variant &milliseconds)
 {
-	this_->o_set(s_MongoBsonUtcDatetime_milliseconds, milliseconds.toInt64(), s_MongoBsonUtcDatetime_className);
+	this_->o_set(s_MongoBsonUTCDateTime_milliseconds, milliseconds.toInt64(), s_MongoBsonUTCDateTime_className);
 }
 
-Object HHVM_METHOD(MongoDBBsonUtcDatetime, toDateTime)
+Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 {
 	static HPHP::Class* c_dt;
-	int64_t milliseconds = this_->o_get(s_MongoBsonUtcDatetime_milliseconds, false, s_MongoBsonUtcDatetime_className).toInt64();
+	int64_t milliseconds = this_->o_get(s_MongoBsonUTCDateTime_milliseconds, false, s_MongoBsonUTCDateTime_className).toInt64();
 
 	/* Prepare result */
 	c_dt = HPHP::Unit::lookupClass(HPHP::s_DateTime.get());

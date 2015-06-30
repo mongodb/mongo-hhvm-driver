@@ -26,7 +26,7 @@
 #include "src/MongoDB/BSON/ObjectID.h"
 #include "src/MongoDB/BSON/Regex.h"
 #include "src/MongoDB/BSON/Timestamp.h"
-#include "src/MongoDB/BSON/UtcDatetime.h"
+#include "src/MongoDB/BSON/UTCDateTime.h"
 
 extern "C" {
 #include "libbson/src/bson/bson.h"
@@ -303,10 +303,10 @@ void VariantToBsonConverter::_convertTimestamp(bson_t *bson, const char *key, Ob
 	bson_append_timestamp(bson, key, -1, timestamp, increment);
 }
 
-/* {{{ MongoDriver\BSON\UtcDatetime */
-void VariantToBsonConverter::_convertUtcDatetime(bson_t *bson, const char *key, Object v)
+/* {{{ MongoDriver\BSON\UTCDateTime */
+void VariantToBsonConverter::_convertUTCDateTime(bson_t *bson, const char *key, Object v)
 {
-	int64_t milliseconds = v.o_get(s_MongoBsonUtcDatetime_milliseconds, false, s_MongoBsonUtcDatetime_className).toInt64();
+	int64_t milliseconds = v.o_get(s_MongoBsonUTCDateTime_milliseconds, false, s_MongoBsonUTCDateTime_className).toInt64();
 
 	bson_append_date_time(bson, key, -1, milliseconds);
 }
@@ -338,8 +338,8 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v
 		if (v.instanceof(s_MongoBsonTimestamp_className)) {
 			_convertTimestamp(bson, key, v);
 		}
-		if (v.instanceof(s_MongoBsonUtcDatetime_className)) {
-			_convertUtcDatetime(bson, key, v);
+		if (v.instanceof(s_MongoBsonUTCDateTime_className)) {
+			_convertUTCDateTime(bson, key, v);
 		}
 	} else {
 		convertPart(bson, key, v.toArray(), true, true);
@@ -474,11 +474,11 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_datetime;
 
-	c_datetime = Unit::lookupClass(s_MongoBsonUtcDatetime_className.get());
+	c_datetime = Unit::lookupClass(s_MongoBsonUTCDateTime_className.get());
 	assert(c_datetime);
 	ObjectData* obj = ObjectData::newInstance(c_datetime);
 
-	obj->o_set(s_MongoBsonUtcDatetime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUtcDatetime_className.get());
+	obj->o_set(s_MongoBsonUTCDateTime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUTCDateTime_className.get());
 
 	state->zchild.add(String(key), Variant(obj));
 

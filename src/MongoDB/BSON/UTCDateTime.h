@@ -17,10 +17,10 @@
 #define __MONGODB_BSON_UTCDATETIME_H__
 namespace HPHP {
 
-extern const StaticString s_MongoBsonUtcDatetime_className;
-extern const StaticString s_MongoBsonUtcDatetime_milliseconds;
+extern const StaticString s_MongoBsonUTCDateTime_className;
+extern const StaticString s_MongoBsonUTCDateTime_milliseconds;
 
-void HHVM_METHOD(MongoDBBsonUtcDatetime, __construct, const Variant &milliseconds);
-Object HHVM_METHOD(MongoDBBsonUtcDatetime, toDateTime);
+void HHVM_METHOD(MongoDBBsonUTCDateTime, __construct, const Variant &milliseconds);
+Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime);
 }
 #endif

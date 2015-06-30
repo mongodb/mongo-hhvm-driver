@@ -475,7 +475,7 @@ class Timestamp implements Type
 	}
 }
 
-class UtcDatetime implements Type
+class UTCDateTime implements Type
 {
 	private int $milliseconds;
 
