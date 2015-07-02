@@ -25,6 +25,10 @@ catch ( InvalidArgumentException $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch ( MongoDB\Driver\Exception\RunTimeException $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "================\n";
 
