@@ -381,7 +381,11 @@ function toArray(string $data, ?array $typemap = array()) : mixed;
 <<__Native>>
 function toJson(string $data) : mixed;
 
-interface Serializable
+interface Type
+{
+}
+
+interface Serializable extends Type
 {
 	function bsonSerialize() : array;
 }
@@ -392,10 +396,6 @@ interface Unserializable
 }
 
 interface Persistable extends Serializable, Unserializable
-{
-}
-
-interface Type
 {
 }
 
