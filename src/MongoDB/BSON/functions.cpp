@@ -27,13 +27,13 @@ extern "C" {
 
 namespace HPHP {
 
-String HHVM_FUNCTION(MongoDBBsonFromArray, const Array &data)
+String HHVM_FUNCTION(MongoDBBsonFromArray, const Variant &data)
 {
 	bson_t *bson;
 	String s;
 	unsigned char *data_s;
 
-	VariantToBsonConverter converter(Variant(data), HIPPO_BSON_NO_FLAGS);
+	VariantToBsonConverter converter(data, HIPPO_BSON_NO_FLAGS);
 	bson = bson_new();
 	converter.convert(bson);
 

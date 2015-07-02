@@ -370,7 +370,7 @@ class WriteException extends RunTimeException
 namespace MongoDB\BSON;
 
 <<__Native>>
-function fromArray(array $data) : string;
+function fromArray(mixed $data) : string;
 
 <<__Native>>
 function fromJson(string $data) : mixed;
