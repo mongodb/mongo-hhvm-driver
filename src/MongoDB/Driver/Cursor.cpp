@@ -102,7 +102,7 @@ static bool hippo_cursor_next(MongoDBDriverCursorData* data)
 	invalidate_current(data);
 
 	data->current++;
-	if (bson_iter_next(&data->first_batch_iter)) {
+	if (data->is_command_cursor && bson_iter_next(&data->first_batch_iter)) {
 		if (BSON_ITER_HOLDS_DOCUMENT(&data->first_batch_iter)) {
 			const uint8_t *document = NULL;
 			uint32_t document_len = 0;
