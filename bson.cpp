@@ -16,6 +16,8 @@
 
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/array-iterator.h"
+#include "hphp/runtime/base/execution-context.h"
+#include "hphp/runtime/base/type-string.h"
 
 #include "bson.h"
 #include "utils.h"
@@ -67,45 +69,36 @@ VariantToBsonConverter::VariantToBsonConverter(const Variant& document, int flag
 
 void VariantToBsonConverter::convert(bson_t *bson)
 {
-	return convert(bson, m_document);
-}
-
-void VariantToBsonConverter::convert(bson_t *bson, Variant v)
-{
-	if (v.isObject()) {
-		convert(bson, v.toObject());
-	} else if (v.isArray()) {
-		convert(bson, v.toArray()); 
+	if (m_document.isObject() || m_document.isArray()) {
+		convertDocument(bson, NULL, m_document);
 	} else {
-		std::cout << "convert *unimplemented*: " << getDataTypeString(v.getType()).c_str() << "\n";
+		std::cout << "convert *unimplemented*: " << getDataTypeString(m_document.getType()).c_str() << "\n";
 	}
 }
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant v)
+void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Variant v)
 {
 	switch (v.getType()) {
 		case KindOfUninit:
 		case KindOfNull:
-			convertPart(bson, key);
+			convertNull(bson, key);
 			break;
 		case KindOfBoolean:
-			convertPart(bson, key, v.toBoolean());
+			convertBoolean(bson, key, v.toBoolean());
 			break;
 		case KindOfInt64:
-			convertPart(bson, key, v.toInt64());
+			convertInt64(bson, key, v.toInt64());
 			break;
 		case KindOfDouble:
-			convertPart(bson, key, v.toDouble());
+			convertDouble(bson, key, v.toDouble());
 			break;
 		case KindOfStaticString:
 		case KindOfString:
-			convertPart(bson, key, v.toString());
+			convertString(bson, key, v.toString());
 			break;
 		case KindOfArray:
-			convertPart(bson, key, v.toArray(), true, false);
-			break;
 		case KindOfObject:
-			convertPart(bson, key, v.toObject());
+			convertDocument(bson, key, v);
 			break;
 		case KindOfResource:
 			throw MongoDriver::Utils::throwUnexpectedValueException("Got unsupported type 'resource'");
@@ -115,17 +108,17 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Variant 
 	}
 }
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key)
+void VariantToBsonConverter::convertNull(bson_t *bson, const char *key)
 {
 	bson_append_null(bson, key, -1);
 };
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, bool v)
+void VariantToBsonConverter::convertBoolean(bson_t *bson, const char *key, bool v)
 {
 	bson_append_bool(bson, key, -1, v);
 };
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, int64_t v)
+void VariantToBsonConverter::convertInt64(bson_t *bson, const char *key, int64_t v)
 {
 	if (v > INT_MAX || v < INT_MIN) {
 		bson_append_int64(bson, key, -1, v);
@@ -134,12 +127,12 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, int64_t 
 	}
 };
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, double v)
+void VariantToBsonConverter::convertDouble(bson_t *bson, const char *key, double v)
 {
 	bson_append_double(bson, key, -1, v);
 };
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, String v)
+void VariantToBsonConverter::convertString(bson_t *bson, const char *key, String v)
 {
 	bson_append_utf8(bson, key, -1, v.c_str(), v.size());
 }
@@ -161,23 +154,26 @@ char *VariantToBsonConverter::_getUnmangledPropertyName(String key)
 	}
 }
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v, bool wrap, bool from_object)
+void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_name, Variant v)
 {
 	bson_t child;
 	int unmangle = 0;
+	Array document;
 
-	if (_isPackedArray(v) && !from_object) {
-		if (wrap) {
-			bson_append_array_begin(bson, key, -1, &child);
+	document = v.toArray();
+
+	if (_isPackedArray(document) && !v.isObject()) {
+		if (property_name != NULL) {
+			bson_append_array_begin(bson, property_name, -1, &child);
 		}
 	} else {
 		unmangle = 1;
-		if (wrap) {
-			bson_append_document_begin(bson, key, -1, &child);
+		if (property_name != NULL) {
+			bson_append_document_begin(bson, property_name, -1, &child);
 		}
 	}
 
-	for (ArrayIter iter(v); iter; ++iter) {
+	for (ArrayIter iter(document); iter; ++iter) {
 		Variant key(iter.first());
 		const Variant& data(iter.secondRef());
 		String s_key = key.toString();
@@ -194,10 +190,10 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 			const char *unmangledName;
 
 			unmangledName = _getUnmangledPropertyName(s_key);
-			convertPart(wrap ? &child : bson, unmangledName, data);
+			convertElement(property_name != NULL ? &child : bson, unmangledName, data);
 			free((void*) unmangledName);
 		} else {
-			convertPart(wrap ? &child : bson, s_key.c_str(), data);
+			convertElement(property_name != NULL ? &child : bson, s_key.c_str(), data);
 		}
 		m_level--;
 	}
@@ -214,8 +210,8 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 		}
 	}
 
-	if (wrap) {
-		if (_isPackedArray(v)) {
+	if (property_name != NULL) {
+		if (_isPackedArray(document)) {
 			bson_append_array_end(bson, &child);
 		} else {
 			bson_append_document_end(bson, &child);
@@ -225,6 +221,11 @@ void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Array v,
 
 /* {{{ Serialization of types */
 const StaticString s_MongoDriverBsonType_className("MongoDB\\BSON\\Type");
+const StaticString s_MongoDriverBsonPersistable_className("MongoDB\\BSON\\Persistable");
+const StaticString s_MongoDriverBsonSerializable_className("MongoDB\\BSON\\Serializable");
+const StaticString s_MongoDriverBsonUnserializable_className("MongoDB\\BSON\\Unserializable");
+const StaticString s_MongoDriverBsonSerializable_functionName("bsonSerialize");
+const StaticString s_MongoDriverBsonUnserializable_functionName("bsonUnserialize");
 
 /* {{{ MongoDriver\BSON\Binary */
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
@@ -314,46 +315,46 @@ void VariantToBsonConverter::_convertUTCDateTime(bson_t *bson, const char *key, 
 
 /* }}} */
 
-void VariantToBsonConverter::convertPart(bson_t *bson, const char *key, Object v)
+bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key, Object v)
 {
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
 		if (v.instanceof(s_MongoBsonBinary_className)) {
 			_convertBinary(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonJavascript_className)) {
 			_convertJavascript(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonMaxKey_className)) {
 			_convertMaxKey(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonMinKey_className)) {
 			_convertMinKey(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonObjectID_className)) {
 			_convertObjectID(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonRegex_className)) {
 			_convertRegex(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonTimestamp_className)) {
 			_convertTimestamp(bson, key, v);
+			return true;
 		}
 		if (v.instanceof(s_MongoBsonUTCDateTime_className)) {
 			_convertUTCDateTime(bson, key, v);
+			return true;
 		}
-	} else {
-		convertPart(bson, key, v.toArray(), true, true);
+		if (v.instanceof(s_MongoDriverBsonSerializable_className)) {
+			_convertSerializable(bson, key, v);
+		}
 	}
-}
-
-void VariantToBsonConverter::convert(bson_t *bson, Array a)
-{
-	convertPart(bson, NULL, a, false, false);
-}
-
-void VariantToBsonConverter::convert(bson_t *bson, Object o)
-{
-	convert(bson, o.toArray());
+	return false;
 }
 /* }}} */
 

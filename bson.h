@@ -40,19 +40,6 @@ class VariantToBsonConverter
 /* {{{ public methods */
 		VariantToBsonConverter(const Variant& document, int flags);
 		void convert(bson_t *bson);
-
-		void convert(bson_t *bson, Variant v);
-		void convert(bson_t *bson, Array a);
-		void convert(bson_t *bson, Object o);
-
-		void convertPart(bson_t *bson, const char *key);
-		void convertPart(bson_t *bson, const char *key, Variant v);
-		void convertPart(bson_t *bson, const char *key, bool v);
-		void convertPart(bson_t *bson, const char *key, int64_t v);
-		void convertPart(bson_t *bson, const char *key, double v);
-		void convertPart(bson_t *bson, const char *key, String v);
-		void convertPart(bson_t *bson, const char *key, Array v, bool wrap, bool from_object);
-		void convertPart(bson_t *bson, const char *key, Object v);
 /* }}} */
 	private:
 /* private properties {{{ */
@@ -70,6 +57,18 @@ class VariantToBsonConverter
 		void _convertRegex(bson_t *bson, const char *key, Object v);
 		void _convertTimestamp(bson_t *bson, const char *key, Object v);
 		void _convertUTCDateTime(bson_t *bson, const char *key, Object v);
+
+		void _convertSerializable(bson_t *bson, const char *key, Object v);
+
+		void convertDocument(bson_t *bson, const char *key, Variant v);
+		void convertElement(bson_t *bson, const char *key, Variant v);
+		bool convertSpecialObject(bson_t *bson, const char *key, Object v);
+
+		void convertNull(bson_t *bson, const char *key);
+		void convertBoolean(bson_t *bson, const char *key, bool v);
+		void convertInt64(bson_t *bson, const char *key, int64_t v);
+		void convertDouble(bson_t *bson, const char *key, double v);
+		void convertString(bson_t *bson, const char *key, String v);
 /* }}} */
 };
 
