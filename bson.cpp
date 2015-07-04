@@ -160,6 +160,16 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 	int unmangle = 0;
 	Array document;
 
+	/* if we are not at a top-level, we need to check (and convert) special
+	 * BSON types too */
+	if (v.isObject()) {
+		if (convertSpecialObject(bson, property_name, v.toObject())) {
+			return;
+		}
+		/* The "convertSpecialObject" method didn't understand this type, so we
+		 * will continue treating this as a normal document */
+	}
+
 	document = v.toArray();
 
 	if (_isPackedArray(document) && !v.isObject()) {
@@ -313,6 +323,37 @@ void VariantToBsonConverter::_convertUTCDateTime(bson_t *bson, const char *key, 
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\UTCDateTime */
+void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key, Object v)
+{
+	Variant result;
+	TypedValue args[1] = { *(Variant(v)).asCell() };
+	Class *cls;
+	Func *m;
+
+	cls = v.get()->getVMClass();
+	m = cls->lookupMethod(s_MongoDriverBsonSerializable_functionName.get());
+	
+	g_context->invokeFuncFew(
+		result.asTypedValue(),
+		m,
+		v.get(),
+		nullptr,
+		1, args
+	);
+
+	if (!result.isArray()) {
+		StringBuffer buf;
+		buf.printf("Expected %s() to return an array, but %s given", s_MongoDriverBsonSerializable_functionName.data(), HPHP::getDataTypeString(result.getType()).data());
+		Variant full_name = buf.detach();
+
+		throw MongoDriver::Utils::throwUnexpectedValueException((char*) full_name.toString().c_str());
+	}
+
+	convertDocument(bson, key, result);
+}
+/* }}} */
+
 /* }}} */
 
 bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key, Object v)
@@ -352,6 +393,7 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 		}
 		if (v.instanceof(s_MongoDriverBsonSerializable_className)) {
 			_convertSerializable(bson, key, v);
+			return true;
 		}
 	}
 	return false;
