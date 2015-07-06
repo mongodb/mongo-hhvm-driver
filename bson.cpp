@@ -236,6 +236,7 @@ const StaticString s_MongoDriverBsonSerializable_className("MongoDB\\BSON\\Seria
 const StaticString s_MongoDriverBsonUnserializable_className("MongoDB\\BSON\\Unserializable");
 const StaticString s_MongoDriverBsonSerializable_functionName("bsonSerialize");
 const StaticString s_MongoDriverBsonUnserializable_functionName("bsonUnserialize");
+const StaticString s_MongoDriverBsonODM_fieldName("__pclass");
 
 /* {{{ MongoDriver\BSON\Binary */
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
@@ -327,6 +328,7 @@ void VariantToBsonConverter::_convertUTCDateTime(bson_t *bson, const char *key, 
 void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key, Object v)
 {
 	Variant result;
+	Array   properties;
 	TypedValue args[1] = { *(Variant(v)).asCell() };
 	Class *cls;
 	Func *m;
@@ -350,7 +352,13 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		throw MongoDriver::Utils::throwUnexpectedValueException((char*) full_name.toString().c_str());
 	}
 
-	convertDocument(bson, key, result);
+	properties = result.toArray();
+
+	if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
+		properties.add(String(s_MongoDriverBsonODM_fieldName), String(cls->nameStr()));
+	}
+
+	convertDocument(bson, key, properties);
 }
 /* }}} */
 
