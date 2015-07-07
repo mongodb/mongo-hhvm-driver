@@ -355,7 +355,13 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 	properties = result.toArray();
 
 	if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
-		properties.add(String(s_MongoDriverBsonODM_fieldName), String(cls->nameStr()));
+		const char *class_name = cls->nameStr().c_str();
+		ObjectData *obj = createMongoBsonBinaryObject(
+			(const uint8_t *) class_name,
+			strlen(class_name),
+			(bson_subtype_t) 0x80
+		);
+		properties.add(String(s_MongoDriverBsonODM_fieldName), obj);
 	}
 
 	convertDocument(bson, key, properties);
