@@ -474,21 +474,9 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), const char *key, bson_subtype_t v_subtype, size_t v_binary_len, const uint8_t *v_binary, void *data)
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
-	static Class* c_binary;
-	String s;
-	unsigned char *data_s;
+	ObjectData *obj;
 
-	s = String(v_binary_len, ReserveString);
-	data_s = (unsigned char*) s.bufferSlice().ptr;
-	memcpy(data_s, v_binary, v_binary_len);
-	s.setSize(v_binary_len);
-
-	c_binary = Unit::lookupClass(s_MongoBsonBinary_className.get());
-	assert(c_binary);
-	ObjectData* obj = ObjectData::newInstance(c_binary);
-
-	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
-	obj->o_set(s_MongoBsonBinary_subType, Variant(v_subtype), s_MongoBsonBinary_className.get());
+	obj = createMongoBsonBinaryObject(v_binary, v_binary_len, v_subtype);
 
 	state->zchild.add(String(key), Variant(obj));
 

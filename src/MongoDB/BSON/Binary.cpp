@@ -25,4 +25,26 @@ const StaticString s_MongoBsonBinary_className("MongoDB\\BSON\\Binary");
 const StaticString s_MongoBsonBinary_data("data");
 const StaticString s_MongoBsonBinary_subType("subType");
 
+ObjectData* createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary_len, bson_subtype_t v_subtype)
+{
+	static Class* c_binary;
+	String s;
+	unsigned char *data_s;
+
+	s = String(v_binary_len, ReserveString);
+	data_s = (unsigned char*) s.bufferSlice().ptr;
+	memcpy(data_s, v_binary, v_binary_len);
+	s.setSize(v_binary_len);
+
+	c_binary = Unit::lookupClass(s_MongoBsonBinary_className.get());
+	assert(c_binary);
+	ObjectData* obj = ObjectData::newInstance(c_binary);
+
+	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
+	obj->o_set(s_MongoBsonBinary_subType, Variant(v_subtype), s_MongoBsonBinary_className.get());
+
+	return obj;
+}
+
+
 }

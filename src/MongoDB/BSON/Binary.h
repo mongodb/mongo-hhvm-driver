@@ -15,12 +15,18 @@
  */
 #ifndef __MONGODB_BSON_BINARY_H__
 #define __MONGODB_BSON_BINARY_H__
+
+extern "C" {
+#include "../../../libbson/src/bson/bson.h"
+}
+
 namespace HPHP {
 
 extern const StaticString s_MongoBsonBinary_className;
 extern const StaticString s_MongoBsonBinary_data;
 extern const StaticString s_MongoBsonBinary_subType;
 
+ObjectData* createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary_len, bson_subtype_t v_subtype);
 }
 #endif
 
