@@ -739,7 +739,39 @@ bool BsonToVariantConverter::convert(Variant *v)
 */
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
-	if (m_options.document_type == HIPPO_TYPEMAP_STDCLASS) {
+	if (
+		state.zchild.exists(s_MongoDriverBsonODM_fieldName) &&
+		state.zchild[s_MongoDriverBsonODM_fieldName].isObject() &&
+		state.zchild[s_MongoDriverBsonODM_fieldName].toObject().instanceof(s_MongoBsonBinary_className)
+	) {
+		static Class* c_class;
+		Variant result;
+
+		String class_name = state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
+			s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
+		);
+		TypedValue args[1] = { *(Variant(state.zchild)).asCell() };
+
+		state.zchild.remove(s_MongoDriverBsonODM_fieldName);
+
+		/* Lookup class and instantiate object */
+		c_class = Unit::lookupClass(class_name.get());
+		assert(c_class);
+		ObjectData *obj = ObjectData::newInstance(c_class);
+
+		/* Call bsonUnserialize on the object */
+		Func *m = c_class->lookupMethod(s_MongoDriverBsonUnserializable_functionName.get());
+
+		g_context->invokeFuncFew(
+			result.asTypedValue(),
+			m,
+			obj,
+			nullptr,
+			1, args
+		);
+
+		*v = Variant(obj);
+	} else if (m_options.document_type == HIPPO_TYPEMAP_STDCLASS) {
 		*v = Variant(Variant(state.zchild).toObject());
 	} else {
 		*v = Variant(state.zchild);
