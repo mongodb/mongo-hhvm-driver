@@ -219,41 +219,12 @@ Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 	return Object(obj);
 }
 
-const StaticString
-	s_document("document"),
-	s_object("object"),
-	s_stdClass("stdClass"),
-	s_array("array");
-
-#define CASECMP(a,b) (bstrcasecmp((a).data(), (a).size(), (b).data(), (b).size()) == 0)
 
 void HHVM_METHOD(MongoDBDriverCursor, setTypeMap, const Array &typemap)
 {
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
-	if (typemap.exists(s_document)) {
-		String document_type;
-
-		document_type = typemap[s_document].toString();
-
-		if (CASECMP(document_type, s_object) || CASECMP(document_type, s_stdClass)) {
-			data->bson_options.document_type = HIPPO_TYPEMAP_STDCLASS;
-		} else if (CASECMP(document_type, s_array)) {
-			data->bson_options.document_type = HIPPO_TYPEMAP_ARRAY;
-		}
-	}
-
-	if (typemap.exists(s_array)) {
-		String array_type;
-
-		array_type = typemap[s_array].toString();
-
-		if (CASECMP(array_type, s_object) || CASECMP(array_type, s_stdClass)) {
-			data->bson_options.array_type = HIPPO_TYPEMAP_STDCLASS;
-		} else if (CASECMP(array_type, s_array)) {
-			data->bson_options.array_type = HIPPO_TYPEMAP_ARRAY;
-		}
-	}
+	parseTypeMap(&data->bson_options, typemap);
 }
 
 }

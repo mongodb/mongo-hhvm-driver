@@ -93,5 +93,9 @@ class BsonToVariantConverter
 		hippo_bson_conversion_options_t m_options;
 };
 
+/* {{{ TypeMap helper functions */
+void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap);
+/* }}} */
+
 }
 #endif
