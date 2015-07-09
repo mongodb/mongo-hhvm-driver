@@ -9,7 +9,7 @@ back into PHP land.
 Serialization to BSON
 =====================
 
-> Arrays
+Arrays
 ------
 
 If an array is a *packed array* — i.e. the keys start at 0 and are sequential
@@ -182,8 +182,31 @@ possible mapping values are:
     And not send the ``__pclass`` property as an array element to
     ``bsonUnserialize``.
 
+TypeMaps
+--------
+
+TypeMaps can be set through the ``setTypeMap()`` on a
+``MongoDB\Driver\Cursor`` object, or the ``$typeMap`` argument of
+``MongoDB\BSON\toPHP()`` (previously, ``MongoDB\BSON\toArray()``). Each of the
+three classes (``root``, ``document`` and ``array``) can be individually set.
+If ``document`` is set to something else than the default and ``root`` is set
+to the default (or not set at all), then the value of ``document`` also counts
+for ``root``. Which makes the following example equivalent::
+
+    ->setTypeMap( [ 'document' => 'MyClass' ] )
+    ->setTypeMap( [ 'document' => 'MyClass', 'root' => 'MyClass' ] );
+    ->setTypeMap( [ 'document' => 'MyClass', 'root' => NULL ] );
+
+But these are **not** equivalent::
+
+    ->setTypeMap( [ 'root' => 'MyClass' ] )
+    ->setTypeMap( [ 'document' => 'MyClass', 'root' => 'MyClass' ] );
+
+In the first line of this second example, the value for ``document`` stays
+the default, which is ``stdClass``.
+
 Examples
-~~~~~~~~
+--------
 
 In these examples, ``MyClass`` does **not** implement any interface,
 ``YourClass`` implements ``MongoDB\BSON\Unserializable`` and ``OurClass``
@@ -253,30 +276,6 @@ iterate over the array and set the properties without modifications. It
 
     { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
       -> OurClass { $foo => 'yes', $unserialized => true }
-
-TypeMaps
---------
-
-TypeMaps can be set through the ``setTypeMap()`` on a
-``MongoDB\Driver\Cursor`` object, or the ``$typeMap`` argument of
-``MongoDB\BSON\toPHP()`` (previously, ``MongoDB\BSON\toArray()``). Each of the
-three classes (``root``, ``document`` and ``array``) can be individually set.
-If ``document`` is set to something else than the default and ``root`` is set
-to the default (or not set at all), then the value of ``document`` also counts
-for ``root``. Which makes the following example equivalent::
-
-    ->setTypeMap( [ 'document' => 'MyClass' ] )
-    ->setTypeMap( [ 'document' => 'MyClass', 'root' => 'MyClass' ] );
-    ->setTypeMap( [ 'document' => 'MyClass', 'root' => NULL ] );
-
-But these are **not** equivalent::
-
-    ->setTypeMap( [ 'root' => 'MyClass' ] )
-    ->setTypeMap( [ 'document' => 'MyClass', 'root' => 'MyClass' ] );
-
-In the first line of this second example, the value for ``document`` stays
-the default, which is ``stdClass``.
-
 
 
 .. [1] A ``__pclass`` property if only deemed to exist if there exists a
