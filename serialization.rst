@@ -52,7 +52,7 @@ interface, serialize as a **BSON document**. Keep only *public* properties,
 and ignore *protected* and *private* properties.
 
 If an object is of a class that implements the ``MongoDB\BSON\Serializable``
-interface, call ``bsonSerialize`` and used the returned associative array to
+interface, call ``bsonSerialize`` and use the returned associative array to
 store as properties of a **BSON document**. Not returning an array is an error
 and should throw an ``MongoDB\Driver\Exception\UnexpectedValueException``
 exception. It is valid to return a packed array, but it must also be stored as
