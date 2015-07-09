@@ -236,6 +236,9 @@ iterate over the array and set the properties without modifications. It
     { foo: 'yes', '__pclass': Binary(0x80, 'YourClass') }
       -> MyClass { $foo => 'yes', $unserialized => true }
 
+    { foo: 'yes', '__pclass': Binary(0x00, 'YourClass') }
+      -> stdClass { $foo => 'yes', Binary(0x00, 'YourClass') }
+
 ::
 
     /* typemap: [ 'document' => 'array' ] (also implicitly sets root=array) */
