@@ -139,7 +139,7 @@ possible mapping values are:
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
   ``stdClass`` object. There will be no special treatment of a ``__pclass``
-  property [1]_, buy it should **not** be set as property in the returned
+  property [1]_, but it should **not** be set as property in the returned
   object.
 
 - ``"odm"`` — uses the class name set in the ``__pclass`` property of a BSON
