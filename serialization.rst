@@ -104,7 +104,7 @@ Deserialization from BSON
 For compound types, there are three data types:
 
 - ``root``: refers to the top-level BSON document *only*
-- ``document``: refers to nested BSON document *only*
+- ``document``: refers to embedded BSON documents *only*
 - ``array``: refers to a BSON array
 
 Each of those three data types can be mapped against different PHP types. The
@@ -113,10 +113,10 @@ possible mapping values are:
 - *not set* or ``NULL`` — this is the default.
 
   - A BSON array will be deserialized as a PHP ``array``.
-  - A BSON document (root or nested) without ``__pclass`` property [1]_ becomes a
+  - A BSON document (root or embedded) without ``__pclass`` property [1]_ becomes a
     PHP ``stdClass`` object, with each BSON document property becoming a
     public ``stdClass`` property.
-  - A BSON document (root or nested) with ``__pclass`` property [1]_ becomes
+  - A BSON document (root or embedded) with ``__pclass`` property [1]_ becomes
     a PHP object of the class name as defined by the ``__pclass`` property.
 
     If the named class implements the ``MongoDB\BSON\Unserializable``
@@ -224,8 +224,8 @@ iterate over the array and set the properties without modifications. It
     { foo: 'no', 'array' : [ 5, 6 ] }
       -> stdClass { $foo => 'no', $array => [ 5, 6 ] }
 
-    { foo: 'no', 'obj' : { 'nested' => 3.14 } }
-      -> stdClass { $foo => 'no', $obj => stdClass { $nested => 3.14 } }
+    { foo: 'no', 'obj' : { 'embedded' => 3.14 } }
+      -> stdClass { $foo => 'no', $obj => stdClass { $embedded => 3.14 } }
 
     { foo: 'yes', '__pclass': 'MyClass' }
       -> stdClass { $foo => 'yes', $__pclass => 'MyClass' }
@@ -245,8 +245,8 @@ iterate over the array and set the properties without modifications. It
     { foo: 'no', 'array' : [ 5, 6 ] }
       -> [ 'foo' => 'no', 'array' => [ 5, 6 ] ]
 
-    { foo: 'no', 'obj' : { 'nested' => 3.14 } }
-      -> [ 'foo' => 'no', 'obj' => [ 'nested => 3.14 ] ]
+    { foo: 'no', 'obj' : { 'embedded' => 3.14 } }
+      -> [ 'foo' => 'no', 'obj' => [ 'embedded => 3.14 ] ]
 
     { foo: 'yes', '__pclass': 'MyClass' }
       -> [ 'foo' => 'yes', '__pclass' => 'MyClass' }
@@ -266,7 +266,7 @@ iterate over the array and set the properties without modifications. It
     { foo: 'no', 'array' : [ 5, 6 ] }
       -> MongoDB\Driver\Exception\UnexpectedValueException("pclass not set")
 
-    { foo: 'no', 'obj' : { 'nested' => 3.14 } }
+    { foo: 'no', 'obj' : { 'embedded' => 3.14 } }
       -> MongoDB\Driver\Exception\UnexpectedValueException("pclass not set")
 
     { foo: 'yes', '__pclass': 'MyClass' }
