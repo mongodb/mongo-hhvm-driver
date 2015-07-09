@@ -79,7 +79,7 @@ Examples
     private $fpr => "cheese"
   } => { 'foo' : 42 }
 
-  AnotherClass implements Serializable {
+  AnotherClass implements MongoDB\BSON\Serializable {
     public $foo => 42,
     protected $prot => "wine",
     private $fpr => "cheese"
@@ -88,14 +88,14 @@ Examples
     }
   } => { 'foo' : 42, 'prot' : "wine" }
 
-  UpperClass implements Persistable {
+  UpperClass implements MongoDB\BSON\Persistable {
     public $foo => 42,
     protected $prot => "wine",
     private $fpr => "cheese"
     function bsonSerialize() : array {
         return [ 'foo' => $this->foo, 'prot' => $this->prot ];
     }
-  } => { 'foo' : 42, 'prot' : "wine", '__pclass' : Binary(0x80, "UpperClass") }
+  } => { 'foo' : 42, 'prot' : "wine", '__pclass' : MongoDB\BSON\Binary(0x80, "UpperClass") }
 
 
 Deserialization from BSON
