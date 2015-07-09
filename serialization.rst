@@ -68,6 +68,7 @@ Examples
 ~~~~~~~~
 
 ::
+
   stdClass {
     public $foo => 42
   } => { 'foo' : 42 }
@@ -112,10 +113,10 @@ possible mapping values are:
 - *not set* or ``NULL`` — this is the default.
 
   - A BSON array will be deserialized as a PHP ``array``.
-  - A BSON document (root or nested) without ``__pclass`` property[1]_ becomes a
+  - A BSON document (root or nested) without ``__pclass`` property [1]_ becomes a
     PHP ``stdClass`` object, with each BSON document property becoming a
     public ``stdClass`` property.
-  - A BSON document (root or nested) with ``__pclass`` property[1]_ becomes
+  - A BSON document (root or nested) with ``__pclass`` property [1]_ becomes
     a PHP object of the class name as defined by the ``__pclass`` property.
 
     If the named class implements the ``MongoDB\BSON\Unserializable``
@@ -134,11 +135,11 @@ possible mapping values are:
     was mapped to ``"odm"`` (see below).
 
 - ``"array"`` — turns a BSON array or BSON document into a PHP array.
-  ``__pclass`` properties[1]_ are igored.
+  ``__pclass`` properties [1]_ are igored.
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
   ``stdClass`` object. There will be no special treatment of a ``__pclass``
-  property[1]_, buy it should **not** be set as property in the returned
+  property [1]_, buy it should **not** be set as property in the returned
   object.
 
 - ``"odm"`` — uses the class name set in the ``__pclass`` property of a BSON
@@ -150,7 +151,7 @@ possible mapping values are:
 
   Remarks:
 
-  - If the ``__pclass`` property is not present[1]_, this throws the
+  - If the ``__pclass`` property is not present [1]_, this throws the
     ``MongoDB\Driver\Exception\UnexpectedValueException`` exception with a
     message indicating the special class marker could not be found.
 
@@ -164,7 +165,7 @@ possible mapping values are:
   object should be deserialized at.
 
   If the class implements the ``MongoDB\BSON\Unserializable`` interface, then
-  the properties of the BSON document, **minus** the ``__pclass`` property[1]_
+  the properties of the BSON document, **minus** the ``__pclass`` property [1]_
   if it exists, are sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
 
@@ -277,6 +278,57 @@ iterate over the array and set the properties without modifications. It
     { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
       -> OurClass { $foo => 'yes', $unserialized => true }
 
+Related Tickets
+===============
+
+- PHPC-248_: Allow ->setTypeMap() to set 'array' and 'stdclass'
+- PHPC-249_: empty array should be serialized as array
+- PHPC-260_: Allow "object" as an alias of "stdClass" for setTypeMap()
+- PHPC-274_: zval_to_bson() ignores BSON\Serializable interface
+- PHPC-275_: object_to_bson() should throw exception if bsonSerialize()
+  returns non-array
+- PHPC-288_: ODS (Object Document Serializer) support and integrations
+- PHPC-311_: Rename BSON from/toArray() methods to from/toPHP()
+- PHPC-315_: Support explicit type mapping for top-level documents
+- PHPC-318_: Cursor type map should apply to top-level document
+- PHPC-319_: Top level documents should be deserialized as stdClass by default
+- PHPC-329_: Determine if ODM class should always supersede the type map
+- HHVM-55_: Implement BSON\Peristable interface
+- HHVM-56_: Implement BSON\Serializable interface
+- HHVM-57_: Implement BSON\Unserializable interface
+- HHVM-63_: Empty array should be serialized as empty array, and empty object
+  should be serialized as empty object
+- HHVM-64_: Allow ->setTypeMap() to set 'array' and 'stdclass'
+- HHVM-67_: ODM should only match field of specific name (__pclass)
+- HHVM-84_: Implement MongoDB\BSON\Serializable
+- HHVM-85_: Implement MongoDB\BSON\Unserializable / MongoDB\BSON\Persistable
+
+.. _PHPC-248: https://jira.mongodb.org/browse/PHPC-248
+.. _PHPC-249: https://jira.mongodb.org/browse/PHPC-249
+.. _PHPC-260: https://jira.mongodb.org/browse/PHPC-260
+.. _PHPC-274: https://jira.mongodb.org/browse/PHPC-274
+.. _PHPC-275: https://jira.mongodb.org/browse/PHPC-275
+.. _PHPC-288: https://jira.mongodb.org/browse/PHPC-288
+.. _PHPC-311: https://jira.mongodb.org/browse/PHPC-311
+.. _PHPC-315: https://jira.mongodb.org/browse/PHPC-315
+.. _PHPC-318: https://jira.mongodb.org/browse/PHPC-318
+.. _PHPC-319: https://jira.mongodb.org/browse/PHPC-319
+.. _PHPC-329: https://jira.mongodb.org/browse/PHPC-329
+.. _HHVM-55: https://jira.mongodb.org/browse/HHVM-55
+.. _HHVM-56: https://jira.mongodb.org/browse/HHVM-56
+.. _HHVM-57: https://jira.mongodb.org/browse/HHVM-57
+.. _HHVM-63: https://jira.mongodb.org/browse/HHVM-63
+.. _HHVM-64: https://jira.mongodb.org/browse/HHVM-64
+.. _HHVM-67: https://jira.mongodb.org/browse/HHVM-67
+.. _HHVM-84: https://jira.mongodb.org/browse/HHVM-84
+.. _HHVM-85: https://jira.mongodb.org/browse/HHVM-85
+
+Unrelated Tickets
+=================
+
+- PHPC-314_: Prototype type map syntax for documents within field paths
+
+.. _PHPC-314: https://jira.mongodb.org/browse/PHPC-314
 
 .. [1] A ``__pclass`` property if only deemed to exist if there exists a
    property with that name,  **and** it is a Binary value, **and** the
