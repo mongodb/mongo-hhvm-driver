@@ -198,9 +198,20 @@ Examples
 
 In these examples, ``MyClass`` does **not** implement any interface,
 ``YourClass`` implements ``MongoDB\BSON\Unserializable`` and ``OurClass``
-implements ``MongoDB\BSON\Persistable``. Their ``bsonUnserialize()`` methods
+implements ``MongoDB\BSON\Persistable``.
+
+The ``bsonUnserialize()`` method of ``YourClass`` and ``OurClass``
 iterate over the array and set the properties without modifications. It
-**also** sets the ``unserialized = true`` property.
+**also** sets the ``unserialized = true`` property::
+
+    function bsonUnserialize( array $map )
+    {
+        foreach ( $map as $k => $value )
+        {
+            $this->$k = $value;
+        }
+        $this->unserialized = true;
+    }
 
 ::
 
