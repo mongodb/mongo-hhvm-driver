@@ -43,11 +43,17 @@ interface, serialize as a **BSON document**. Keep only *public* properties,
 and ignore *protected* and *private* properties.
 
 If an object is of a class that implements the ``MongoDB\BSON\Serializable``
-interface, call ``bsonSerialize`` and use the returned associative array to
-store as properties of a **BSON document**. Not returning an array is an error
-and should throw an ``MongoDB\Driver\Exception\UnexpectedValueException``
-exception. It is valid to return a packed array, but it must also be stored as
-a **BSON document**.
+interface, call ``bsonSerialize`` and use the returned array or ``stdClass`` to
+serialize as a BSON document or array. The BSON type will be determined by the
+following:
+
+1. Root documents must be serialized as a BSON document.
+2. ``MongoDB\BSON\Persistable`` objects must be serialized as a BSON document.
+3. If ``bsonSerialize`` returns a packed array, serialize as a BSON array.
+4. In all other cases, serialize as a BSON document.
+
+Not returning an array or ``stdClass`` is an error and should throw an
+``MongoDB\Driver\Exception\UnexpectedValueException`` exception.
 
 If an object is of a class that implements the ``MongoDB\BSON\Persistable``
 interface (which implies ``MongoDB\BSON\Serializable``), obtain the properties
@@ -81,16 +87,66 @@ Examples
     public $foo => 42,
     protected $prot => "wine",
     private $fpr => "cheese"
-    function bsonSerialize() : array {
+    function bsonSerialize() {
         return [ 'foo' => $this->foo, 'prot' => $this->prot ];
     }
   } => { 'foo' : 42, 'prot' : "wine" }
+
+  AnotherClass implements MongoDB\BSON\Serializable {
+    public $foo => 42
+    function bsonSerialize() {
+        return $this;
+    }
+  } => MongoDB\Driver\Exception\UnexpectedValueException("bsonSerialize() did not return an array or stdClass")
+
+  AnotherClass implements MongoDB\BSON\Serializable {
+    private $elements => [ 'foo', 'bar' ]
+    function bsonSerialize() {
+        return $this->elements;
+    }
+  } => { '0' : 'foo', '1' : 'bar' }
+
+  ContainerClass implements MongoDB\BSON\Serializable {
+    public $things => AnotherClass implements MongoDB\BSON\Serializable {
+      private $elements => [ 0 => 'foo', 2 => 'bar' ]
+      function bsonSerialize() {
+        return $this->elements;
+      }
+    }
+    function bsonSerialize() {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : { '0' : 'foo', '2' : 'bar' } }
+
+  ContainerClass implements MongoDB\BSON\Serializable {
+    public $things => AnotherClass implements MongoDB\BSON\Serializable {
+      private $elements => [ 0 => 'foo', 2 => 'bar' ]
+      function bsonSerialize() {
+        return array_values($this->elements);
+      }
+    }
+    function bsonSerialize() {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : [ 'foo', 'bar' ] }
+
+  ContainerClass implements MongoDB\BSON\Serializable {
+    public $things => AnotherClass implements MongoDB\BSON\Serializable {
+      private $elements => [ 'foo', 'bar' ]
+      function bsonSerialize() {
+        return (object) $this->elements;
+      }
+    }
+    function bsonSerialize() {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : { '0' : 'foo', '1' : 'bar' } }
 
   UpperClass implements MongoDB\BSON\Persistable {
     public $foo => 42,
     protected $prot => "wine",
     private $fpr => "cheese"
-    function bsonSerialize() : array {
+    function bsonSerialize() {
         return [ 'foo' => $this->foo, 'prot' => $this->prot ];
     }
   } => { 'foo' : 42, 'prot' : "wine", '__pclass' : MongoDB\BSON\Binary(0x80, "UpperClass") }
