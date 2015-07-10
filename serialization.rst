@@ -31,16 +31,7 @@ These serialize as a BSON document::
 
   [ 0 => 1, 2 => 8, 3 => 12 ] => { "0" : 1, "2" : 8, "3" : 12 }
   [ "foo" => 42 ] => { "foo" : 42 }
-
-To discuss:
- 
-- This is one is tricky, as the internal order in PHP does not have sequential
-  arrays::
-
-    [ 1 => 9, 0 => 10 ] => { "1" : 9, "0" => 10 }
-
-  I suggest we serialize this as a **BSON document**.
-
+  [ 1 => 9, 0 => 10 ] => { "1" : 9, "0" => 10 }
 
 Objects
 -------
