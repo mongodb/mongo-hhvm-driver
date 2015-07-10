@@ -49,6 +49,19 @@ and should throw an ``MongoDB\Driver\Exception\UnexpectedValueException``
 exception. It is valid to return a packed array, but it must also be stored as
 a **BSON document**.
 
+If an object is of a class that implements the
+``MongoDB\BSON\ArraySerializable`` interface, call ``bsonSerialize`` and store
+the *values* of the returned array as elements of a **BSON array**. Not
+returning an array is an error and should throw an
+``MongoDB\Driver\Exception\UnexpectedValueException`` exception. It is valid to
+return an associative array, but the keys will be ignored and the array elements
+will be re-indexed (akin to filtering the array with ``array_values()``).
+
+An ``MongoDB\BSON\ArraySerializable`` object may not be serialized as a
+top-level BSON document. Attempting to do so (e.g. passing the object as an
+argument to ``MongoDB\BSON\fromPHP()``) will throw an
+``MongoDB\Driver\Exception\InvalidArgumentException`` exception.
+
 If an object is of a class that implements the ``MongoDB\BSON\Persistable``
 interface (which implies ``MongoDB\BSON\Serializable``), obtain the properties
 in a similar way as in the previous paragraph, but *also* add an additional
@@ -85,6 +98,37 @@ Examples
         return [ 'foo' => $this->foo, 'prot' => $this->prot ];
     }
   } => { 'foo' : 42, 'prot' : "wine" }
+
+  ThatArrayClass implements MongoDB\BSON\ArraySerializable {
+    private $elements => [ 1, 2, 3 ]
+    function bsonSerialize() : array {
+        return $this->elements;
+    }
+  } => MongoDB\Driver\Exception\InvalidArgumentException("ArraySerializable cannot be serialized as top-level document")
+
+  AnotherClass implements MongoDB\BSON\Serializable {
+    public $things => ThatArrayClass implements MongoDB\BSON\ArraySerializable {
+      private $elements => [ 0 => 'foo', 2 => 'bar' ]
+      function bsonSerialize() : array {
+        return array_values($this->elements);
+      }
+    }
+    function bsonSerialize() : array {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : [ 'foo', 'bar' ] }
+
+  AnotherClass implements MongoDB\BSON\Serializable {
+    public $things => ThatArrayClass implements MongoDB\BSON\ArraySerializable {
+      private $elements => [ 0 => 'foo', 2 => 'bar' ]
+      function bsonSerialize() : array {
+        return $this->elements;
+      }
+    }
+    function bsonSerialize() : array {
+        return [ 'things' => $this->things ];
+    }
+  } => MongoDB\Driver\Exception\UnexpectedValueException("ArraySerializable::bsonSerialize() returned an associative array")
 
   UpperClass implements MongoDB\BSON\Persistable {
     public $foo => 42,
