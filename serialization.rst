@@ -64,12 +64,12 @@ in a similar way as in the previous paragraph, but *also* add an additional
 property ``__pclass`` as a Binary value, with subtype ``0x80`` and as value
 the fully qualified class name of the object that is being serialized.
 
-The ``__pclass`` property is added to the array as returned by
+The ``__pclass`` property is added to the array returned by
 ``bsonSerialize``. That means, that it overwrites a ``__pclass`` array element
 if it was returned from ``bsonSerialize``. If you want to override this
 behaviour, you must **not** implement ``MongoDB\BSON\Persistable``, but
-instead implement ``MongoDB\BSON\Serializable``, where you are free to inject
-your own ``__pclass`` array element.
+instead implement ``MongoDB\BSON\Serializable`` directly, where you are free
+to inject your own ``__pclass`` array element.
 
 Examples
 ~~~~~~~~
