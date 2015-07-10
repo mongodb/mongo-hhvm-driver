@@ -242,6 +242,13 @@ iterate over the array and set the properties without modifications. It
     { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
       -> [ 'foo' => 'yes' ] /* 'unserialized' does not get set, because it's an array */
 
+::
+
+    /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
+    { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
+      -> stdClass { $foo => 'yes' }
+
+
 Related Tickets
 ===============
 
