@@ -239,13 +239,13 @@ iterate over the array and set the properties without modifications. It
 
 ::
 
-    /* typemap: [ 'object' => 'MyClass' ] */
+    /* typemap: [ 'document' => 'MyClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
       -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
 
 ::
 
-    /* typemap: [ 'object' => 'YourClass' ] */
+    /* typemap: [ 'document' => 'YourClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'YourClass') }
       -> YourClass { $foo => 'yes', $unserialized => true }
 
