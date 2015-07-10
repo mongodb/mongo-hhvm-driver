@@ -189,21 +189,9 @@ TypeMaps can be set through the ``setTypeMap()`` on a
 ``MongoDB\Driver\Cursor`` object, or the ``$typeMap`` argument of
 ``MongoDB\BSON\toPHP()`` (previously, ``MongoDB\BSON\toArray()``). Each of the
 three classes (``root``, ``document`` and ``array``) can be individually set.
-If ``document`` is set to something else than the default and ``root`` is set
-to the default (or not set at all), then the value of ``document`` also counts
-for ``root``. Which makes the following example equivalent::
 
-    ->setTypeMap( [ 'document' => 'MyClass' ] )
-    ->setTypeMap( [ 'document' => 'MyClass', 'root' => 'MyClass' ] );
-    ->setTypeMap( [ 'document' => 'MyClass', 'root' => NULL ] );
-
-But these are **not** equivalent::
-
-    ->setTypeMap( [ 'root' => 'MyClass' ] )
-    ->setTypeMap( [ 'document' => 'MyClass', 'root' => 'MyClass' ] );
-
-In the first line of this second example, the value for ``document`` stays
-the default, which is ``stdClass``.
+If the value in the map is ``NULL``, it means the same as the *default* value
+for that item.
 
 Examples
 --------
