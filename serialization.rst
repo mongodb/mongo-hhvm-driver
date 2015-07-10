@@ -16,7 +16,7 @@ If an array is a *packed array* — i.e. the keys start at 0 and are sequential
 without gaps: **BSON array**. 
 
 If the array is not packed — i.e. having associative (string) keys, the keys
-don't start at 0, or when they are gaps:: **BSON object**
+don't start at 0, or when there are gaps:: **BSON object**
 
 Examples
 ~~~~~~~~
@@ -133,14 +133,14 @@ possible mapping values are:
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
   ``stdClass`` object. There will be no special treatment of a ``__pclass``
-  property [1]_, but it should **not** be set as property in the returned
+  property [1]_, but it will **not** be set as property in the returned
   object.
 
 - ``any other string`` — defines the class name that the BSON array or BSON
-  object should be deserialized at.
+  object should be deserialized as.
 
   If the class implements the ``MongoDB\BSON\Unserializable`` interface,
-  either directly, or indirectly via ``MongoDB\BSON\Persistable``, then
+  either directly or indirectly via ``MongoDB\BSON\Persistable``, then
   the properties of the BSON document, **including** the ``__pclass`` property
   if it exists, are sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
@@ -174,7 +174,7 @@ implements ``MongoDB\BSON\Persistable``.
 
 The ``bsonUnserialize()`` method of ``YourClass`` and ``OurClass``
 iterate over the array and set the properties without modifications. It
-**also** sets the ``unserialized = true`` property::
+**also** sets the ``$unserialized`` property to ``true``::
 
     function bsonUnserialize( array $map )
     {
@@ -211,13 +211,13 @@ iterate over the array and set the properties without modifications. It
 
 ::
 
-    /* typemap: [ 'document' => 'MyClass' ] */
+    /* typemap: [ 'root' => 'MyClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
       -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
 
 ::
 
-    /* typemap: [ 'document' => 'YourClass' ] */
+    /* typemap: [ 'root' => 'YourClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'YourClass') }
       -> YourClass { $foo => 'yes', $__pclass => Binary(0x80, 'YourClass'), $unserialized => true }
 
@@ -234,7 +234,7 @@ iterate over the array and set the properties without modifications. It
       -> [ 'foo' => 'no', 'obj' => [ 'embedded => 3.14 ] ]
 
     { foo: 'yes', '__pclass': 'MyClass' }
-      -> [ 'foo' => 'yes', '__pclass' => 'MyClass' }
+      -> [ 'foo' => 'yes', '__pclass' => 'MyClass' ]
 
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
       -> [ 'foo' => 'yes' ]
@@ -246,7 +246,7 @@ iterate over the array and set the properties without modifications. It
 
     /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> stdClass { $foo => 'yes' }
+      -> stdClass { $foo => 'yes' } /* 'unserialized' does not get set, because it's a stdClass */
 
 
 Related Tickets
@@ -264,6 +264,7 @@ Related Tickets
 - PHPC-318_: Cursor type map should apply to top-level document
 - PHPC-319_: Top level documents should be deserialized as stdClass by default
 - PHPC-329_: Determine if ODM class should always supersede the type map
+
 - HHVM-55_: Implement BSON\Peristable interface
 - HHVM-56_: Implement BSON\Serializable interface
 - HHVM-57_: Implement BSON\Unserializable interface
@@ -273,6 +274,10 @@ Related Tickets
 - HHVM-67_: ODM should only match field of specific name (__pclass)
 - HHVM-84_: Implement MongoDB\BSON\Serializable
 - HHVM-85_: Implement MongoDB\BSON\Unserializable / MongoDB\BSON\Persistable
+
+- PHP-1457_: MongoCollection::insert() Non-public properties of objects.
+
+
 
 .. _PHPC-248: https://jira.mongodb.org/browse/PHPC-248
 .. _PHPC-249: https://jira.mongodb.org/browse/PHPC-249
@@ -293,6 +298,7 @@ Related Tickets
 .. _HHVM-67: https://jira.mongodb.org/browse/HHVM-67
 .. _HHVM-84: https://jira.mongodb.org/browse/HHVM-84
 .. _HHVM-85: https://jira.mongodb.org/browse/HHVM-85
+.. _PHP-1457: https://jira.mongodb.org/browse/PHP-1457
 
 Unrelated Tickets
 =================
@@ -301,7 +307,7 @@ Unrelated Tickets
 
 .. _PHPC-314: https://jira.mongodb.org/browse/PHPC-314
 
-.. [1] A ``__pclass`` property if only deemed to exist if there exists a
+.. [1] A ``__pclass`` property is only deemed to exist if there exists a
    property with that name,  **and** it is a Binary value, **and** the
    sub-type of the Binary value is ``0x80``. If any of these three conditions
    is not met, the ``__pclass`` property does not exist and should be treated
