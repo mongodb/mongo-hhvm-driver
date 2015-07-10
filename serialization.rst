@@ -137,25 +137,6 @@ possible mapping values are:
   property [1]_, but it should **not** be set as property in the returned
   object.
 
-- ``"odm"`` — uses the class name set in the ``__pclass`` property of a BSON
-  array or BSON document to determine the class name of the created object.
-
-  The properties of the BSON document, minus the ``__pclass`` property are
-  sent as an associative array to the ``bsonUnserialize`` function to initialise
-  the object's properties.
-
-  Remarks:
-
-  - If the ``__pclass`` property is not present [1]_, this throws the
-    ``MongoDB\Driver\Exception\UnexpectedValueException`` exception with a
-    message indicating the special class marker could not be found.
-
-  - If the class as determined by the ``__pclass`` property does not implement
-    the ``MongoDB\BSON\Persistable`` interface, throw an
-    ``MongoDB\Driver\Exception\UnexpectedValueException`` exception with a
-    message indicating that the named class does not implement the required
-    interface.
-
 - ``any other string`` — defines the class name that the BSON array or BSON
   object should be deserialized at.
 
@@ -269,27 +250,6 @@ iterate over the array and set the properties without modifications. It
 
     { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
       -> [ 'foo' => 'yes' ] /* 'unserialized' does not get set, because it's an array */
-
-:: 
-
-    /* typemap: [ 'document' => 'odm' ] (also implicitly sets root=odm) */
-    { foo: 'yes', 'bar' : false }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("pclass not set")
-
-    { foo: 'no', 'array' : [ 5, 6 ] }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("pclass not set")
-
-    { foo: 'no', 'obj' : { 'embedded' => 3.14 } }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("pclass not set")
-
-    { foo: 'yes', '__pclass': 'MyClass' }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("pclass not set")
-
-    { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("not persistable")
-
-    { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
-      -> OurClass { $foo => 'yes', $unserialized => true }
 
 Related Tickets
 ===============
