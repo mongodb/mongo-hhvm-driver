@@ -164,6 +164,10 @@ possible mapping values are:
   if it exists, are sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
 
+  If the class does not implement the ``MongoDB\BSON\Unserializable``
+  interface, then an ``MongoDB\Driver\Exception\UnexpectedValueException``
+  exception is thrown.
+
   To discuss:
 
   - What should we do if the named class implements
@@ -233,6 +237,18 @@ iterate over the array and set the properties without modifications. It
 
     { foo: 'yes', '__pclass': Binary(0x44, 'YourClass') }
       -> stdClass { $foo => 'yes', $__pclass => Binary(0x44, 'YourClass') }
+
+::
+
+    /* typemap: [ 'object' => 'MyClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
+      -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
+
+::
+
+    /* typemap: [ 'object' => 'YourClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'YourClass') }
+      -> YourClass { $foo => 'yes', $unserialized => true }
 
 ::
 
