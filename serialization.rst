@@ -118,8 +118,8 @@ possible mapping values are:
     a PHP object of the class name as defined by the ``__pclass`` property.
 
     If the named class implements the ``MongoDB\BSON\Unserializable``
-    interface, then the properties of the BSON document, minus the
-    ``__pclass`` property are sent as an associative array to the
+    interface, then the properties of the BSON document, including the
+    ``__pclass`` property, are sent as an associative array to the
     ``bsonUnserialize`` function to initialise the object's properties.
     
     If the named class does not implement the ``MongoDB\BSON\Unserializable``
@@ -128,7 +128,8 @@ possible mapping values are:
     expected interface.
 
 - ``"array"`` — turns a BSON array or BSON document into a PHP array.
-  ``__pclass`` properties [1]_ are igored.
+  ``__pclass`` properties [1]_ are ignored, and are **not** set as array
+  element in the returned array.
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
   ``stdClass`` object. There will be no special treatment of a ``__pclass``
@@ -140,7 +141,7 @@ possible mapping values are:
 
   If the class implements the ``MongoDB\BSON\Unserializable`` interface,
   either directly, or indirectly via ``MongoDB\BSON\Persistable``, then
-  the properties of the BSON document, **minus** the ``__pclass`` property [1]_
+  the properties of the BSON document, **including** the ``__pclass`` property
   if it exists, are sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
 
