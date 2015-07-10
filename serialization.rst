@@ -138,8 +138,8 @@ possible mapping values are:
 - ``any other string`` — defines the class name that the BSON array or BSON
   object should be deserialized at.
 
-  If the class implements the ``MongoDB\BSON\Unserializable`` interface, or
-  implicitly by implementing ``MongoDB\BSON\Persistable``, then
+  If the class implements the ``MongoDB\BSON\Unserializable`` interface,
+  either directly, or indirectly via ``MongoDB\BSON\Persistable``, then
   the properties of the BSON document, **minus** the ``__pclass`` property [1]_
   if it exists, are sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
@@ -150,7 +150,7 @@ possible mapping values are:
 
   If the named class is different from the ``__pclass`` key's value, then the
   ``__pclass`` value is ignored and the class name from the type map is used.
-  The properties of the BSON document are send to ``bsonUnserialize`` as per
+  The properties of the BSON document are sent to ``bsonUnserialize`` as per
   above.
 
 TypeMaps
