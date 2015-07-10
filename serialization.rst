@@ -251,7 +251,7 @@ iterate over the array and set the properties without modifications. It
 
 ::
 
-    /* typemap: [ 'document' => 'array' ] (also implicitly sets root=array) */
+    /* typemap: [ 'root' => 'array', 'document' => 'array' ] */
     { foo: 'yes', 'bar' : false }
       -> [ 'foo' => 'yes', 'bar' => false ]
 
