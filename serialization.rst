@@ -125,14 +125,9 @@ possible mapping values are:
     ``bsonUnserialize`` function to initialise the object's properties.
     
     If the named class does not implement the ``MongoDB\BSON\Unserializable``
-    interface, then the object gets initialized with the properties
-    **without** the ``__pclass`` property being one of them. It simply gets
-    left out.
-
-    The rationale for the latter is because no explicit choice about whether
-    to use ODM features has been made, it should not bail out because of an
-    extra ``__pclass`` property. The behaviour is different if the data type
-    was mapped to ``"odm"`` (see below).
+    interface, then an ``MongoDB\Driver\UnexpectedValueException`` exception
+    is thrown with a message indicating that the class does not implement the
+    expected interface.
 
 - ``"array"`` — turns a BSON array or BSON document into a PHP array.
   ``__pclass`` properties [1]_ are igored.
@@ -231,7 +226,7 @@ iterate over the array and set the properties without modifications. It
       -> stdClass { $foo => 'yes', $__pclass => 'MyClass' }
 
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> MyClass { $foo => 'yes' }
+      -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
 
     { foo: 'yes', '__pclass': Binary(0x80, 'YourClass') }
       -> MyClass { $foo => 'yes', $unserialized => true }
