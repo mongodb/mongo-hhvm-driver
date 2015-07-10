@@ -114,7 +114,7 @@ possible mapping values are:
 
   - A BSON array will be deserialized as a PHP ``array``.
   - A BSON document (root or nested) without ``__pclass`` property [1]_ becomes a
-    PHP ``stdClass`` object, with each BSON document property becoming a
+    PHP ``stdClass`` object, with each BSON document key becoming a
     public ``stdClass`` property.
   - A BSON document (root or nested) with ``__pclass`` property [1]_ becomes
     a PHP object of the class name as defined by the ``__pclass`` property.
