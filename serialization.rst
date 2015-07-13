@@ -18,6 +18,8 @@ without gaps: **BSON array**.
 If the array is not packed — i.e. having associative (string) keys, the keys
 don't start at 0, or when there are gaps:: **BSON object**
 
+A top-level (root) document, **always** serializes as a BSON document.
+
 Examples
 ~~~~~~~~
 
@@ -31,7 +33,10 @@ These serialize as a BSON document::
 
   [ 0 => 1, 2 => 8, 3 => 12 ] => { "0" : 1, "2" : 8, "3" : 12 }
   [ "foo" => 42 ] => { "foo" : 42 }
-  [ 1 => 9, 0 => 10 ] => { "1" : 9, "0" => 10 }
+  [ 1 => 9, 0 => 10 ] => { "1" : 9, "0" : 10 }
+
+Note that the five examples are *extracts* of a full document, and represent
+only **one** value inside a document.
 
 Objects
 -------
