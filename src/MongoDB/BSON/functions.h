@@ -17,9 +17,9 @@
 #define __MONGODB_BSON_FUNCTIONS_H__
 namespace HPHP {
 
-String HHVM_FUNCTION(MongoDBBsonFromArray, const Variant &data);
+String HHVM_FUNCTION(MongoDBBsonFromPHP, const Variant &data);
 Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data);
-Variant HHVM_FUNCTION(MongoDBBsonToArray, const String &data, const Variant &typemap);
+Variant HHVM_FUNCTION(MongoDBBsonToPHP, const String &data, const Variant &typemap);
 Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data);
 }
 #endif

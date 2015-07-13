@@ -32,8 +32,8 @@ $a = new Bar;
 $f = new Foo;
 $a->foo = $f;
 
-var_dump( MongoDB\BSON\toArray( MongoDB\BSON\fromArray( $a ) ) );
-var_dump( MongoDB\BSON\toArray( MongoDB\BSON\fromArray( $f ) ) );
+var_dump( MongoDB\BSON\toPHP( MongoDB\BSON\fromPHP( $a ) ) );
+var_dump( MongoDB\BSON\toPHP( MongoDB\BSON\fromPHP( $f ) ) );
 ?>
 --EXPECTF--
 object(stdClass)#%d (2) {

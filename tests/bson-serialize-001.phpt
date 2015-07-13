@@ -22,8 +22,8 @@ $a = new Bar;
 $f = new Foo;
 $a->foo = $f;
 
-var_dump( MongoDB\BSON\toJson( MongoDB\BSON\fromArray( $a ) ) );
-var_dump( MongoDB\BSON\toJson( MongoDB\BSON\fromArray( $f ) ) );
+var_dump( MongoDB\BSON\toJson( MongoDB\BSON\fromPHP( $a ) ) );
+var_dump( MongoDB\BSON\toJson( MongoDB\BSON\fromPHP( $f ) ) );
 ?>
 --EXPECT--
 string(58) "{ "barbar" : 3.141593, "foo" : { "3" : 42, "1" : false } }"

@@ -57,9 +57,9 @@ static class MongoDBExtension : public Extension {
 
 		virtual void moduleInit() {
 			/* MongoDB\BSON functions */
-			HHVM_FALIAS(MongoDB\\BSON\\fromArray, MongoDBBsonFromArray);
+			HHVM_FALIAS(MongoDB\\BSON\\fromPHP, MongoDBBsonFromPHP);
 			HHVM_FALIAS(MongoDB\\BSON\\fromJson, MongoDBBsonFromJson);
-			HHVM_FALIAS(MongoDB\\BSON\\toArray, MongoDBBsonToArray);
+			HHVM_FALIAS(MongoDB\\BSON\\toPHP, MongoDBBsonToPHP);
 			HHVM_FALIAS(MongoDB\\BSON\\toJson, MongoDBBsonToJson);
 
 			/* MongoDB\BSON\Binary */
