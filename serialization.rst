@@ -50,23 +50,23 @@ following:
 1. Root documents must be serialized as a BSON document.
 2. ``MongoDB\BSON\Persistable`` objects must be serialized as a BSON document.
 3. If ``bsonSerialize`` returns a packed array, serialize as a BSON array.
-4. In all other cases, serialize as a BSON document.
-
-Not returning an array or ``stdClass`` is an error and should throw an
-``MongoDB\Driver\Exception\UnexpectedValueException`` exception.
+4. If ``bsonSerialize`` returns a non-packed array or ``stdClass``, serialize as
+   a BSON document.
+5. If ``bsonSerialize`` did not return an array or ``stdClass``, throw an
+   ``MongoDB\Driver\Exception\UnexpectedValueException`` exception.
 
 If an object is of a class that implements the ``MongoDB\BSON\Persistable``
 interface (which implies ``MongoDB\BSON\Serializable``), obtain the properties
 in a similar way as in the previous paragraph, but *also* add an additional
-property ``__pclass`` as a Binary value, with subtype ``0x80`` and as value
+property ``__pclass`` as a Binary value, with subtype ``0x80`` and data bearing
 the fully qualified class name of the object that is being serialized.
 
-The ``__pclass`` property is added to the array returned by
-``bsonSerialize``. That means, that it overwrites a ``__pclass`` array element
-if it was returned from ``bsonSerialize``. If you want to override this
-behaviour, you must **not** implement ``MongoDB\BSON\Persistable``, but
-instead implement ``MongoDB\BSON\Serializable`` directly, where you are free
-to inject your own ``__pclass`` array element.
+The ``__pclass`` property is added to the array or object returned by
+``bsonSerialize``, which means it will overwrite any ``__pclass`` key/property
+in the ``bsonSerialize`` return value. If you want to avoid this behaviour and
+set your own ``__pclass`` value, you must **not** implement
+``MongoDB\BSON\Persistable`` and should instead implement
+``MongoDB\BSON\Serializable`` directly.
 
 Examples
 ~~~~~~~~
@@ -184,7 +184,7 @@ possible mapping values are:
     expected interface.
 
 - ``"array"`` — turns a BSON array or BSON document into a PHP array.
-  ``__pclass`` properties [1]_ are ignored, and are **not** set as array
+  ``__pclass`` properties [1]_ are ignored, and are **not** set as an array
   element in the returned array.
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
@@ -207,13 +207,13 @@ possible mapping values are:
 
   If the named class is different from the ``__pclass`` key's value, then the
   ``__pclass`` value is ignored and the class name from the type map is used.
-  The properties of the BSON document are sent to ``bsonUnserialize`` as per
-  above.
+  The properties of the BSON document (including ``__pclass``) are sent to
+  ``bsonUnserialize`` as per above.
 
 TypeMaps
 --------
 
-TypeMaps can be set through the ``setTypeMap()`` on a
+TypeMaps can be set through the ``setTypeMap()`` method on a
 ``MongoDB\Driver\Cursor`` object, or the ``$typeMap`` argument of
 ``MongoDB\BSON\toPHP()`` (previously, ``MongoDB\BSON\toArray()``). Each of the
 three classes (``root``, ``document`` and ``array``) can be individually set.
