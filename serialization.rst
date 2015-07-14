@@ -182,11 +182,11 @@ possible mapping values are:
     interface, then the properties of the BSON document, including the
     ``__pclass`` property, are sent as an associative array to the
     ``bsonUnserialize`` function to initialise the object's properties.
-    
-    If the named class does not implement the ``MongoDB\BSON\Unserializable``
-    interface, then an ``MongoDB\Driver\UnexpectedValueException`` exception
-    is thrown with a message indicating that the class does not implement the
-    expected interface.
+
+    If the named class does not exist or does not implement the
+    ``MongoDB\BSON\Unserializable`` interface, ``stdClass`` will be used and
+    each BSON document key (including ``__pclass``) will be set as a public
+    ``stdClass`` property.
 
 - ``"array"`` — turns a BSON array or BSON document into a PHP array. There will
   be no special treatment of a ``__pclass`` property [1]_, but it may be set as
@@ -262,7 +262,7 @@ iterate over the array and set the properties without modifications. It
       -> stdClass { $foo => 'yes', $__pclass => 'MyClass' }
 
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
+      -> stdClass { $foo => 'yes', $__pclass => Binary(0x80, 'MyClass') }
 
     { foo: 'yes', '__pclass': Binary(0x80, 'YourClass') }
       -> MyClass { $foo => 'yes', $__pclass => Binary(0x80, 'YourClass'), $unserialized => true }
