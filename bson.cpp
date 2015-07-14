@@ -333,7 +333,7 @@ void VariantToBsonConverter::_convertUTCDateTime(bson_t *bson, const char *key, 
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\UTCDateTime */
+/* {{{ Special objects that implement MongoDB\BSON\Serializable */
 void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key, Object v)
 {
 	Variant result;
