@@ -206,9 +206,9 @@ possible mapping values are:
   if it exists, are sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
 
-  If the class does not implement the ``MongoDB\BSON\Unserializable``
-  interface, then an ``MongoDB\Driver\Exception\UnexpectedValueException``
-  exception is thrown.
+  If the named class does not exist or does not implement the
+  ``MongoDB\BSON\Unserializable`` interface, then an
+  ``MongoDB\Driver\Exception\UnexpectedValueException`` exception is thrown.
 
   If the named class is different from the ``__pclass`` key's value, then the
   ``__pclass`` value is ignored and the class name from the type map is used.
