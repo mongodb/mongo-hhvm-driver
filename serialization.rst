@@ -43,24 +43,30 @@ interface, serialize as a **BSON document**. Keep only *public* properties,
 and ignore *protected* and *private* properties.
 
 If an object is of a class that implements the ``MongoDB\BSON\Serializable``
-interface, call ``bsonSerialize`` and use the returned associative array to
-store as properties of a **BSON document**. Not returning an array is an error
-and should throw an ``MongoDB\Driver\Exception\UnexpectedValueException``
-exception. It is valid to return a packed array, but it must also be stored as
-a **BSON document**.
+interface, call ``bsonSerialize`` and use the returned array or ``stdClass`` to
+serialize as a BSON document or array. The BSON type will be determined by the
+following:
+
+1. Root documents must be serialized as a BSON document.
+2. ``MongoDB\BSON\Persistable`` objects must be serialized as a BSON document.
+3. If ``bsonSerialize`` returns a packed array, serialize as a BSON array.
+4. If ``bsonSerialize`` returns a non-packed array or ``stdClass``, serialize as
+   a BSON document.
+5. If ``bsonSerialize`` did not return an array or ``stdClass``, throw an
+   ``MongoDB\Driver\Exception\UnexpectedValueException`` exception.
 
 If an object is of a class that implements the ``MongoDB\BSON\Persistable``
 interface (which implies ``MongoDB\BSON\Serializable``), obtain the properties
 in a similar way as in the previous paragraph, but *also* add an additional
-property ``__pclass`` as a Binary value, with subtype ``0x80`` and as value
+property ``__pclass`` as a Binary value, with subtype ``0x80`` and data bearing
 the fully qualified class name of the object that is being serialized.
 
-The ``__pclass`` property is added to the array returned by
-``bsonSerialize``. That means, that it overwrites a ``__pclass`` array element
-if it was returned from ``bsonSerialize``. If you want to override this
-behaviour, you must **not** implement ``MongoDB\BSON\Persistable``, but
-instead implement ``MongoDB\BSON\Serializable`` directly, where you are free
-to inject your own ``__pclass`` array element.
+The ``__pclass`` property is added to the array or object returned by
+``bsonSerialize``, which means it will overwrite any ``__pclass`` key/property
+in the ``bsonSerialize`` return value. If you want to avoid this behaviour and
+set your own ``__pclass`` value, you must **not** implement
+``MongoDB\BSON\Persistable`` and should instead implement
+``MongoDB\BSON\Serializable`` directly.
 
 Examples
 ~~~~~~~~
@@ -81,16 +87,66 @@ Examples
     public $foo => 42,
     protected $prot => "wine",
     private $fpr => "cheese"
-    function bsonSerialize() : array {
+    function bsonSerialize() {
         return [ 'foo' => $this->foo, 'prot' => $this->prot ];
     }
   } => { 'foo' : 42, 'prot' : "wine" }
+
+  AnotherClass implements MongoDB\BSON\Serializable {
+    public $foo => 42
+    function bsonSerialize() {
+        return $this;
+    }
+  } => MongoDB\Driver\Exception\UnexpectedValueException("bsonSerialize() did not return an array or stdClass")
+
+  AnotherClass implements MongoDB\BSON\Serializable {
+    private $elements => [ 'foo', 'bar' ]
+    function bsonSerialize() {
+        return $this->elements;
+    }
+  } => { '0' : 'foo', '1' : 'bar' }
+
+  ContainerClass implements MongoDB\BSON\Serializable {
+    public $things => AnotherClass implements MongoDB\BSON\Serializable {
+      private $elements => [ 0 => 'foo', 2 => 'bar' ]
+      function bsonSerialize() {
+        return $this->elements;
+      }
+    }
+    function bsonSerialize() {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : { '0' : 'foo', '2' : 'bar' } }
+
+  ContainerClass implements MongoDB\BSON\Serializable {
+    public $things => AnotherClass implements MongoDB\BSON\Serializable {
+      private $elements => [ 0 => 'foo', 2 => 'bar' ]
+      function bsonSerialize() {
+        return array_values($this->elements);
+      }
+    }
+    function bsonSerialize() {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : [ 'foo', 'bar' ] }
+
+  ContainerClass implements MongoDB\BSON\Serializable {
+    public $things => AnotherClass implements MongoDB\BSON\Serializable {
+      private $elements => [ 'foo', 'bar' ]
+      function bsonSerialize() {
+        return (object) $this->elements;
+      }
+    }
+    function bsonSerialize() {
+        return [ 'things' => $this->things ];
+    }
+  } => { 'things' : { '0' : 'foo', '1' : 'bar' } }
 
   UpperClass implements MongoDB\BSON\Persistable {
     public $foo => 42,
     protected $prot => "wine",
     private $fpr => "cheese"
-    function bsonSerialize() : array {
+    function bsonSerialize() {
         return [ 'foo' => $this->foo, 'prot' => $this->prot ];
     }
   } => { 'foo' : 42, 'prot' : "wine", '__pclass' : MongoDB\BSON\Binary(0x80, "UpperClass") }
@@ -128,7 +184,7 @@ possible mapping values are:
     expected interface.
 
 - ``"array"`` — turns a BSON array or BSON document into a PHP array.
-  ``__pclass`` properties [1]_ are ignored, and are **not** set as array
+  ``__pclass`` properties [1]_ are ignored, and are **not** set as an array
   element in the returned array.
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
@@ -151,13 +207,13 @@ possible mapping values are:
 
   If the named class is different from the ``__pclass`` key's value, then the
   ``__pclass`` value is ignored and the class name from the type map is used.
-  The properties of the BSON document are sent to ``bsonUnserialize`` as per
-  above.
+  The properties of the BSON document (including ``__pclass``) are sent to
+  ``bsonUnserialize`` as per above.
 
 TypeMaps
 --------
 
-TypeMaps can be set through the ``setTypeMap()`` on a
+TypeMaps can be set through the ``setTypeMap()`` method on a
 ``MongoDB\Driver\Cursor`` object, or the ``$typeMap`` argument of
 ``MongoDB\BSON\toPHP()`` (previously, ``MongoDB\BSON\toArray()``). Each of the
 three classes (``root``, ``document`` and ``array``) can be individually set.
