@@ -154,11 +154,6 @@ char *VariantToBsonConverter::_getUnmangledPropertyName(String key)
 	}
 }
 
-static inline StrNR ctxClassName() {
-	Class* ctx = g_context->getContextClass();
-	return ctx ? ctx->nameStr() : StrNR(staticEmptyString());
-}
-
 void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_name, Variant v)
 {
 	bson_t child;
@@ -175,7 +170,7 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 		 * will continue treating this as a normal document */
 	}
 
-	document = v.toObject()->o_toIterArray(ctxClassName(), ObjectData::PreserveRefs);
+	document = v.toObject()->o_toIterArray(null_string, ObjectData::PreserveRefs);
 
 	if (_isPackedArray(document) && !v.isObject()) {
 		if (property_name != NULL) {
