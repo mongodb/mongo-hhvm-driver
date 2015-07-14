@@ -37,6 +37,15 @@ extern "C" {
 
 namespace HPHP {
 /* {{{ HHVM → BSON */
+
+/* {{{ static strings used for conversions */
+const StaticString
+	s_document("document"),
+	s_object("object"),
+	s_stdClass("stdClass"),
+	s_array("array");
+/* }}} */
+
 int VariantToBsonConverter::_isPackedArray(const Array &a)
 {
 	int idx = 0, key_value = 0;
@@ -344,15 +353,18 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		1, args
 	);
 
-	if (!result.isArray()) {
+	if (result.isArray()) {
+		properties = result.toArray();
+	} else if (result.isObject() && result.toObject().instanceof(s_stdClass)) {
+		properties = result.toObject();
+	} else {
 		StringBuffer buf;
-		buf.printf("Expected %s() to return an array, but %s given", s_MongoDriverBsonSerializable_functionName.data(), HPHP::getDataTypeString(result.getType()).data());
+		buf.printf("Expected %s() to return an array or stdClass, but %s given", s_MongoDriverBsonSerializable_functionName.data(), HPHP::getDataTypeString(result.getType()).data());
 		Variant full_name = buf.detach();
 
 		throw MongoDriver::Utils::throwUnexpectedValueException((char*) full_name.toString().c_str());
 	}
 
-	properties = result.toArray();
 
 	if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
 		const char *class_name = cls->nameStr().c_str();
@@ -782,12 +794,6 @@ bool BsonToVariantConverter::convert(Variant *v)
 /* }}} */
 
 /* {{{ TypeMap helper functions */
-const StaticString
-	s_document("document"),
-	s_object("object"),
-	s_stdClass("stdClass"),
-	s_array("array");
-
 #define CASECMP(a,b) (bstrcasecmp((a).data(), (a).size(), (b).data(), (b).size()) == 0)
 
 void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap)
