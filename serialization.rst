@@ -57,7 +57,7 @@ following:
 
 If an object is of a class that implements the ``MongoDB\BSON\Persistable``
 interface (which implies ``MongoDB\BSON\Serializable``), obtain the properties
-in a similar way as in the previous paragraph, but *also* add an additional
+in a similar way as in the previous paragraphs, but *also* add an additional
 property ``__pclass`` as a Binary value, with subtype ``0x80`` and data bearing
 the fully qualified class name of the object that is being serialized.
 
