@@ -353,11 +353,11 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		1, args
 	);
 
-	if (result.isArray()) {
-		properties = result.toArray();
-	} else if (result.isObject() && result.toObject().instanceof(s_stdClass)) {
-		properties = result.toObject();
-	} else {
+	if ( ! (
+			result.isArray() || 
+			(result.isObject() && result.toObject().instanceof(s_stdClass))
+		)
+	) {
 		StringBuffer buf;
 		buf.printf("Expected %s() to return an array or stdClass, but %s given", s_MongoDriverBsonSerializable_functionName.data(), HPHP::getDataTypeString(result.getType()).data());
 		Variant full_name = buf.detach();
@@ -365,6 +365,8 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		throw MongoDriver::Utils::throwUnexpectedValueException((char*) full_name.toString().c_str());
 	}
 
+	/* Convert to array so that we can handle it well */
+	properties = result.toArray();
 
 	if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
 		const char *class_name = cls->nameStr().c_str();
@@ -376,7 +378,7 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		properties.add(String(s_MongoDriverBsonODM_fieldName), obj);
 	}
 
-	convertDocument(bson, key, properties);
+	convertDocument(bson, key, result.isObject() ? Variant(Variant(properties).toObject()) : Variant(properties));
 }
 /* }}} */
 
