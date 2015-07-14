@@ -188,14 +188,14 @@ possible mapping values are:
     is thrown with a message indicating that the class does not implement the
     expected interface.
 
-- ``"array"`` — turns a BSON array or BSON document into a PHP array.
-  ``__pclass`` properties [1]_ are ignored, and are **not** set as an array
-  element in the returned array.
+- ``"array"`` — turns a BSON array or BSON document into a PHP array. There will
+  be no special treatment of a ``__pclass`` property [1]_, but it may be set as
+  an element in the returned array if it was present in the BSON document.
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
   ``stdClass`` object. There will be no special treatment of a ``__pclass``
-  property [1]_, but it will **not** be set as property in the returned
-  object.
+  property [1]_, but it may be set as a public property in the returned object
+  if it was present in the BSON document.
 
 - ``any other string`` — defines the class name that the BSON array or BSON
   object should be deserialized as.
@@ -298,16 +298,16 @@ iterate over the array and set the properties without modifications. It
       -> [ 'foo' => 'yes', '__pclass' => 'MyClass' ]
 
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> [ 'foo' => 'yes' ]
+      -> [ 'foo' => 'yes', '__pclass' => Binary(0x80, 'MyClass') ]
 
     { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
-      -> [ 'foo' => 'yes' ] /* 'unserialized' does not get set, because it's an array */
+      -> [ 'foo' => 'yes', '__pclass' => Binary(0x80, 'OurClass') ]
 
 ::
 
     /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> stdClass { $foo => 'yes' } /* 'unserialized' does not get set, because it's a stdClass */
+      -> stdClass { $foo => 'yes', '__pclass' => Binary(0x80, 'MyClass') }
 
 
 Related Tickets
