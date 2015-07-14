@@ -172,10 +172,10 @@ possible mapping values are:
 - *not set* or ``NULL`` — this is the default.
 
   - A BSON array will be deserialized as a PHP ``array``.
-  - A BSON document (root or embedded) without ``__pclass`` property [1]_ becomes a
-    PHP ``stdClass`` object, with each BSON document key becoming a
+  - A BSON document (root or embedded) without a ``__pclass`` property [1]_
+    becomes a PHP ``stdClass`` object, with each BSON document key set as a
     public ``stdClass`` property.
-  - A BSON document (root or embedded) with ``__pclass`` property [1]_ becomes
+  - A BSON document (root or embedded) with a ``__pclass`` property [1]_ becomes
     a PHP object of the class name as defined by the ``__pclass`` property.
 
     If the named class implements the ``MongoDB\BSON\Unserializable``
