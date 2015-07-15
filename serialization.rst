@@ -198,22 +198,33 @@ possible mapping values are:
   if it was present in the BSON document.
 
 - ``any other string`` — defines the class name that the BSON array or BSON
-  object should be deserialized as.
+  object should be deserialized as. For BSON objects that include ``__pclass``
+  properties, this may also be a generic class or interface.
 
-  If the class implements the ``MongoDB\BSON\Unserializable`` interface,
-  either directly or indirectly via ``MongoDB\BSON\Persistable``, then
-  the properties of the BSON document, **including** the ``__pclass`` property
-  if it exists, are sent as an associative array to the ``bsonUnserialize``
-  function to initialise the object's properties.
+  If the named class does not exist, then an
+  ``MongoDB\Driver\Exception\InvalidArgumentException`` exception is
+  thrown.
 
-  If the named class does not exist or does not implement the
-  ``MongoDB\BSON\Unserializable`` interface, then an
+  If the BSON object has a ``__pclass`` property, that class must implement
+  ``MongoDB\BSON\Persistable`` and be an instance of the named class or
+  interface (i.e. it is that class, extends that class, or implements that
+  interface); otherwise, an
   ``MongoDB\Driver\Exception\UnexpectedValueException`` exception is thrown.
 
-  If the named class is different from the ``__pclass`` key's value, then the
-  ``__pclass`` value is ignored and the class name from the type map is used.
-  The properties of the BSON document (including ``__pclass``) are sent to
-  ``bsonUnserialize`` as per above.
+  At this point, we will know whether to use the named class or ``__pclass``
+  for instantiation. This instantiation class must be concrete (i.e. not an
+  abstract class or interface) and must implement
+  ``MongoDB\BSON\Unserializable``; otherwise, an
+  ``MongoDB\Driver\Exception\UnexpectedValueException`` will be thrown.
+
+  The properties of the BSON document, **including** the ``__pclass`` property
+  if it exists, will be sent as an associative array to the ``bsonUnserialize``
+  function to initialise the object's properties.
+
+  Note: unlike the default behaviour (i.e. unset or ``NULL`` type map entry), we
+  do *not* fall back to returning a ``stdClass`` instance if the instantiation
+  class does not exist or implement the required interface. This is a deliberate
+  decision to honor the requested type.
 
 TypeMaps
 --------
@@ -229,11 +240,15 @@ for that item.
 Examples
 --------
 
-In these examples, ``MyClass`` does **not** implement any interface,
-``YourClass`` implements ``MongoDB\BSON\Unserializable`` and ``OurClass``
-implements ``MongoDB\BSON\Persistable``.
+These examples use the following classes:
 
-The ``bsonUnserialize()`` method of ``YourClass`` and ``OurClass``
+- ``MyClass``, which does **not** implement any interface
+- ``YourClass``, which implements ``MongoDB\BSON\Unserializable``
+- ``OurClass``, which implements ``MongoDB\BSON\Persistable``
+- ``TheirClass``, which extends ``OurClass`` and additionally implements
+  ``Countable``.
+
+The ``bsonUnserialize()`` method of ``YourClass``, ``OurClass``, ``TheirClass``
 iterate over the array and set the properties without modifications. It
 **also** sets the ``$unserialized`` property to ``true``::
 
@@ -272,9 +287,29 @@ iterate over the array and set the properties without modifications. It
 
 ::
 
+    /* typemap: [ 'root' => 'MissingClass' ] */
+    { foo: 'yes' }
+      -> MongoDB\Driver\Exception\InvalidArgumentException("MissingClass does not exist")
+
     /* typemap: [ 'root' => 'MyClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
+      -> MongoDB\Driver\Exception\UnexpectedValueException("MyClass does not implement Persistable interface")
+
+    /* typemap: [ 'root' => 'OurClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'OurClass') }
+      -> OurClass { $foo => 'yes', $__pclass => Binary(0x80, 'OurClass'), $unserialized => true }
+
+    /* typemap: [ 'root' => 'OurClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'TheirClass') }
+      -> TheirClass { $foo => 'yes', $__pclass => Binary(0x80, 'TheirClass'), $unserialized => true }
+
+    /* typemap: [ 'root' => 'Countable' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'OurClass') }
+      -> MongoDB\Driver\Exception\UnexpectedValueException("OurClass is not an instance of Countable")
+
+    /* typemap: [ 'root' => 'Countable' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'TheirClass') }
+      -> TheirClass { $foo => 'yes', $__pclass => Binary(0x80, 'TheirClass'), $unserialized => true }
 
 ::
 
