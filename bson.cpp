@@ -767,9 +767,13 @@ bool BsonToVariantConverter::convert(Variant *v)
 		);
 		TypedValue args[1] = { *(Variant(state.zchild)).asCell() };
 
-		/* Lookup class and instantiate object */
+		/* Lookup class and instantiate object, but if we can't find the class,
+		 * make it a stdClass */
 		c_class = Unit::lookupClass(class_name.get());
-		assert(c_class);
+		if (!c_class) {
+			*v = Variant(Variant(state.zchild).toObject());
+			return true;
+		}
 		ObjectData *obj = ObjectData::newInstance(c_class);
 
 		/* Call bsonUnserialize on the object */
