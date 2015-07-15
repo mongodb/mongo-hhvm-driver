@@ -199,32 +199,19 @@ possible mapping values are:
 
 - ``any other string`` — defines the class name that the BSON array or BSON
   object should be deserialized as. For BSON objects that include ``__pclass``
-  properties, this may also be a generic class or interface.
+  properties, that class will take priority.
 
-  If the named class does not exist, then an
-  ``MongoDB\Driver\Exception\InvalidArgumentException`` exception is
-  thrown.
+  If the named class does not exist, is not concrete (i.e. it is abstract or an
+  interface), or does not implement ``MongoDB\BSON\Unserializable``, then an
+  ``MongoDB\Driver\Exception\InvalidArgumentException`` exception is thrown.
 
-  If the BSON object has a ``__pclass`` property, that class must implement
-  ``MongoDB\BSON\Persistable`` and be an instance of the named class or
-  interface (i.e. it is that class, extends that class, or implements that
-  interface); otherwise, an
-  ``MongoDB\Driver\Exception\UnexpectedValueException`` exception is thrown.
-
-  At this point, we will know whether to use the named class or ``__pclass``
-  for instantiation. This instantiation class must be concrete (i.e. not an
-  abstract class or interface) and must implement
-  ``MongoDB\BSON\Unserializable``; otherwise, an
-  ``MongoDB\Driver\Exception\UnexpectedValueException`` will be thrown.
+  If the BSON object has a ``__pclass`` property and that class exists and
+  implements ``MongoDB\BSON\Persistable``, it will supersede the class provided
+  in the type map.
 
   The properties of the BSON document, **including** the ``__pclass`` property
   if it exists, will be sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
-
-  Note: unlike the default behaviour (i.e. unset or ``NULL`` type map entry), we
-  do *not* fall back to returning a ``stdClass`` instance if the instantiation
-  class does not exist or implement the required interface. This is a deliberate
-  decision to honor the requested type.
 
 TypeMaps
 --------
@@ -245,8 +232,7 @@ These examples use the following classes:
 - ``MyClass``, which does **not** implement any interface
 - ``YourClass``, which implements ``MongoDB\BSON\Unserializable``
 - ``OurClass``, which implements ``MongoDB\BSON\Persistable``
-- ``TheirClass``, which extends ``OurClass`` and additionally implements
-  ``Countable``.
+- ``TheirClass``, which extends ``OurClass``
 
 The ``bsonUnserialize()`` method of ``YourClass``, ``OurClass``, ``TheirClass``
 iterate over the array and set the properties without modifications. It
@@ -293,21 +279,25 @@ iterate over the array and set the properties without modifications. It
 
     /* typemap: [ 'root' => 'MyClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("MyClass does not implement Persistable interface")
+      -> MongoDB\Driver\Exception\UnexpectedValueException("MyClass does not implement Unserializable interface")
 
-    /* typemap: [ 'root' => 'OurClass' ] */
+    /* typemap: [ 'root' => 'MongoDB\BSON\Unserializable' ] */
+    { foo: 'yes' }
+      -> MongoDB\Driver\Exception\UnexpectedValueException("Unserializable is not a concrete class")
+
+    /* typemap: [ 'root' => 'YourClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
+      -> YourClass { $foo => 'yes', $__pclass => Binary(0x80, 'MyClass'), $unserialized => true }
+
+    /* typemap: [ 'root' => 'YourClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'OurClass') }
       -> OurClass { $foo => 'yes', $__pclass => Binary(0x80, 'OurClass'), $unserialized => true }
 
-    /* typemap: [ 'root' => 'OurClass' ] */
+    /* typemap: [ 'root' => 'YourClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'TheirClass') }
       -> TheirClass { $foo => 'yes', $__pclass => Binary(0x80, 'TheirClass'), $unserialized => true }
 
-    /* typemap: [ 'root' => 'Countable' ] */
-    { foo: 'yes', '__pclass' => Binary(0x80, 'OurClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("OurClass is not an instance of Countable")
-
-    /* typemap: [ 'root' => 'Countable' ] */
+    /* typemap: [ 'root' => 'OurClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'TheirClass') }
       -> TheirClass { $foo => 'yes', $__pclass => Binary(0x80, 'TheirClass'), $unserialized => true }
 
