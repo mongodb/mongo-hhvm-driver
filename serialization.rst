@@ -178,13 +178,13 @@ possible mapping values are:
   - A BSON document (root or embedded) with a ``__pclass`` property [1]_ becomes
     a PHP object of the class name as defined by the ``__pclass`` property.
 
-    If the named class implements the ``MongoDB\BSON\Unserializable``
+    If the named class implements the ``MongoDB\BSON\Persistable``
     interface, then the properties of the BSON document, including the
     ``__pclass`` property, are sent as an associative array to the
     ``bsonUnserialize`` function to initialise the object's properties.
 
     If the named class does not exist or does not implement the
-    ``MongoDB\BSON\Unserializable`` interface, ``stdClass`` will be used and
+    ``MongoDB\BSON\Persistable`` interface, ``stdClass`` will be used and
     each BSON document key (including ``__pclass``) will be set as a public
     ``stdClass`` property.
 
