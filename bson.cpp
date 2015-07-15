@@ -756,7 +756,8 @@ bool BsonToVariantConverter::convert(Variant *v)
 	if (
 		state.zchild.exists(s_MongoDriverBsonODM_fieldName) &&
 		state.zchild[s_MongoDriverBsonODM_fieldName].isObject() &&
-		state.zchild[s_MongoDriverBsonODM_fieldName].toObject().instanceof(s_MongoBsonBinary_className)
+		state.zchild[s_MongoDriverBsonODM_fieldName].toObject().instanceof(s_MongoBsonBinary_className) &&
+		state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className).toInt64() == 0x80
 	) {
 		static Class* c_class;
 		Variant result;
@@ -765,8 +766,6 @@ bool BsonToVariantConverter::convert(Variant *v)
 			s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
 		);
 		TypedValue args[1] = { *(Variant(state.zchild)).asCell() };
-
-		state.zchild.remove(s_MongoDriverBsonODM_fieldName);
 
 		/* Lookup class and instantiate object */
 		c_class = Unit::lookupClass(class_name.get());
