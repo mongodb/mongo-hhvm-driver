@@ -21,6 +21,11 @@ class Foo implements MongoDB\BSON\Persistable
 	{
 		foreach ( $properties as $k => $v )
 		{
+			if ( $k == '__pclass' )
+			{
+				continue;
+			}
+
 			$prop_name = "prop_{$k}";
 
 			$this->$prop_name = $v;
