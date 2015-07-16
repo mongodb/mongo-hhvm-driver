@@ -414,6 +414,11 @@ class Binary implements Type
 		}
 		return $this->subType;
 	}
+
+	function getData() : string
+	{
+		return $this->data;
+	}
 }
 
 class Javascript implements Type
