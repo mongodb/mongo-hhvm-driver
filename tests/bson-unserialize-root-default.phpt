@@ -24,8 +24,8 @@ class RigidClass extends LiquidClass implements MongoDB\BSON\Persistable
 
 $tests = [
 	'{ "foo" : 42 }',
-	'{ "foo" : "yes", "__pclass": "MyObject" }',
-	'{ "foo" : "yes", "__pclass": { "$type": "44", "$binary" : "TGlxdWlkQ2xhc3M=" } }',
+	'{ "foo" : "yes", "__pclass": "RigidClass" }',
+	'{ "foo" : "yes", "__pclass": { "$type": "44", "$binary" : "UmlnaWRDbGFzcw==" } }',
 	'{ "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "RG9lc05vdEV4aXN0" } }', // DoesNotExist
 	'{ "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "Tm9TZXJpYWxpemU=" } }', // NoSerialize
 	'{ "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }', // LiquidClass
@@ -47,22 +47,22 @@ object(stdClass)#1 (1) {
   int(42)
 }
 
-{ "foo" : "yes", "__pclass": "MyObject" }
+{ "foo" : "yes", "__pclass": "RigidClass" }
 object(stdClass)#1 (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  string(8) "MyObject"
+  string(10) "RigidClass"
 }
 
-{ "foo" : "yes", "__pclass": { "$type": "44", "$binary" : "TGlxdWlkQ2xhc3M=" } }
+{ "foo" : "yes", "__pclass": { "$type": "44", "$binary" : "UmlnaWRDbGFzcw==" } }
 object(stdClass)#2 (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
   object(MongoDB\BSON\Binary)#1 (2) {
     ["data":"MongoDB\BSON\Binary":private]=>
-    string(11) "LiquidClass"
+    string(10) "RigidClass"
     ["subType":"MongoDB\BSON\Binary":private]=>
     int(68)
   }
