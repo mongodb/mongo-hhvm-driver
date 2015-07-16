@@ -774,7 +774,15 @@ bool BsonToVariantConverter::convert(Variant *v)
 			*v = Variant(Variant(state.zchild).toObject());
 			return true;
 		}
+
+		/* Instantiate */
 		ObjectData *obj = ObjectData::newInstance(c_class);
+
+		/* If the class does not implement Persistable, make it a stdClass */
+		if (!obj->instanceof(s_MongoDriverBsonPersistable_className)) {
+			*v = Variant(Variant(state.zchild).toObject());
+			return true;
+		}
 
 		/* Call bsonUnserialize on the object */
 		Func *m = c_class->lookupMethod(s_MongoDriverBsonUnserializable_functionName.get());
