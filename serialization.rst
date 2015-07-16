@@ -172,48 +172,46 @@ possible mapping values are:
 - *not set* or ``NULL`` — this is the default.
 
   - A BSON array will be deserialized as a PHP ``array``.
-  - A BSON document (root or embedded) without ``__pclass`` property [1]_ becomes a
-    PHP ``stdClass`` object, with each BSON document key becoming a
+  - A BSON document (root or embedded) without a ``__pclass`` property [1]_
+    becomes a PHP ``stdClass`` object, with each BSON document key set as a
     public ``stdClass`` property.
-  - A BSON document (root or embedded) with ``__pclass`` property [1]_ becomes
+  - A BSON document (root or embedded) with a ``__pclass`` property [1]_ becomes
     a PHP object of the class name as defined by the ``__pclass`` property.
 
-    If the named class implements the ``MongoDB\BSON\Unserializable``
+    If the named class implements the ``MongoDB\BSON\Persistable``
     interface, then the properties of the BSON document, including the
     ``__pclass`` property, are sent as an associative array to the
     ``bsonUnserialize`` function to initialise the object's properties.
-    
-    If the named class does not implement the ``MongoDB\BSON\Unserializable``
-    interface, then an ``MongoDB\Driver\UnexpectedValueException`` exception
-    is thrown with a message indicating that the class does not implement the
-    expected interface.
 
-- ``"array"`` — turns a BSON array or BSON document into a PHP array.
-  ``__pclass`` properties [1]_ are ignored, and are **not** set as an array
-  element in the returned array.
+    If the named class does not exist or does not implement the
+    ``MongoDB\BSON\Persistable`` interface, ``stdClass`` will be used and
+    each BSON document key (including ``__pclass``) will be set as a public
+    ``stdClass`` property.
+
+- ``"array"`` — turns a BSON array or BSON document into a PHP array. There will
+  be no special treatment of a ``__pclass`` property [1]_, but it may be set as
+  an element in the returned array if it was present in the BSON document.
 
 - ``"object"`` or ``"stdClass"`` — turns a BSON array or BSON document into a
   ``stdClass`` object. There will be no special treatment of a ``__pclass``
-  property [1]_, but it will **not** be set as property in the returned
-  object.
+  property [1]_, but it may be set as a public property in the returned object
+  if it was present in the BSON document.
 
 - ``any other string`` — defines the class name that the BSON array or BSON
-  object should be deserialized as.
+  object should be deserialized as. For BSON objects that include ``__pclass``
+  properties, that class will take priority.
 
-  If the class implements the ``MongoDB\BSON\Unserializable`` interface,
-  either directly or indirectly via ``MongoDB\BSON\Persistable``, then
-  the properties of the BSON document, **including** the ``__pclass`` property
-  if it exists, are sent as an associative array to the ``bsonUnserialize``
+  If the named class does not exist, is not concrete (i.e. it is abstract or an
+  interface), or does not implement ``MongoDB\BSON\Unserializable``, then an
+  ``MongoDB\Driver\Exception\InvalidArgumentException`` exception is thrown.
+
+  If the BSON object has a ``__pclass`` property and that class exists and
+  implements ``MongoDB\BSON\Persistable``, it will supersede the class provided
+  in the type map.
+
+  The properties of the BSON document, **including** the ``__pclass`` property
+  if it exists, will be sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
-
-  If the class does not implement the ``MongoDB\BSON\Unserializable``
-  interface, then an ``MongoDB\Driver\Exception\UnexpectedValueException``
-  exception is thrown.
-
-  If the named class is different from the ``__pclass`` key's value, then the
-  ``__pclass`` value is ignored and the class name from the type map is used.
-  The properties of the BSON document (including ``__pclass``) are sent to
-  ``bsonUnserialize`` as per above.
 
 TypeMaps
 --------
@@ -229,11 +227,14 @@ for that item.
 Examples
 --------
 
-In these examples, ``MyClass`` does **not** implement any interface,
-``YourClass`` implements ``MongoDB\BSON\Unserializable`` and ``OurClass``
-implements ``MongoDB\BSON\Persistable``.
+These examples use the following classes:
 
-The ``bsonUnserialize()`` method of ``YourClass`` and ``OurClass``
+- ``MyClass``, which does **not** implement any interface
+- ``YourClass``, which implements ``MongoDB\BSON\Unserializable``
+- ``OurClass``, which implements ``MongoDB\BSON\Persistable``
+- ``TheirClass``, which extends ``OurClass``
+
+The ``bsonUnserialize()`` method of ``YourClass``, ``OurClass``, ``TheirClass``
 iterate over the array and set the properties without modifications. It
 **also** sets the ``$unserialized`` property to ``true``::
 
@@ -262,7 +263,7 @@ iterate over the array and set the properties without modifications. It
       -> stdClass { $foo => 'yes', $__pclass => 'MyClass' }
 
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
+      -> stdClass { $foo => 'yes', $__pclass => Binary(0x80, 'MyClass') }
 
     { foo: 'yes', '__pclass': Binary(0x80, 'YourClass') }
       -> MyClass { $foo => 'yes', $__pclass => Binary(0x80, 'YourClass'), $unserialized => true }
@@ -272,9 +273,33 @@ iterate over the array and set the properties without modifications. It
 
 ::
 
+    /* typemap: [ 'root' => 'MissingClass' ] */
+    { foo: 'yes' }
+      -> MongoDB\Driver\Exception\InvalidArgumentException("MissingClass does not exist")
+
     /* typemap: [ 'root' => 'MyClass' ] */
     { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("class does not implement unserializable interface")
+      -> MongoDB\Driver\Exception\UnexpectedValueException("MyClass does not implement Unserializable interface")
+
+    /* typemap: [ 'root' => 'MongoDB\BSON\Unserializable' ] */
+    { foo: 'yes' }
+      -> MongoDB\Driver\Exception\UnexpectedValueException("Unserializable is not a concrete class")
+
+    /* typemap: [ 'root' => 'YourClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'MyClass') }
+      -> YourClass { $foo => 'yes', $__pclass => Binary(0x80, 'MyClass'), $unserialized => true }
+
+    /* typemap: [ 'root' => 'YourClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'OurClass') }
+      -> OurClass { $foo => 'yes', $__pclass => Binary(0x80, 'OurClass'), $unserialized => true }
+
+    /* typemap: [ 'root' => 'YourClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'TheirClass') }
+      -> TheirClass { $foo => 'yes', $__pclass => Binary(0x80, 'TheirClass'), $unserialized => true }
+
+    /* typemap: [ 'root' => 'OurClass' ] */
+    { foo: 'yes', '__pclass' => Binary(0x80, 'TheirClass') }
+      -> TheirClass { $foo => 'yes', $__pclass => Binary(0x80, 'TheirClass'), $unserialized => true }
 
 ::
 
@@ -298,16 +323,16 @@ iterate over the array and set the properties without modifications. It
       -> [ 'foo' => 'yes', '__pclass' => 'MyClass' ]
 
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> [ 'foo' => 'yes' ]
+      -> [ 'foo' => 'yes', '__pclass' => Binary(0x80, 'MyClass') ]
 
     { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
-      -> [ 'foo' => 'yes' ] /* 'unserialized' does not get set, because it's an array */
+      -> [ 'foo' => 'yes', '__pclass' => Binary(0x80, 'OurClass') ]
 
 ::
 
     /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
     { foo: 'yes', '__pclass': Binary(0x80, 'MyClass') }
-      -> stdClass { $foo => 'yes' } /* 'unserialized' does not get set, because it's a stdClass */
+      -> stdClass { $foo => 'yes', '__pclass' => Binary(0x80, 'MyClass') }
 
 
 Related Tickets
