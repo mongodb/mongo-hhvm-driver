@@ -742,17 +742,6 @@ bool BsonToVariantConverter::convert(Variant *v)
 		state.options = m_options;
 
 		bson_iter_visit_all(&iter, &hippo_bson_visitors, &state);
-/*
-		if (state->map.array || state->odm) {
-			zval *obj = NULL;
-
-			MAKE_STD_ZVAL(obj); 
-			object_init_ex(obj, state->odm ? state->odm : state->map.array);
-			zend_call_method_with_1_params(&obj, NULL, NULL, BSON_UNSERIALIZE_FUNC_NAME, NULL, state->zchild);
-			zval_dtor(state->zchild);
-			ZVAL_ZVAL(state->zchild, obj, 1, 1);
-		}
-*/
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
 	if (
