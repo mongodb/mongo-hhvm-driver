@@ -428,6 +428,7 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 	return false;
 }
 /* }}} */
+/* }}} */
 
 /* {{{ BSON → HHVM */
 BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int data_len, hippo_bson_conversion_options_t options)
