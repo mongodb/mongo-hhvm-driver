@@ -68,7 +68,7 @@ Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
 Variant HHVM_FUNCTION(MongoDBBsonToPHP, const String &data, const Variant &typemap)
 {
 	Variant v;
-	hippo_bson_conversion_options_t options = { HIPPO_TYPEMAP_ARRAY, HIPPO_TYPEMAP_STDCLASS };
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
 
 	BsonToVariantConverter convertor((const unsigned char*) data.c_str(), data.length(), options);
 	convertor.convert(&v);

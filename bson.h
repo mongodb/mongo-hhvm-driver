@@ -78,10 +78,13 @@ class VariantToBsonConverter
 /* }}} */
 };
 
+#define HIPPO_TYPEMAP_INITIALIZER { HIPPO_TYPEMAP_DEFAULT, HIPPO_TYPEMAP_DEFAULT, HIPPO_TYPEMAP_DEFAULT, HIPPO_BSONTYPE_ROOT }
+
 typedef struct {
 	int array_type;
 	int root_type;
 	int document_type;
+	int current_compound_type;
 } hippo_bson_conversion_options_t;
 
 typedef struct {

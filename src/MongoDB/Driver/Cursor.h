@@ -53,8 +53,7 @@ class MongoDBDriverCursorData
 		}
 
 		MongoDBDriverCursorData() {
-			bson_options.document_type = HIPPO_TYPEMAP_STDCLASS;
-			bson_options.array_type =    HIPPO_TYPEMAP_ARRAY;
+			bson_options = HIPPO_TYPEMAP_INITIALIZER;
 		}
 
 		~MongoDBDriverCursorData() {
