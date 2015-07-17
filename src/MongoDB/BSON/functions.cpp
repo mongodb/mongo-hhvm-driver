@@ -70,6 +70,8 @@ Variant HHVM_FUNCTION(MongoDBBsonToPHP, const String &data, const Variant &typem
 	Variant v;
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
 
+	parseTypeMap(&options, typemap.toArray());
+
 	BsonToVariantConverter convertor((const unsigned char*) data.c_str(), data.length(), options);
 	convertor.convert(&v);
 

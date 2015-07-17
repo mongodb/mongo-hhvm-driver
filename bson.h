@@ -100,6 +100,7 @@ class BsonToVariantConverter
 	private:
 		bson_reader_t *m_reader;
 
+		hippo_bson_state m_state;
 		hippo_bson_conversion_options_t m_options;
 };
 

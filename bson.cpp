@@ -464,14 +464,12 @@ bool hippo_bson_visit_document(const bson_iter_t *iter __attribute__((unused)), 
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	Variant document_v;
 
+	state->options.current_compound_type = HIPPO_BSONTYPE_DOCUMENT;
+
 	BsonToVariantConverter converter(bson_get_data(v_document), v_document->len, state->options);
 	converter.convert(&document_v);
 
-	if (state->options.document_type == HIPPO_TYPEMAP_ARRAY) {
-		state->zchild.add(String(key), document_v);
-	} else {
-		state->zchild.add(String(key), Variant(Variant(document_v).toObject()));
-	}
+	state->zchild.add(String(key), document_v);
 
 	return false;
 }
@@ -481,14 +479,12 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	Variant array_v;
 
+	state->options.current_compound_type = HIPPO_BSONTYPE_ARRAY;
+
 	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len, state->options);
 	converter.convert(&array_v);
 
-	if (state->options.array_type == HIPPO_TYPEMAP_ARRAY) {
-		state->zchild.add(String(key), array_v.toArray());
-	} else {
-		state->zchild.add(String(key), Variant(Variant(array_v).toObject()));
-	}
+	state->zchild.add(String(key), array_v);
 
 	return false;
 }
@@ -722,10 +718,26 @@ bool BsonToVariantConverter::convert(Variant *v)
 {
 	bson_iter_t   iter;
 	bool          eof = false;
+	bool          havePclass;
 	const bson_t *b;
-	hippo_bson_state state;
+	int type_descriminator;
 
-	state.zchild = NULL;
+	m_state.zchild = NULL;
+
+	/* Determine which descriminator to use */
+	switch (m_options.current_compound_type) {
+		case HIPPO_BSONTYPE_ARRAY:
+			type_descriminator = m_options.array_type;
+			break;
+
+		case HIPPO_BSONTYPE_ROOT:
+			type_descriminator = m_options.root_type;
+			break;
+
+		case HIPPO_BSONTYPE_DOCUMENT:
+			type_descriminator = m_options.document_type;
+			break;
+	}
 
 	if (!(b = bson_reader_read(m_reader, &eof))) {
 //		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not read document from reader");
@@ -738,31 +750,42 @@ bool BsonToVariantConverter::convert(Variant *v)
 			return false;
 		}
 
-		state.zchild = Array::Create();
-		state.options = m_options;
+		m_state.zchild = Array::Create();
+		m_state.options = m_options;
 
-		bson_iter_visit_all(&iter, &hippo_bson_visitors, &state);
+		bson_iter_visit_all(&iter, &hippo_bson_visitors, &m_state);
 	} while ((b = bson_reader_read(m_reader, &eof)));
 
+	/* Set "root" to false */
+	havePclass = false;
+
 	if (
-		state.zchild.exists(s_MongoDriverBsonODM_fieldName) &&
-		state.zchild[s_MongoDriverBsonODM_fieldName].isObject() &&
-		state.zchild[s_MongoDriverBsonODM_fieldName].toObject().instanceof(s_MongoBsonBinary_className) &&
-		state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className).toInt64() == 0x80
+		(
+			type_descriminator == HIPPO_TYPEMAP_DEFAULT ||
+			type_descriminator == HIPPO_TYPEMAP_NAMEDCLASS
+		) &&
+		m_state.zchild.exists(s_MongoDriverBsonODM_fieldName) &&
+		m_state.zchild[s_MongoDriverBsonODM_fieldName].isObject() &&
+		m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().instanceof(s_MongoBsonBinary_className) &&
+		m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className).toInt64() == 0x80
 	) {
+		havePclass = true;
+	}
+
+	if (havePclass) {
 		static Class* c_class;
 		Variant result;
 
-		String class_name = state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
+		String class_name = m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
 			s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
 		);
-		TypedValue args[1] = { *(Variant(state.zchild)).asCell() };
+		TypedValue args[1] = { *(Variant(m_state.zchild)).asCell() };
 
 		/* Lookup class and instantiate object, but if we can't find the class,
 		 * make it a stdClass */
 		c_class = Unit::lookupClass(class_name.get());
 		if (!c_class) {
-			*v = Variant(Variant(state.zchild).toObject());
+			*v = Variant(Variant(m_state.zchild).toObject());
 			return true;
 		}
 
@@ -771,7 +794,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 		/* If the class does not implement Persistable, make it a stdClass */
 		if (!obj->instanceof(s_MongoDriverBsonPersistable_className)) {
-			*v = Variant(Variant(state.zchild).toObject());
+			*v = Variant(Variant(m_state.zchild).toObject());
 			return true;
 		}
 
@@ -787,10 +810,20 @@ bool BsonToVariantConverter::convert(Variant *v)
 		);
 
 		*v = Variant(obj);
-	} else if (m_options.document_type == HIPPO_TYPEMAP_STDCLASS) {
-		*v = Variant(Variant(state.zchild).toObject());
+	} else if (type_descriminator == HIPPO_TYPEMAP_DEFAULT) {
+		if (m_options.current_compound_type == HIPPO_BSONTYPE_ARRAY) {
+			*v = Variant(Variant(m_state.zchild).toArray());
+		} else if (m_options.current_compound_type == HIPPO_BSONTYPE_ROOT) {
+			*v = Variant(Variant(m_state.zchild).toObject());
+		} else if (m_options.current_compound_type == HIPPO_BSONTYPE_DOCUMENT) {
+			*v = Variant(Variant(m_state.zchild).toObject());
+		}
+	} else if (type_descriminator == HIPPO_TYPEMAP_STDCLASS) {
+		*v = Variant(Variant(m_state.zchild).toObject());
+	} else if (type_descriminator == HIPPO_TYPEMAP_ARRAY) {
+		*v = Variant(m_state.zchild);
 	} else {
-		*v = Variant(state.zchild);
+		assert(NULL);
 	}
 
 	return true;
