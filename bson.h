@@ -28,8 +28,14 @@ namespace HPHP {
 #define HIPPO_BSON_ADD_ID     0x01
 #define HIPPO_BSON_RETURN_ID  0x02
 
-#define HIPPO_TYPEMAP_STDCLASS 0x04
-#define HIPPO_TYPEMAP_ARRAY    0x05
+#define HIPPO_TYPEMAP_DEFAULT    0x03
+#define HIPPO_TYPEMAP_STDCLASS   0x04
+#define HIPPO_TYPEMAP_ARRAY      0x05
+#define HIPPO_TYPEMAP_NAMEDCLASS 0x06
+
+#define HIPPO_BSONTYPE_ARRAY     0x10
+#define HIPPO_BSONTYPE_DOCUMENT  0x11
+#define HIPPO_BSONTYPE_ROOT      0x12
 
 class VariantToBsonConverter
 {
@@ -74,6 +80,7 @@ class VariantToBsonConverter
 
 typedef struct {
 	int array_type;
+	int root_type;
 	int document_type;
 } hippo_bson_conversion_options_t;
 

@@ -40,6 +40,7 @@ namespace HPHP {
 
 /* {{{ static strings used for conversions */
 const StaticString
+	s_root("root"),
 	s_document("document"),
 	s_object("object"),
 	s_stdClass("stdClass"),
@@ -811,6 +812,18 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap)
 {
+	if (typemap.exists(s_root)) {
+		String root_type;
+
+		root_type = typemap[s_root].toString();
+
+		if (CASECMP(root_type, s_object) || CASECMP(root_type, s_stdClass)) {
+			options->root_type = HIPPO_TYPEMAP_STDCLASS;
+		} else if (CASECMP(root_type, s_array)) {
+			options->root_type = HIPPO_TYPEMAP_ARRAY;
+		}
+	}
+
 	if (typemap.exists(s_document)) {
 		String document_type;
 

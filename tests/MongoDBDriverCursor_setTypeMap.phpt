@@ -41,10 +41,19 @@ $typemaps = [
 	[ 'array' => 'object' ],
 	[ 'array' => 'stdClass' ],
 	[ 'document' => 'array' ],
+	[ 'root' => 'array' ],
 	[ 'array' => 'object', 'document' => 'object' ],
 	[ 'array' => 'array', 'document' => 'object' ],
 	[ 'array' => 'object', 'document' => 'array' ],
 	[ 'array' => 'array', 'document' => 'array' ],
+	[ 'root' => 'array', 'array' => 'object', 'document' => 'object' ],
+	[ 'root' => 'array', 'array' => 'array', 'document' => 'object' ],
+	[ 'root' => 'array', 'array' => 'object', 'document' => 'array' ],
+	[ 'root' => 'array', 'array' => 'array', 'document' => 'array' ],
+	[ 'root' => 'object', 'array' => 'object', 'document' => 'object' ],
+	[ 'root' => 'object', 'array' => 'array', 'document' => 'object' ],
+	[ 'root' => 'object', 'array' => 'object', 'document' => 'array' ],
+	[ 'root' => 'object', 'array' => 'array', 'document' => 'array' ],
 ];
 
 foreach ( $typemaps as $typemap )
@@ -226,7 +235,7 @@ object(stdClass)#%d (3) {
 =================
 
 document: array  
-array(3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
   object(MongoDB\BSON\ObjectID)#%d (0) {
   }
@@ -241,6 +250,31 @@ array(3) {
   }
   ["document"]=>
   array(2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: array  
+array(3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  array(3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  object(stdClass)#%d (2) {
     ["bar"]=>
     int(52)
     ["foo"]=>
@@ -301,7 +335,7 @@ object(stdClass)#%d (3) {
 =================
 
 array: object  document: array  
-array(3) {
+object(stdClass)#%d (3) {
   ["_id"]=>
   object(MongoDB\BSON\ObjectID)#%d (0) {
   }
@@ -326,7 +360,207 @@ array(3) {
 =================
 
 array: array  document: array  
+object(stdClass)#%d (3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  array(3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  array(2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: array  array: object  document: object  
 array(3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  object(stdClass)#%d (3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  object(stdClass)#%d (2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: array  array: array  document: object  
+array(3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  array(3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  object(stdClass)#%d (2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: array  array: object  document: array  
+array(3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  object(stdClass)#%d (3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  array(2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: array  array: array  document: array  
+array(3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  array(3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  array(2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: object  array: object  document: object  
+object(stdClass)#%d (3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  object(stdClass)#%d (3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  object(stdClass)#%d (2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: object  array: array  document: object  
+object(stdClass)#%d (3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  array(3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  object(stdClass)#%d (2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: object  array: object  document: array  
+object(stdClass)#%d (3) {
+  ["_id"]=>
+  object(MongoDB\BSON\ObjectID)#%d (0) {
+  }
+  ["array"]=>
+  object(stdClass)#%d (3) {
+    [0]=>
+    int(1)
+    [1]=>
+    int(5)
+    [2]=>
+    string(3) "foo"
+  }
+  ["document"]=>
+  array(2) {
+    ["bar"]=>
+    int(52)
+    ["foo"]=>
+    bool(true)
+  }
+}
+
+=================
+
+root: object  array: array  document: array  
+object(stdClass)#%d (3) {
   ["_id"]=>
   object(MongoDB\BSON\ObjectID)#%d (0) {
   }
