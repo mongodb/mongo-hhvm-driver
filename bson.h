@@ -85,6 +85,9 @@ typedef struct {
 	int root_type;
 	int document_type;
 	int current_compound_type;
+	String array_class_name;
+	String root_class_name;
+	String document_class_name;
 } hippo_bson_conversion_options_t;
 
 typedef struct {

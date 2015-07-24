@@ -721,6 +721,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 	bool          havePclass;
 	const bson_t *b;
 	int type_descriminator;
+	String named_class;
 
 	m_state.zchild = NULL;
 
@@ -728,14 +729,17 @@ bool BsonToVariantConverter::convert(Variant *v)
 	switch (m_options.current_compound_type) {
 		case HIPPO_BSONTYPE_ARRAY:
 			type_descriminator = m_options.array_type;
+			named_class = m_options.array_class_name;
 			break;
 
 		case HIPPO_BSONTYPE_ROOT:
 			type_descriminator = m_options.root_type;
+			named_class = m_options.root_class_name;
 			break;
 
 		case HIPPO_BSONTYPE_DOCUMENT:
 			type_descriminator = m_options.document_type;
+			named_class = m_options.array_class_name;
 			break;
 	}
 
@@ -772,7 +776,67 @@ bool BsonToVariantConverter::convert(Variant *v)
 		havePclass = true;
 	}
 
-	if (havePclass) {
+	if (type_descriminator == HIPPO_TYPEMAP_NAMEDCLASS) {
+		static Class* c_class;
+		static Class* c_unserializable_interface;
+		static Class* c_persistable_interface;
+		Object obj;
+		Variant result;
+		bool useTypeMap = true;
+		c_unserializable_interface = Unit::lookupClass(s_MongoDriverBsonUnserializable_className.get());
+		c_persistable_interface = Unit::lookupClass(s_MongoDriverBsonPersistable_className.get());
+
+		/* If we have a __pclass, and the class exists, and the class
+		 * implements MongoDB\BSON\Persitable, we use that class name. */
+		if (havePclass) {
+			String class_name = m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
+				s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
+			);
+
+			/* Lookup class and instantiate object, but if we can't find the class,
+			 * make it a stdClass */
+			c_class = Unit::lookupClass(class_name.get());
+			if (c_class && c_class->classof(c_persistable_interface)) {
+				/* Instantiate */
+				obj = Object{c_class};
+				useTypeMap = false;
+				*v = Variant(obj);
+			}
+		}
+
+		if (useTypeMap) {
+			c_class = Unit::lookupClass(named_class.get());
+			if (c_class && c_class->classof(c_unserializable_interface)) {
+				/* Instantiate */
+				obj = Object{c_class};
+				useTypeMap = false;
+				*v = Variant(obj);
+			}
+		}
+
+		/* If the type map didn't match with a suitable class, we bail out */
+		if (useTypeMap) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("The typemap does not provide a class that implements MongoDB\\BSON\\Unserializable");
+		}
+
+		{
+			/* Setup arguments for bsonUnserialize call */
+			TypedValue args[1] = { *(Variant(m_state.zchild)).asCell() };
+
+			/* Call bsonUnserialize on the object */
+			Func *m = c_class->lookupMethod(s_MongoDriverBsonUnserializable_functionName.get());
+
+			g_context->invokeFuncFew(
+				result.asTypedValue(),
+				m,
+				obj.get(),
+				nullptr,
+				1, args
+			);
+
+			*v = Variant(obj);
+		}
+	} else if (havePclass) {
 		static Class* c_class;
 		Variant result;
 
@@ -844,6 +908,9 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 			options->root_type = HIPPO_TYPEMAP_STDCLASS;
 		} else if (CASECMP(root_type, s_array)) {
 			options->root_type = HIPPO_TYPEMAP_ARRAY;
+		} else {
+			options->root_type = HIPPO_TYPEMAP_NAMEDCLASS;
+			options->root_class_name = root_type;
 		}
 	}
 
@@ -856,6 +923,9 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 			options->document_type = HIPPO_TYPEMAP_STDCLASS;
 		} else if (CASECMP(document_type, s_array)) {
 			options->document_type = HIPPO_TYPEMAP_ARRAY;
+		} else {
+			options->document_type = HIPPO_TYPEMAP_NAMEDCLASS;
+			options->document_class_name = document_type;
 		}
 	}
 
@@ -868,6 +938,9 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 			options->array_type = HIPPO_TYPEMAP_STDCLASS;
 		} else if (CASECMP(array_type, s_array)) {
 			options->array_type = HIPPO_TYPEMAP_ARRAY;
+		} else {
+			options->array_type = HIPPO_TYPEMAP_NAMEDCLASS;
+			options->array_class_name = array_type;
 		}
 	}
 }
