@@ -333,13 +333,16 @@ iterate over the array and set the properties without modifications. It
       -> [ "foo" => "yes", "__pclass" => Binary(0x80, "MyClass") ]
 
     { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "OurClass" } }
-      -> [ "foo" => "yes", "__pclass" => Binary(0x80, "OurClass") ]
+      -> OurClass { $foo => "yes", $__pclass => Binary(0x80, "OurClass"), $unserialized => true }
 
 ::
 
     /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
     { "foo": "yes", "__pclass": Binary(0x80, "MyClass") }
       -> stdClass { $foo => "yes", "__pclass" => Binary(0x80, "MyClass") }
+      
+    { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "OurClass" } }
+      -> OurClass { $foo => "yes", $__pclass => Binary(0x80, "OurClass"), $unserialized => true }
 
 
 Related Tickets
