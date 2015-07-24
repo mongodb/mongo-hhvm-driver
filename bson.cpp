@@ -739,7 +739,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 		case HIPPO_BSONTYPE_DOCUMENT:
 			type_descriminator = m_options.document_type;
-			named_class = m_options.array_class_name;
+			named_class = m_options.document_class_name;
 			break;
 	}
 
