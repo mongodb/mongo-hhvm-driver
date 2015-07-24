@@ -796,7 +796,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 			/* Lookup class and instantiate object, but if we can't find the class,
 			 * make it a stdClass */
 			c_class = Unit::lookupClass(class_name.get());
-			if (c_class && c_class->classof(c_persistable_interface)) {
+			if (c_class && isNormalClass(c_class) && c_class->classof(c_persistable_interface)) {
 				/* Instantiate */
 				obj = Object{c_class};
 				useTypeMap = false;
@@ -806,7 +806,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 		if (useTypeMap) {
 			c_class = Unit::lookupClass(named_class.get());
-			if (c_class && c_class->classof(c_unserializable_interface)) {
+			if (c_class && isNormalClass(c_class) && c_class->classof(c_unserializable_interface)) {
 				/* Instantiate */
 				obj = Object{c_class};
 				useTypeMap = false;
