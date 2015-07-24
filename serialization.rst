@@ -266,7 +266,10 @@ iterate over the array and set the properties without modifications. It
       -> stdClass { $foo => 'yes', $__pclass => Binary(0x80, 'MyClass') }
 
     { foo: 'yes', '__pclass': Binary(0x80, 'YourClass') }
-      -> MyClass { $foo => 'yes', $__pclass => Binary(0x80, 'YourClass'), $unserialized => true }
+      -> stdClass { $foo => 'yes', $__pclass => Binary(0x80, 'YourClass') }
+
+    { foo: 'yes', '__pclass': Binary(0x80, 'OurClass') }
+      -> OurClass { $foo => 'yes', $__pclass => Binary(0x80, 'OurClass'), $unserialized => true }
 
     { foo: 'yes', '__pclass': Binary(0x44, 'YourClass') }
       -> stdClass { $foo => 'yes', $__pclass => Binary(0x44, 'YourClass') }
