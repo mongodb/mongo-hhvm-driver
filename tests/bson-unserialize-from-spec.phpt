@@ -245,3 +245,205 @@ object(stdClass)#9 (2) {
     int(68)
   }
 }
+
+
+=== NONEXISTING CLASS ===
+
+{ "foo": "yes" }
+The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+
+
+=== DOES NOT IMPLEMENT UNSERIALIZABLE ===
+
+{ "foo": "yes", "__pclass": { "$type": "80", "$binary": "TXlDbGFzcw==" } }
+The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+
+
+=== IS NOT A CONCRETE CLASS ===
+
+{ "foo": "yes" }
+The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+
+
+=== IS NOT A CONCRETE CLASS VIA PCLASS ===
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TW9uZ29EQlxCU09OXFVuc2VyaWFsaXphYmxl" } }
+object(YourClass)#14 (3) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#13 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(27) "MongoDB\BSON\Unserializable"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+  ["unserialized"]=>
+  bool(true)
+}
+
+
+=== PCLASS OVERRIDES TYPEMAP (1) ===
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TXlDbGFzcw==" } }
+object(YourClass)#15 (3) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#14 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(7) "MyClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+  ["unserialized"]=>
+  bool(true)
+}
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "T3VyQ2xhc3M=" } }
+object(OurClass)#16 (3) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#15 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(8) "OurClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+  ["unserialized"]=>
+  bool(true)
+}
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "VGhlaXJDbGFzcw==" } }
+object(TheirClass)#17 (3) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#16 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(10) "TheirClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+  ["unserialized"]=>
+  bool(true)
+}
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "WW91ckNsYXNz" } }
+object(YourClass)#18 (3) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#17 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(9) "YourClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+  ["unserialized"]=>
+  bool(true)
+}
+
+
+=== PCLASS OVERRIDES TYPEMAP (2) ===
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "VGhlaXJDbGFzcw==" } }
+object(TheirClass)#19 (3) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#18 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(10) "TheirClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+  ["unserialized"]=>
+  bool(true)
+}
+
+
+=== OBJECTS AS ARRAY ===
+
+{ "foo": "yes", "bar" : false }
+array(2) {
+  ["foo"]=>
+  string(3) "yes"
+  ["bar"]=>
+  bool(false)
+}
+
+{ "foo": "no", "array" : [ 5, 6 ] }
+array(2) {
+  ["foo"]=>
+  string(2) "no"
+  ["array"]=>
+  array(2) {
+    [0]=>
+    int(5)
+    [1]=>
+    int(6)
+  }
+}
+
+{ "foo": "no", "obj" : { "embedded" : 3.14 } }
+array(2) {
+  ["foo"]=>
+  string(2) "no"
+  ["obj"]=>
+  array(1) {
+    ["embedded"]=>
+    float(3.14)
+  }
+}
+
+{ "foo": "yes", "__pclass": "MyClass" }
+array(2) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  string(7) "MyClass"
+}
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TXlDbGFzcw==" } }
+array(2) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#19 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(7) "MyClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+}
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "T3VyQ2xhc3M=" } }
+array(2) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#20 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(8) "OurClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+}
+
+
+=== OBJECTS AS STDCLASS ===
+
+{ "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TXlDbGFzcw==" } }
+object(stdClass)#22 (2) {
+  ["foo"]=>
+  string(3) "yes"
+  ["__pclass"]=>
+  object(MongoDB\BSON\Binary)#21 (2) {
+    ["data":"MongoDB\BSON\Binary":private]=>
+    string(7) "MyClass"
+    ["subType":"MongoDB\BSON\Binary":private]=>
+    int(128)
+  }
+}
