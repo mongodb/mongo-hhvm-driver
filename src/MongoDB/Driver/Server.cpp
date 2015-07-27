@@ -68,4 +68,16 @@ Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const 
 	);
 }
 
+Object HHVM_METHOD(MongoDBDriverServer, executeQuery, const String &ns, const Object &query, const Variant &ReadPreference)
+{
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+
+	return MongoDriver::Utils::doExecuteQuery(
+		ns,
+		data->m_client,
+		query,
+		NULL
+	);
+}
+
 }

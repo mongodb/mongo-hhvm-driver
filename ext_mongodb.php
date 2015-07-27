@@ -256,6 +256,9 @@ final class Server {
 
 	<<__Native>>
 	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
+
+	<<__Native>>
+	function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
 }
 
 <<__NativeData("MongoDBDriverWriteResult")>>
