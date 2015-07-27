@@ -47,6 +47,7 @@ class Utils
 		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
 
 		static HPHP::Object doExecuteCommand(const char *db, mongoc_client_t *client, bson_t *command, mongoc_read_prefs_t *read_pref);
+		static HPHP::Object doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, HPHP::Object query, mongoc_read_prefs_t *read_pref);
 };
 
 }

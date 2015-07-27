@@ -20,8 +20,10 @@
 #include "hphp/runtime/vm/native-data.h"
 
 #include "utils.h"
+#include "mongodb.h"
 
 #include "src/MongoDB/Driver/Cursor.h"
+#include "src/MongoDB/Driver/Query.h"
 
 namespace MongoDriver
 {
@@ -221,5 +223,80 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bs
 
 	return obj;
 }
+
+HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, HPHP::Object query, mongoc_read_prefs_t *read_pref)
+{
+	static HPHP::Class* c_result;
+	bson_t *bson_query = NULL, *bson_fields = NULL;
+	const bson_t *doc;
+	mongoc_collection_t *collection;
+	mongoc_cursor_t *cursor;
+
+	uint32_t skip, limit, batch_size;
+	mongoc_query_flags_t flags;
+	char *dbname;
+	char *collname;
+
+	/* Prepare */
+	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
+		throw HPHP::Object(HPHP::SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
+		return NULL;
+	}
+
+	/* Get query properties */
+	auto zquery = query->o_get(HPHP::String("query"), false, HPHP::s_MongoDriverQuery_className);
+
+	if (zquery.getType() == HPHP::KindOfArray) {
+		const HPHP::Array& aquery = zquery.toArray();
+
+		skip = aquery[HPHP::String("skip")].toInt32();
+		limit = aquery[HPHP::String("limit")].toInt32();
+		batch_size = aquery[HPHP::String("batch_size")].toInt32();
+		flags = (mongoc_query_flags_t) aquery[HPHP::String("flags")].toInt32();
+
+		HPHP::VariantToBsonConverter converter(aquery[HPHP::String("query")], HIPPO_BSON_NO_FLAGS);
+		bson_query = bson_new();
+		converter.convert(bson_query);
+
+		if (aquery.exists(HPHP::String("fields"))) {
+			HPHP::VariantToBsonConverter converter(aquery[HPHP::String("fields")], HIPPO_BSON_NO_FLAGS);
+			bson_fields = bson_new();
+			converter.convert(bson_fields);
+		}
+	}
+
+	/* Run query and get cursor */
+	collection = mongoc_client_get_collection(client, dbname, collname);
+	cursor = mongoc_collection_find(collection, flags, skip, limit, batch_size, bson_query, bson_fields, NULL /*read_preference*/);
+	mongoc_collection_destroy(collection);
+
+	/* Check for errors */
+	if (!mongoc_cursor_next(cursor, &doc)) {
+		bson_error_t error;
+
+		/* Could simply be no docs, which is not an error */
+		if (mongoc_cursor_error(cursor, &error)) {
+			mongoc_cursor_destroy(cursor);
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+
+			return NULL;
+		}
+	}
+
+	/* Prepare result */
+	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
+	assert(c_result);
+	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_result);
+
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj);
+
+	cursor_data->cursor = cursor;
+	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
+	cursor_data->is_command_cursor = false;
+	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
+
+	return obj;
+}
+
 
 }

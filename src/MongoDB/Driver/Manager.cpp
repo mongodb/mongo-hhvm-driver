@@ -219,77 +219,14 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 
 Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const Object &query, const Variant &readPreference)
 {
-	static Class* c_result;
-	bson_t *bson_query = NULL, *bson_fields = NULL;
-	const bson_t *doc;
 	MongoDBDriverManagerData* manager_data = Native::data<MongoDBDriverManagerData>(this_);
-	char *dbname;
-	char *collname;
-	mongoc_collection_t *collection;
-	mongoc_cursor_t *cursor;
 
-	uint32_t skip, limit, batch_size;
-	mongoc_query_flags_t flags;
-
-	/* Prepare */
-	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
-		return NULL;
-	}
-
-	/* Get query properties */
-	auto zquery = query->o_get(String("query"), false, s_MongoDriverQuery_className);
-
-	if (zquery.getType() == KindOfArray) {
-		const Array& aquery = zquery.toArray();
-
-		skip = aquery[String("skip")].toInt32();
-		limit = aquery[String("limit")].toInt32();
-		batch_size = aquery[String("batch_size")].toInt32();
-		flags = (mongoc_query_flags_t) aquery[String("flags")].toInt32();
-
-		VariantToBsonConverter converter(aquery[String("query")], HIPPO_BSON_NO_FLAGS);
-		bson_query = bson_new();
-		converter.convert(bson_query);
-
-		if (aquery.exists(String("fields"))) {
-			VariantToBsonConverter converter(aquery[String("fields")], HIPPO_BSON_NO_FLAGS);
-			bson_fields = bson_new();
-			converter.convert(bson_fields);
-		}
-	}
-
-	/* Run query and get cursor */
-	collection = mongoc_client_get_collection(manager_data->m_client, dbname, collname);
-	cursor = mongoc_collection_find(collection, flags, skip, limit, batch_size, bson_query, bson_fields, NULL /*read_preference*/);
-	mongoc_collection_destroy(collection);
-
-	/* Check for errors */
-	if (!mongoc_cursor_next(cursor, &doc)) {
-		bson_error_t error;
-
-		/* Could simply be no docs, which is not an error */
-		if (mongoc_cursor_error(cursor, &error)) {
-			mongoc_cursor_destroy(cursor);
-			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
-
-			return NULL;
-		}
-	}
-
-	/* Prepare result */
-	c_result = Unit::lookupClass(s_MongoDriverCursor_className.get());
-	assert(c_result);
-	ObjectData* obj = ObjectData::newInstance(c_result);
-
-	MongoDBDriverCursorData* cursor_data = Native::data<MongoDBDriverCursorData>(obj);
-
-	cursor_data->cursor = cursor;
-	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
-	cursor_data->is_command_cursor = false;
-	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
-
-	return obj;
+	return MongoDriver::Utils::doExecuteQuery(
+		ns,
+		manager_data->m_client,
+		query,
+		NULL
+	);
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const Variant &query, const Variant &newObj, const Variant &updateOptions, const Variant &writeConcern)
