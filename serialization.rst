@@ -338,7 +338,7 @@ iterate over the array and set the properties without modifications. It
 ::
 
     /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
-    { "foo": "yes", "__pclass": Binary(0x80, "MyClass") }
+    { "foo": "yes", "__pclass": { "$type": "80", "$binary": "MyClass" } }
       -> stdClass { $foo => "yes", "__pclass" => Binary(0x80, "MyClass") }
 
 
