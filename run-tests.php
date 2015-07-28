@@ -1990,7 +1990,7 @@ COMMAND $cmd
 			// %f allows two points "-.0.0" but that is the best *simple* expression
 		}
 /* DEBUG YOUR REGEX HERE
-		var_dump($wanted_re);
+		var_dump("/^{$wanted_re}\$/s");
 		print(str_repeat('=', 80) . "\n");
 		var_dump($output);
 */
