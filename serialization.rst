@@ -282,11 +282,11 @@ iterate over the array and set the properties without modifications. It
 
     /* typemap: [ "root" => "MyClass" ] */
     { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "MyClass" } }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("MyClass does not implement Unserializable interface")
+      -> MongoDB\Driver\Exception\InvalidArgumentException("MyClass does not implement Unserializable interface")
 
     /* typemap: [ "root" => "MongoDB\BSON\Unserializable" ] */
     { "foo": "yes" }
-      -> MongoDB\Driver\Exception\UnexpectedValueException("Unserializable is not a concrete class")
+      -> MongoDB\Driver\Exception\InvalidArgumentException("Unserializable is not a concrete class")
 
     /* typemap: [ "root" => "YourClass" ] */
     { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "MongoDB\BSON\Unserializable" } }
