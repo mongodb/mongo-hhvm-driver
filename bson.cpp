@@ -748,17 +748,15 @@ bool BsonToVariantConverter::convert(Variant *v)
 		return false;
 	}
 
-	do {
-		if (!bson_iter_init(&iter, b)) {
-			bson_reader_destroy(m_reader);
-			return false;
-		}
+	if (!bson_iter_init(&iter, b)) {
+		bson_reader_destroy(m_reader);
+		return false;
+	}
 
-		m_state.zchild = Array::Create();
-		m_state.options = m_options;
+	m_state.zchild = Array::Create();
+	m_state.options = m_options;
 
-		bson_iter_visit_all(&iter, &hippo_bson_visitors, &m_state);
-	} while ((b = bson_reader_read(m_reader, &eof)));
+	bson_iter_visit_all(&iter, &hippo_bson_visitors, &m_state);
 
 	/* Set "root" to false */
 	havePclass = false;
@@ -890,6 +888,13 @@ bool BsonToVariantConverter::convert(Variant *v)
 		assert(NULL);
 	}
 
+	if (bson_reader_read(m_reader, &eof) || !eof) {
+		raise_warning("Reading document did not exhaust input buffer");
+		bson_reader_destroy(m_reader);
+		return false;
+	}
+
+	bson_reader_destroy(m_reader);
 	return true;
 }
 /* }}} */
