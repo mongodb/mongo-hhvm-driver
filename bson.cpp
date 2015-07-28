@@ -369,14 +369,16 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 	/* Convert to array so that we can handle it well */
 	properties = result.toArray();
 
-	if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
-		const char *class_name = cls->nameStr().c_str();
-		ObjectData *obj = createMongoBsonBinaryObject(
-			(const uint8_t *) class_name,
-			strlen(class_name),
-			(bson_subtype_t) 0x80
-		);
-		properties.add(String(s_MongoDriverBsonODM_fieldName), obj);
+	if (m_level > 0 || (m_flags & HIPPO_BSON_NO_ROOT_ODS) == 0) {
+		if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
+			const char *class_name = cls->nameStr().c_str();
+			ObjectData *obj = createMongoBsonBinaryObject(
+				(const uint8_t *) class_name,
+				strlen(class_name),
+				(bson_subtype_t) 0x80
+			);
+			properties.add(String(s_MongoDriverBsonODM_fieldName), obj);
+		}
 	}
 
 	convertDocument(bson, key, result.isObject() ? Variant(Variant(properties).toObject()) : Variant(properties));
