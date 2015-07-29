@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+#include "hphp/runtime/version.h"
 
 #define IMPLEMENT_GET_CLASS(cls) \
 	Class* cls::getClass() { \
@@ -22,3 +23,5 @@
 		} \
 		return s_class; \
 	}
+
+#define HIPPO_HHVM_VERSION (HHVM_VERSION_MAJOR * 10000 + HHVM_VERSION_MINOR * 100 + HHVM_VERSION_PATCH)

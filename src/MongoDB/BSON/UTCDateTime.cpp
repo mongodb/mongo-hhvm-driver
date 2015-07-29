@@ -45,7 +45,11 @@ Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_dt);
 
 	DateTimeData* data = Native::data<DateTimeData>(obj);
+#if HIPPO_HHVM_VERSION >= 30900
 	data->m_dt = req::make<DateTime>(0, false);
+#else
+	data->m_dt = makeSmartPtr<DateTime>(0, false);
+#endif
 	data->m_dt->fromTimeStamp(milliseconds / 1000, true);
 
 	return obj;
