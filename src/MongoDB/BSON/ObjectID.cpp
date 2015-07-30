@@ -65,4 +65,16 @@ String HHVM_METHOD(MongoDBBsonObjectID, __toString)
 	return oidAsString(data);
 }
 
+const StaticString s_oid("oid");
+
+Array HHVM_METHOD(MongoDBBsonObjectID, __debugInfo)
+{
+	Array retval = Array::Create();
+	MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(this_);
+
+	retval.set(s_oid, oidAsString(data));
+
+	return retval;
+}
+
 }

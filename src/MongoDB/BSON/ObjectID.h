@@ -43,6 +43,7 @@ class MongoDBBsonObjectIDData
 
 void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId = null_variant);
 String HHVM_METHOD(MongoDBBsonObjectID, __toString);
+Array HHVM_METHOD(MongoDBBsonObjectID, __debugInfo);
 
 }
 #endif

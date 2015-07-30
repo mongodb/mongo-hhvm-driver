@@ -444,9 +444,12 @@ class ObjectID implements Type
 {
 	<<__Native>>
 	function __construct(string $objectId = null);
-	
+
 	<<__Native>>
 	function __toString() : string;
+
+	<<__Native>>
+	function __debugInfo() : array;
 }
 
 class Regex implements Type
