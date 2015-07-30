@@ -45,11 +45,10 @@ void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 	}
 }
 
-String HHVM_METHOD(MongoDBBsonObjectID, __toString)
+static String oidAsString(MongoDBBsonObjectIDData* data)
 {
 	String s;
 	char *data_s;
-	MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(this_);
 
 	s = String(24, ReserveString);
 	data_s = s.bufferSlice().ptr;
@@ -57,6 +56,13 @@ String HHVM_METHOD(MongoDBBsonObjectID, __toString)
 	s.setSize(24);
 
 	return s;
+}
+
+String HHVM_METHOD(MongoDBBsonObjectID, __toString)
+{
+	MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(this_);
+
+	return oidAsString(data);
 }
 
 }
