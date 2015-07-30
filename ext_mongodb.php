@@ -422,6 +422,9 @@ class Binary implements Type
 	{
 		return $this->data;
 	}
+
+	<<__Native>>
+	function __debugInfo() : array;
 }
 
 class Javascript implements Type

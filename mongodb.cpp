@@ -71,6 +71,8 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_MD5"), (int64_t) BSON_SUBTYPE_MD5);
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_USER_DEFINED"), (int64_t) BSON_SUBTYPE_USER);
 
+			HHVM_MALIAS(MongoDB\\BSON\\Binary, __debugInfo, MongoDBBsonBinary, __debugInfo);
+
 			/* MongoDB\BSON\ObjectID */
 			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __construct, MongoDBBsonObjectID, __construct);
 			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __debugInfo, MongoDBBsonObjectID, __debugInfo);

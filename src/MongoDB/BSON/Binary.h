@@ -27,6 +27,8 @@ extern const StaticString s_MongoBsonBinary_data;
 extern const StaticString s_MongoBsonBinary_subType;
 
 ObjectData* createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary_len, bson_subtype_t v_subtype);
+
+Array HHVM_METHOD(MongoDBBsonBinary, __debugInfo);
 }
 #endif
 

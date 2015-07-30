@@ -46,5 +46,13 @@ ObjectData* createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary
 	return obj;
 }
 
+Array HHVM_METHOD(MongoDBBsonBinary, __debugInfo)
+{
+	Array retval = Array::Create();
+
+	retval.set(s_MongoBsonBinary_data, this_->o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className));
+
+	return retval;
+}
 
 }
