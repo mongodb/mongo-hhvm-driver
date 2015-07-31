@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "../../../mongodb.h"
 
 #include "hphp/runtime/ext/datetime/ext_datetime.h"
 
