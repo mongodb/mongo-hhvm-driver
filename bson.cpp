@@ -751,7 +751,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 	}
 
 	if (!(b = bson_reader_read(m_reader, &eof))) {
-//		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not read document from reader");
+		throw MongoDriver::Utils::throwUnexpectedValueException("Could not read document from BSON reader");
 		return false;
 	}
 
@@ -896,8 +896,8 @@ bool BsonToVariantConverter::convert(Variant *v)
 	}
 
 	if (bson_reader_read(m_reader, &eof) || !eof) {
-		raise_warning("Reading document did not exhaust input buffer");
 		bson_reader_destroy(m_reader);
+		throw MongoDriver::Utils::throwUnexpectedValueException("Reading document did not exhaust input buffer");
 		return false;
 	}
 
