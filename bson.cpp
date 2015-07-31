@@ -360,7 +360,12 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		)
 	) {
 		StringBuffer buf;
-		buf.printf("Expected %s() to return an array or stdClass, but %s given", s_MongoDriverBsonSerializable_functionName.data(), HPHP::getDataTypeString(result.getType()).data());
+		buf.printf(
+			"Expected %s::%s() to return an array or stdClass, %s given",
+			cls->nameStr().c_str(),
+			s_MongoDriverBsonSerializable_functionName.data(),
+			result.isObject() ? result.toObject()->getVMClass()->nameStr().c_str() : HPHP::getDataTypeString(result.getType()).data()
+		);
 		Variant full_name = buf.detach();
 
 		throw MongoDriver::Utils::throwUnexpectedValueException((char*) full_name.toString().c_str());
