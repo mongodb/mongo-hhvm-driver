@@ -858,6 +858,12 @@ bool BsonToVariantConverter::convert(Variant *v)
 			return true;
 		}
 
+		/* If the class is not a "normal" class, make it a stdClass object */
+		if (!isNormalClass(c_class) || isAbstract(c_class)) {
+			*v = Variant(Variant(m_state.zchild).toObject());
+			return true;
+		}
+
 		/* Instantiate */
 		ObjectData *obj = ObjectData::newInstance(c_class);
 
