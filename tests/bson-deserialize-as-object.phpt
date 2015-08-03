@@ -69,9 +69,9 @@ object(stdClass)#3 (1) {
 object(stdClass)#5 (2) {
   ["__pclass"]=>
   object(MongoDB\BSON\Binary)#3 (2) {
-    ["data":"MongoDB\BSON\Binary":private]=>
+    ["data"]=>
     string(11) "LiquidClass"
-    ["subType":"MongoDB\BSON\Binary":private]=>
+    ["subType"]=>
     int(128)
   }
   ["data"]=>
@@ -91,9 +91,9 @@ object(stdClass)#7 (1) {
   object(stdClass)#6 (3) {
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#5 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(11) "LiquidClass"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
     ["breakfast"]=>
@@ -107,18 +107,18 @@ object(stdClass)#7 (1) {
 object(stdClass)#10 (2) {
   ["__pclass"]=>
   object(MongoDB\BSON\Binary)#7 (2) {
-    ["data":"MongoDB\BSON\Binary":private]=>
+    ["data"]=>
     string(11) "LiquidClass"
-    ["subType":"MongoDB\BSON\Binary":private]=>
+    ["subType"]=>
     int(128)
   }
   ["data"]=>
   object(stdClass)#9 (3) {
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#8 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(11) "LiquidClass"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
     ["breakfast"]=>

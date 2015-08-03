@@ -87,9 +87,9 @@ object(FallbackClass)#2 (1) {
     string(3) "yes"
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#1 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(12) "DoesNotExist"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
   }
@@ -103,9 +103,9 @@ object(FallbackClass)#3 (1) {
     string(3) "yes"
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#2 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(19) "UnserializableClass"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
   }
@@ -119,9 +119,9 @@ object(FallbackClass)#4 (1) {
     string(3) "yes"
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#3 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(11) "LiquidClass"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
   }
@@ -171,9 +171,9 @@ object(FallbackClass)#8 (1) {
         string(3) "yes"
         ["__pclass"]=>
         object(MongoDB\BSON\Binary)#6 (2) {
-          ["data":"MongoDB\BSON\Binary":private]=>
+          ["data"]=>
           string(12) "DoesNotExist"
-          ["subType":"MongoDB\BSON\Binary":private]=>
+          ["subType"]=>
           int(128)
         }
       }
@@ -193,9 +193,9 @@ object(FallbackClass)#10 (1) {
         string(3) "yes"
         ["__pclass"]=>
         object(MongoDB\BSON\Binary)#8 (2) {
-          ["data":"MongoDB\BSON\Binary":private]=>
+          ["data"]=>
           string(19) "UnserializableClass"
-          ["subType":"MongoDB\BSON\Binary":private]=>
+          ["subType"]=>
           int(128)
         }
       }
@@ -215,9 +215,9 @@ object(FallbackClass)#12 (1) {
         string(3) "yes"
         ["__pclass"]=>
         object(MongoDB\BSON\Binary)#10 (2) {
-          ["data":"MongoDB\BSON\Binary":private]=>
+          ["data"]=>
           string(11) "LiquidClass"
-          ["subType":"MongoDB\BSON\Binary":private]=>
+          ["subType"]=>
           int(128)
         }
       }

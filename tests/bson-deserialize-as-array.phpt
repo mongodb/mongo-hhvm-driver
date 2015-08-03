@@ -69,9 +69,9 @@ array(1) {
 array(2) {
   ["__pclass"]=>
   object(MongoDB\BSON\Binary)#1 (2) {
-    ["data":"MongoDB\BSON\Binary":private]=>
+    ["data"]=>
     string(11) "LiquidClass"
-    ["subType":"MongoDB\BSON\Binary":private]=>
+    ["subType"]=>
     int(128)
   }
   ["data"]=>
@@ -91,9 +91,9 @@ array(1) {
   array(3) {
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#2 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(11) "LiquidClass"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
     ["breakfast"]=>
@@ -107,18 +107,18 @@ array(1) {
 array(2) {
   ["__pclass"]=>
   object(MongoDB\BSON\Binary)#3 (2) {
-    ["data":"MongoDB\BSON\Binary":private]=>
+    ["data"]=>
     string(11) "LiquidClass"
-    ["subType":"MongoDB\BSON\Binary":private]=>
+    ["subType"]=>
     int(128)
   }
   ["data"]=>
   array(3) {
     ["__pclass"]=>
     object(MongoDB\BSON\Binary)#4 (2) {
-      ["data":"MongoDB\BSON\Binary":private]=>
+      ["data"]=>
       string(11) "LiquidClass"
-      ["subType":"MongoDB\BSON\Binary":private]=>
+      ["subType"]=>
       int(128)
     }
     ["breakfast"]=>
