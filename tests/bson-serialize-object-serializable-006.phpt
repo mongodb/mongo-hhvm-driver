@@ -128,4 +128,4 @@ foreach ( $tests as $test )
 { "things" : [ "foo", "bar" ] }
 { "things" : { "0" : "foo", "1" : "bar" } }
 { "foo" : 42, "prot" : "wine", "__pclass" : { "$type" : "80", "$binary" : "VXBwZXJDbGFzcw==" } }
-Expected bsonSerialize() to return an array or stdClass, but object given
+Expected AnotherClass2::bsonSerialize() to return an array or stdClass, AnotherClass2 given

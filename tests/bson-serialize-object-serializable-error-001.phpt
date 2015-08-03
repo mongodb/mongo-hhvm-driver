@@ -46,4 +46,4 @@ foreach ( $tests as $test )
 }
 ?>
 --EXPECTF--
-Expected bsonSerialize() to return an array or stdClass, but object given
+Expected PrimeNumbers::bsonSerialize() to return an array or stdClass, PrimeNumbers given
