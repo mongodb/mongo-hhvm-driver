@@ -23,7 +23,7 @@ namespace HPHP {
 
 const StaticString s_MongoBsonBinary_className("MongoDB\\BSON\\Binary");
 const StaticString s_MongoBsonBinary_data("data");
-const StaticString s_MongoBsonBinary_subType("subType");
+const StaticString s_MongoBsonBinary_type("type");
 
 ObjectData* createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary_len, bson_subtype_t v_subtype)
 {
@@ -41,7 +41,7 @@ ObjectData* createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary
 	ObjectData* obj = ObjectData::newInstance(c_binary);
 
 	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
-	obj->o_set(s_MongoBsonBinary_subType, Variant(v_subtype), s_MongoBsonBinary_className.get());
+	obj->o_set(s_MongoBsonBinary_type, Variant(v_subtype), s_MongoBsonBinary_className.get());
 
 	return obj;
 }
@@ -51,7 +51,7 @@ Array HHVM_METHOD(MongoDBBsonBinary, __debugInfo)
 	Array retval = Array::Create();
 
 	retval.set(s_MongoBsonBinary_data, this_->o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className));
-	retval.set(s_MongoBsonBinary_subType, this_->o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className));
+	retval.set(s_MongoBsonBinary_type, this_->o_get(s_MongoBsonBinary_type, false, s_MongoBsonBinary_className));
 
 	return retval;
 }

@@ -200,7 +200,7 @@ object(stdClass)#4 (2) {
   object(MongoDB\BSON\Binary)#2 (2) {
     ["data"]=>
     string(7) "MyClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -213,7 +213,7 @@ object(stdClass)#6 (2) {
   object(MongoDB\BSON\Binary)#4 (2) {
     ["data"]=>
     string(9) "YourClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -226,7 +226,7 @@ object(OurClass)#7 (3) {
   object(MongoDB\BSON\Binary)#6 (2) {
     ["data"]=>
     string(8) "OurClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -241,7 +241,7 @@ object(stdClass)#9 (2) {
   object(MongoDB\BSON\Binary)#8 (2) {
     ["data"]=>
     string(9) "YourClass"
-    ["subType"]=>
+    ["type"]=>
     int(68)
   }
 }
@@ -275,7 +275,7 @@ object(YourClass)#14 (3) {
   object(MongoDB\BSON\Binary)#13 (2) {
     ["data"]=>
     string(27) "MongoDB\BSON\Unserializable"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -293,7 +293,7 @@ object(YourClass)#15 (3) {
   object(MongoDB\BSON\Binary)#14 (2) {
     ["data"]=>
     string(7) "MyClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -308,7 +308,7 @@ object(OurClass)#16 (3) {
   object(MongoDB\BSON\Binary)#15 (2) {
     ["data"]=>
     string(8) "OurClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -323,7 +323,7 @@ object(TheirClass)#17 (3) {
   object(MongoDB\BSON\Binary)#16 (2) {
     ["data"]=>
     string(10) "TheirClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -338,7 +338,7 @@ object(YourClass)#18 (3) {
   object(MongoDB\BSON\Binary)#17 (2) {
     ["data"]=>
     string(9) "YourClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -356,7 +356,7 @@ object(TheirClass)#19 (3) {
   object(MongoDB\BSON\Binary)#18 (2) {
     ["data"]=>
     string(10) "TheirClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["unserialized"]=>
@@ -414,7 +414,7 @@ array(2) {
   object(MongoDB\BSON\Binary)#19 (2) {
     ["data"]=>
     string(7) "MyClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -427,7 +427,7 @@ array(2) {
   object(MongoDB\BSON\Binary)#20 (2) {
     ["data"]=>
     string(8) "OurClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -443,7 +443,7 @@ object(stdClass)#22 (2) {
   object(MongoDB\BSON\Binary)#21 (2) {
     ["data"]=>
     string(7) "MyClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }

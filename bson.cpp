@@ -252,9 +252,9 @@ const StaticString s_MongoDriverBsonODM_fieldName("__pclass");
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
 {
 	String data = v.o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className);
-	int64_t subType = v.o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className).toInt64();
+	int64_t type = v.o_get(s_MongoBsonBinary_type, false, s_MongoBsonBinary_className).toInt64();
 
-	bson_append_binary(bson, key, -1, (bson_subtype_t) subType, (const unsigned char*) data.c_str(), data.length());
+	bson_append_binary(bson, key, -1, (bson_subtype_t) type, (const unsigned char*) data.c_str(), data.length());
 }
 /* }}} */
 
@@ -776,7 +776,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 		m_state.zchild.exists(s_MongoDriverBsonODM_fieldName) &&
 		m_state.zchild[s_MongoDriverBsonODM_fieldName].isObject() &&
 		m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().instanceof(s_MongoBsonBinary_className) &&
-		m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(s_MongoBsonBinary_subType, false, s_MongoBsonBinary_className).toInt64() == 0x80
+		m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(s_MongoBsonBinary_type, false, s_MongoBsonBinary_className).toInt64() == 0x80
 	) {
 		havePclass = true;
 	}

@@ -71,7 +71,7 @@ array(2) {
   object(MongoDB\BSON\Binary)#1 (2) {
     ["data"]=>
     string(11) "LiquidClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["data"]=>
@@ -93,7 +93,7 @@ array(1) {
     object(MongoDB\BSON\Binary)#2 (2) {
       ["data"]=>
       string(11) "LiquidClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
     ["breakfast"]=>
@@ -109,7 +109,7 @@ array(2) {
   object(MongoDB\BSON\Binary)#3 (2) {
     ["data"]=>
     string(11) "LiquidClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["data"]=>
@@ -118,7 +118,7 @@ array(2) {
     object(MongoDB\BSON\Binary)#4 (2) {
       ["data"]=>
       string(11) "LiquidClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
     ["breakfast"]=>

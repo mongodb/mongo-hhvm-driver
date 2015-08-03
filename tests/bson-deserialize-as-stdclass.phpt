@@ -71,7 +71,7 @@ object(stdClass)#5 (2) {
   object(MongoDB\BSON\Binary)#3 (2) {
     ["data"]=>
     string(11) "LiquidClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["data"]=>
@@ -93,7 +93,7 @@ object(stdClass)#7 (1) {
     object(MongoDB\BSON\Binary)#5 (2) {
       ["data"]=>
       string(11) "LiquidClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
     ["breakfast"]=>
@@ -109,7 +109,7 @@ object(stdClass)#10 (2) {
   object(MongoDB\BSON\Binary)#7 (2) {
     ["data"]=>
     string(11) "LiquidClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
   ["data"]=>
@@ -118,7 +118,7 @@ object(stdClass)#10 (2) {
     object(MongoDB\BSON\Binary)#8 (2) {
       ["data"]=>
       string(11) "LiquidClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
     ["breakfast"]=>

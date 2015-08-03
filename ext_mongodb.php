@@ -404,18 +404,18 @@ interface Persistable extends Serializable, Unserializable
 
 class Binary implements Type
 {
-	function __construct(private string $data, private int $subType)
+	function __construct(private string $data, private int $type)
 	{
 	}
 
-	function getSubType()
+	function getType()
 	{
 		$func_args = func_num_args();
 		if ($func_args != 0) {
-			trigger_error("MongoDB\BSON\Binary::getSubType() expects exactly 0 parameters, {$func_args} given", E_WARNING);
+			trigger_error("MongoDB\BSON\Binary::getType() expects exactly 0 parameters, {$func_args} given", E_WARNING);
 			return NULL;
 		}
-		return $this->subType;
+		return $this->type;
 	}
 
 	function getData() : string

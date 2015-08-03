@@ -1,11 +1,11 @@
 --TEST--
-MongoDB\BSON\Binary::getSubType()
+MongoDB\BSON\Binary::getType()
 --FILE--
 <?php
 $a = new MongoDB\BSON\Binary("Hello!", 0x00);
 $b = new MongoDB\BSON\Binary("Hello!", 0x44);
 
-var_dump($a->getSubType(), $b->getSubType());
+var_dump($a->getType(), $b->getType());
 ?>
 --EXPECTF--
 int(0)

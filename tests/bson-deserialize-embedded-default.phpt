@@ -71,7 +71,7 @@ object(stdClass)#5 (1) {
     object(MongoDB\BSON\Binary)#3 (2) {
       ["data"]=>
       string(10) "RigidClass"
-      ["subType"]=>
+      ["type"]=>
       int(68)
     }
   }
@@ -87,7 +87,7 @@ object(stdClass)#7 (1) {
     object(MongoDB\BSON\Binary)#5 (2) {
       ["data"]=>
       string(12) "DoesNotExist"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
   }
@@ -103,7 +103,7 @@ object(stdClass)#10 (1) {
     object(MongoDB\BSON\Binary)#7 (2) {
       ["data"]=>
       string(11) "NoSerialize"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
   }
@@ -119,7 +119,7 @@ object(stdClass)#13 (1) {
     object(MongoDB\BSON\Binary)#10 (2) {
       ["data"]=>
       string(11) "LiquidClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
   }

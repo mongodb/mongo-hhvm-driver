@@ -81,7 +81,7 @@ object(stdClass)#2 (2) {
   object(MongoDB\BSON\Binary)#1 (2) {
     ["data"]=>
     string(12) "DoesNotExist"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -94,7 +94,7 @@ object(stdClass)#4 (2) {
   object(MongoDB\BSON\Binary)#2 (2) {
     ["data"]=>
     string(19) "UnserializableClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -107,7 +107,7 @@ object(stdClass)#6 (2) {
   object(MongoDB\BSON\Binary)#4 (2) {
     ["data"]=>
     string(11) "LiquidClass"
-    ["subType"]=>
+    ["type"]=>
     int(128)
   }
 }
@@ -150,7 +150,7 @@ object(stdClass)#10 (1) {
       object(MongoDB\BSON\Binary)#8 (2) {
         ["data"]=>
         string(12) "DoesNotExist"
-        ["subType"]=>
+        ["type"]=>
         int(128)
       }
     }
@@ -169,7 +169,7 @@ object(stdClass)#12 (1) {
       object(MongoDB\BSON\Binary)#10 (2) {
         ["data"]=>
         string(19) "UnserializableClass"
-        ["subType"]=>
+        ["type"]=>
         int(128)
       }
     }
@@ -188,7 +188,7 @@ object(stdClass)#14 (1) {
       object(MongoDB\BSON\Binary)#12 (2) {
         ["data"]=>
         string(11) "LiquidClass"
-        ["subType"]=>
+        ["type"]=>
         int(128)
       }
     }

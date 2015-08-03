@@ -89,7 +89,7 @@ object(FallbackClass)#2 (1) {
     object(MongoDB\BSON\Binary)#1 (2) {
       ["data"]=>
       string(12) "DoesNotExist"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
   }
@@ -105,7 +105,7 @@ object(FallbackClass)#3 (1) {
     object(MongoDB\BSON\Binary)#2 (2) {
       ["data"]=>
       string(19) "UnserializableClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
   }
@@ -121,7 +121,7 @@ object(FallbackClass)#4 (1) {
     object(MongoDB\BSON\Binary)#3 (2) {
       ["data"]=>
       string(11) "LiquidClass"
-      ["subType"]=>
+      ["type"]=>
       int(128)
     }
   }
@@ -173,7 +173,7 @@ object(FallbackClass)#8 (1) {
         object(MongoDB\BSON\Binary)#6 (2) {
           ["data"]=>
           string(12) "DoesNotExist"
-          ["subType"]=>
+          ["type"]=>
           int(128)
         }
       }
@@ -195,7 +195,7 @@ object(FallbackClass)#10 (1) {
         object(MongoDB\BSON\Binary)#8 (2) {
           ["data"]=>
           string(19) "UnserializableClass"
-          ["subType"]=>
+          ["type"]=>
           int(128)
         }
       }
@@ -217,7 +217,7 @@ object(FallbackClass)#12 (1) {
         object(MongoDB\BSON\Binary)#10 (2) {
           ["data"]=>
           string(11) "LiquidClass"
-          ["subType"]=>
+          ["type"]=>
           int(128)
         }
       }
