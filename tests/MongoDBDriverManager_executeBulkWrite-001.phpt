@@ -30,7 +30,6 @@ $bw->delete( [ 'i' => [ '$gte' => 8 ] ], [ 'limit' => 1 ] );
 
 $result = $m->executeBulkWrite( 'demo.test', $bw );
 show_obj_properties( $result, [ 'inserted', 'matched', 'modified', 'deleted', 'upserted' ] );
-echo 'n_commands: ', $result->n_commands, '; offset: ', $result->offset, "\n";
 foreach ( $result->getUpsertedIds() as $key => $upsertedId )
 {
 	echo $key, ': ', $upsertedId, "\n";
@@ -41,7 +40,6 @@ var_dump( $m->executeQuery( 'demo.test', $q )->toArray() );
 ?>
 --EXPECTF--
 inserted: 6; matched: 4; modified: 4; deleted: 3; upserted: 4; 
-n_commands: 16; offset: 11
 10: %s
 11: %s
 12: %s

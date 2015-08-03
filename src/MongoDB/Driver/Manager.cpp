@@ -92,8 +92,10 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	obj->o_set(String("nInserted"), Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("nModified"), Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("omit_nModified"), Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className.get());
+/*
 	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className.get());
+*/
 
 	Variant v;
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
