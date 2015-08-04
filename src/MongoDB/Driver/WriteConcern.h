@@ -25,6 +25,7 @@
 namespace HPHP {
 
 extern const StaticString s_MongoDriverWriteConcern_className;
+extern const StaticString s_MongoDriverWriteConcern_majority;
 
 class MongoDBDriverWriteConcernData
 {
@@ -45,6 +46,9 @@ class MongoDBDriverWriteConcernData
 			sweep();
 		};
 };
+
+void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const Variant &w_timeout, const Variant &journal, const Variant &fsync);
+Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo);
 
 }
 #endif

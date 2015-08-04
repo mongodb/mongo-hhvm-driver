@@ -261,6 +261,15 @@ final class Server {
 	function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
 }
 
+<<__NativeData("MongoDBDriverWriteConcern")>>
+final class WriteConcern {
+	<<__Native>>
+	function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL, ?boolean $fsync = NULL);
+
+	<<__Native>>
+	function __debugInfo() : array;
+}
+
 <<__NativeData("MongoDBDriverWriteResult")>>
 final class WriteResult {
 	private $nUpserted = 0;

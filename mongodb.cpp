@@ -27,6 +27,7 @@
 #include "src/MongoDB/Driver/Query.h"
 #include "src/MongoDB/Driver/ReadPreference.h"
 #include "src/MongoDB/Driver/Server.h"
+#include "src/MongoDB/Driver/WriteConcern.h"
 #include "src/MongoDB/Driver/WriteResult.h"
 
 #include "src/MongoDB/BSON/functions.h"
@@ -153,6 +154,14 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\Server, getInfo, MongoDBDriverServer, getInfo);
 
 			Native::registerNativeDataInfo<MongoDBDriverServerData>(MongoDBDriverServerData::s_className.get());
+
+			/* MongoDb\Driver\WriteConcern */
+			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __construct, MongoDBDriverWriteConcern, __construct);
+			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __debugInfo, MongoDBDriverWriteConcern, __debugInfo);
+
+			Native::registerNativeDataInfo<MongoDBDriverWriteConcernData>(MongoDBDriverWriteConcernData::s_className.get());
+
+			Native::registerClassConstant<KindOfString>(s_MongoDriverWriteConcern_className.get(), makeStaticString("MAJORITY"), s_MongoDriverWriteConcern_majority.get());
 
 			/* MongoDb\Driver\WriteResult */
 			HHVM_MALIAS(MongoDB\\Driver\\WriteResult, getServer, MongoDBDriverWriteResult, getServer);
