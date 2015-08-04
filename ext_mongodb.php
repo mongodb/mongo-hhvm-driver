@@ -57,13 +57,13 @@ class Utils {
 		}
 	}
 
-	static function mustBeArrayOrObject(string $name, mixed $value)
+	static function mustBeArrayOrObject(string $name, mixed $value, string $context = '')
 	{
 		$valueType = gettype($value);
 		if (!in_array($valueType, [ 'array', 'object' ])) {
 			Utils::throwHippoException(
 				Utils::ERROR_INVALID_ARGUMENT,
-				"Expected {$name} to be array or object, {$valueType} given"
+				($context != '' ? "{$context}() expects" : 'Expected') . " {$name} to be array or object, {$valueType} given"
 			);
 		}
 	}
@@ -162,7 +162,7 @@ final class Query {
 		$zquery = [];
 
 		/* phongo_query_init */
-		Utils::mustBeArrayOrObject('filter', $filter);
+		Utils::mustBeArrayOrObject('filter', $filter, "MongoDB\Driver\Query::__construct");
 
 		if ($options) {
 			$this->query['batchSize'] = array_key_exists('batchSize', $options ) ? (int) $options['batchSize'] : 0;
