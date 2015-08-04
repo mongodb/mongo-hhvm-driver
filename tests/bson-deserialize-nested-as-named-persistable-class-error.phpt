@@ -58,15 +58,15 @@ foreach ( $typemaps as $typemap )
 	}
 }
 ?>
---EXPECT--
+--EXPECTF--
 { "foo" : 42 }
-object(stdClass)#1 (1) {
+object(stdClass)#%d (1) {
   ["foo"]=>
   int(42)
 }
 
 { "foo" : "yes", "__pclass": "RigidClass" }
-object(stdClass)#1 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
@@ -74,11 +74,11 @@ object(stdClass)#1 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "RG9lc05vdEV4aXN0" } }
-object(stdClass)#2 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#1 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(12) "DoesNotExist"
     ["type"]=>
@@ -87,11 +87,11 @@ object(stdClass)#2 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "VW5zZXJpYWxpemFibGVDbGFzcw==" } }
-object(stdClass)#4 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#2 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(19) "UnserializableClass"
     ["type"]=>
@@ -100,11 +100,11 @@ object(stdClass)#4 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
-object(stdClass)#6 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#4 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "LiquidClass"
     ["type"]=>
@@ -113,9 +113,9 @@ object(stdClass)#6 (2) {
 }
 
 { "nested" : { "foo" : 42 } }
-object(stdClass)#7 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(FallbackClass)#6 (1) {
+  object(FallbackClass)#%d (1) {
     ["fallback"]=>
     array(1) {
       ["foo"]=>
@@ -125,9 +125,9 @@ object(stdClass)#7 (1) {
 }
 
 { "nested" : { "foo" : "yes", "__pclass": "RigidClass" } }
-object(stdClass)#8 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(FallbackClass)#7 (1) {
+  object(FallbackClass)#%d (1) {
     ["fallback"]=>
     array(2) {
       ["foo"]=>
@@ -139,15 +139,15 @@ object(stdClass)#8 (1) {
 }
 
 { "nested" : { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "RG9lc05vdEV4aXN0" } } }
-object(stdClass)#10 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(FallbackClass)#9 (1) {
+  object(FallbackClass)#%d (1) {
     ["fallback"]=>
     array(2) {
       ["foo"]=>
       string(3) "yes"
       ["__pclass"]=>
-      object(MongoDB\BSON\Binary)#8 (2) {
+      object(MongoDB\BSON\Binary)#%d (2) {
         ["data"]=>
         string(12) "DoesNotExist"
         ["type"]=>
@@ -158,15 +158,15 @@ object(stdClass)#10 (1) {
 }
 
 { "nested" : { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "VW5zZXJpYWxpemFibGVDbGFzcw==" } } }
-object(stdClass)#12 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(FallbackClass)#11 (1) {
+  object(FallbackClass)#%d (1) {
     ["fallback"]=>
     array(2) {
       ["foo"]=>
       string(3) "yes"
       ["__pclass"]=>
-      object(MongoDB\BSON\Binary)#10 (2) {
+      object(MongoDB\BSON\Binary)#%d (2) {
         ["data"]=>
         string(19) "UnserializableClass"
         ["type"]=>
@@ -177,15 +177,15 @@ object(stdClass)#12 (1) {
 }
 
 { "nested" : { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" } } }
-object(stdClass)#14 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(FallbackClass)#13 (1) {
+  object(FallbackClass)#%d (1) {
     ["fallback"]=>
     array(2) {
       ["foo"]=>
       string(3) "yes"
       ["__pclass"]=>
-      object(MongoDB\BSON\Binary)#12 (2) {
+      object(MongoDB\BSON\Binary)#%d (2) {
         ["data"]=>
         string(11) "LiquidClass"
         ["type"]=>

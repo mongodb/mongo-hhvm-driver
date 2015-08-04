@@ -40,15 +40,15 @@ foreach ( $tests as $test )
 	echo "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 { "foo" : 42 }
-object(stdClass)#1 (1) {
+object(stdClass)#%d (1) {
   ["foo"]=>
   int(42)
 }
 
 { "foo" : "yes", "__pclass": "RigidClass" }
-object(stdClass)#1 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
@@ -56,11 +56,11 @@ object(stdClass)#1 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "44", "$binary" : "UmlnaWRDbGFzcw==" } }
-object(stdClass)#2 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#1 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(10) "RigidClass"
     ["type"]=>
@@ -69,11 +69,11 @@ object(stdClass)#2 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "RG9lc05vdEV4aXN0" } }
-object(stdClass)#3 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#2 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(12) "DoesNotExist"
     ["type"]=>
@@ -82,11 +82,11 @@ object(stdClass)#3 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "Tm9TZXJpYWxpemU=" } }
-object(stdClass)#5 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#3 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "NoSerialize"
     ["type"]=>
@@ -95,11 +95,11 @@ object(stdClass)#5 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
-object(stdClass)#7 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#5 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "LiquidClass"
     ["type"]=>
@@ -108,7 +108,7 @@ object(stdClass)#7 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "UmlnaWRDbGFzcw==" } }
-object(RigidClass)#8 (2) {
+object(RigidClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["pclass"]=>

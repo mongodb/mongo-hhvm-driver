@@ -55,21 +55,21 @@ foreach ( $tests as $test )
 	echo "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 { "foo" : 42 }
-object(LiquidClass)#1 (1) {
+object(LiquidClass)#%d (1) {
   ["foo"]=>
   int(42)
 }
 
 { "foo" : "yes", "__pclass": "RigidClass" }
-object(LiquidClass)#1 (1) {
+object(LiquidClass)#%d (1) {
   ["foo"]=>
   string(3) "yes"
 }
 
 { "foo" : "yes", "__pclass": { "$type": "44", "$binary" : "UmlnaWRDbGFzcw==" } }
-object(LiquidClass)#2 (2) {
+object(LiquidClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["pclass"]=>
@@ -77,7 +77,7 @@ object(LiquidClass)#2 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "RG9lc05vdEV4aXN0" } }
-object(LiquidClass)#3 (2) {
+object(LiquidClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["pclass"]=>
@@ -85,7 +85,7 @@ object(LiquidClass)#3 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "Tm9TZXJpYWxpemU=" } }
-object(LiquidClass)#4 (2) {
+object(LiquidClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["pclass"]=>
@@ -93,7 +93,7 @@ object(LiquidClass)#4 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
-object(LiquidClass)#5 (2) {
+object(LiquidClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["pclass"]=>
@@ -101,7 +101,7 @@ object(LiquidClass)#5 (2) {
 }
 
 { "foo" : "yes", "__pclass": { "$type": "80", "$binary" : "UmlnaWRDbGFzcw==" } }
-object(RigidClass)#6 (2) {
+object(RigidClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["pclass"]=>

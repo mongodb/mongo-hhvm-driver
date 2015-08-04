@@ -15,9 +15,9 @@ foreach ( $tests as $test )
 	echo "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 [ 42, 43, 44 ]
-object(stdClass)#1 (3) {
+object(stdClass)#%d (3) {
   [0]=>
   int(42)
   [1]=>
@@ -27,7 +27,7 @@ object(stdClass)#1 (3) {
 }
 
 { "nested" : [ "foo", "bar", "baz" ] }
-object(stdClass)#1 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
   array(3) {
     [0]=>

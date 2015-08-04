@@ -149,11 +149,11 @@ foreach ( $tests as $testGroup )
 	echo "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 === DEFAULT TYPEMAP ===
 
 { "foo": "yes", "bar" : false }
-object(stdClass)#1 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["bar"]=>
@@ -161,7 +161,7 @@ object(stdClass)#1 (2) {
 }
 
 { "foo": "no", "array" : [ 5, 6 ] }
-object(stdClass)#1 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(2) "no"
   ["array"]=>
@@ -174,18 +174,18 @@ object(stdClass)#1 (2) {
 }
 
 { "foo": "no", "obj" : { "embedded" : 3.14 } }
-object(stdClass)#2 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(2) "no"
   ["obj"]=>
-  object(stdClass)#1 (1) {
+  object(stdClass)#%d (1) {
     ["embedded"]=>
     float(3.14)
   }
 }
 
 { "foo": "yes", "__pclass": "MyClass" }
-object(stdClass)#2 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
@@ -193,11 +193,11 @@ object(stdClass)#2 (2) {
 }
 
 { "foo": "yes", "__pclass": { "$type" : "80", "$binary" : "TXlDbGFzcw==" } }
-object(stdClass)#4 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#2 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(7) "MyClass"
     ["type"]=>
@@ -206,11 +206,11 @@ object(stdClass)#4 (2) {
 }
 
 { "foo": "yes", "__pclass": { "$type" : "80", "$binary" : "WW91ckNsYXNz" } }
-object(stdClass)#6 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#4 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(9) "YourClass"
     ["type"]=>
@@ -219,11 +219,11 @@ object(stdClass)#6 (2) {
 }
 
 { "foo": "yes", "__pclass": { "$type" : "80", "$binary" : "T3VyQ2xhc3M=" } }
-object(OurClass)#7 (3) {
+object(OurClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#6 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(8) "OurClass"
     ["type"]=>
@@ -234,11 +234,11 @@ object(OurClass)#7 (3) {
 }
 
 { "foo": "yes", "__pclass": { "$type" : "44", "$binary" : "WW91ckNsYXNz" } }
-object(stdClass)#9 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#8 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(9) "YourClass"
     ["type"]=>
@@ -268,11 +268,11 @@ The typemap does not provide a class that implements MongoDB\BSON\Unserializable
 === IS NOT A CONCRETE CLASS VIA PCLASS ===
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TW9uZ29EQlxCU09OXFVuc2VyaWFsaXphYmxl" } }
-object(YourClass)#14 (3) {
+object(YourClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#13 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(27) "MongoDB\BSON\Unserializable"
     ["type"]=>
@@ -286,11 +286,11 @@ object(YourClass)#14 (3) {
 === PCLASS OVERRIDES TYPEMAP (1) ===
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TXlDbGFzcw==" } }
-object(YourClass)#15 (3) {
+object(YourClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#14 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(7) "MyClass"
     ["type"]=>
@@ -301,11 +301,11 @@ object(YourClass)#15 (3) {
 }
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "T3VyQ2xhc3M=" } }
-object(OurClass)#16 (3) {
+object(OurClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#15 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(8) "OurClass"
     ["type"]=>
@@ -316,11 +316,11 @@ object(OurClass)#16 (3) {
 }
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "VGhlaXJDbGFzcw==" } }
-object(TheirClass)#17 (3) {
+object(TheirClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#16 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(10) "TheirClass"
     ["type"]=>
@@ -331,11 +331,11 @@ object(TheirClass)#17 (3) {
 }
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "WW91ckNsYXNz" } }
-object(YourClass)#18 (3) {
+object(YourClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#17 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(9) "YourClass"
     ["type"]=>
@@ -349,11 +349,11 @@ object(YourClass)#18 (3) {
 === PCLASS OVERRIDES TYPEMAP (2) ===
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "VGhlaXJDbGFzcw==" } }
-object(TheirClass)#19 (3) {
+object(TheirClass)#%d (3) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#18 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(10) "TheirClass"
     ["type"]=>
@@ -411,7 +411,7 @@ array(2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#19 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(7) "MyClass"
     ["type"]=>
@@ -424,7 +424,7 @@ array(2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#20 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(8) "OurClass"
     ["type"]=>
@@ -436,11 +436,11 @@ array(2) {
 === OBJECTS AS STDCLASS ===
 
 { "foo": "yes", "__pclass" : { "$type": "80", "$binary": "TXlDbGFzcw==" } }
-object(stdClass)#22 (2) {
+object(stdClass)#%d (2) {
   ["foo"]=>
   string(3) "yes"
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#21 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(7) "MyClass"
     ["type"]=>

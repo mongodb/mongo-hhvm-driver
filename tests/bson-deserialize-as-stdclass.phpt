@@ -22,9 +22,9 @@ foreach ( $tests as $test )
 	echo "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 [ 42, 43, 44 ]
-object(stdClass)#1 (3) {
+object(stdClass)#%d (3) {
   [0]=>
   int(42)
   [1]=>
@@ -34,7 +34,7 @@ object(stdClass)#1 (3) {
 }
 
 { "breakfast" : "cheese", "dinner" : "sausages" }
-object(stdClass)#1 (2) {
+object(stdClass)#%d (2) {
   ["breakfast"]=>
   string(6) "cheese"
   ["dinner"]=>
@@ -42,9 +42,9 @@ object(stdClass)#1 (2) {
 }
 
 { "nested" : [ "foo", "bar", "baz" ] }
-object(stdClass)#2 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(stdClass)#1 (3) {
+  object(stdClass)#%d (3) {
     [0]=>
     string(3) "foo"
     [1]=>
@@ -55,9 +55,9 @@ object(stdClass)#2 (1) {
 }
 
 { "nested" : { "breakfast" : "cheese", "dinner" : "sausages" } }
-object(stdClass)#3 (1) {
+object(stdClass)#%d (1) {
   ["nested"]=>
-  object(stdClass)#2 (2) {
+  object(stdClass)#%d (2) {
     ["breakfast"]=>
     string(6) "cheese"
     ["dinner"]=>
@@ -66,16 +66,16 @@ object(stdClass)#3 (1) {
 }
 
 { "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "data" : [ "foo", "bar", "baz" ] }
-object(stdClass)#5 (2) {
+object(stdClass)#%d (2) {
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#3 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "LiquidClass"
     ["type"]=>
     int(128)
   }
   ["data"]=>
-  object(stdClass)#4 (3) {
+  object(stdClass)#%d (3) {
     [0]=>
     string(3) "foo"
     [1]=>
@@ -86,11 +86,11 @@ object(stdClass)#5 (2) {
 }
 
 { "data" : { "__pclass" : { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "breakfast" : "cheese", "dinner" : "sausages" } }
-object(stdClass)#7 (1) {
+object(stdClass)#%d (1) {
   ["data"]=>
-  object(stdClass)#6 (3) {
+  object(stdClass)#%d (3) {
     ["__pclass"]=>
-    object(MongoDB\BSON\Binary)#5 (2) {
+    object(MongoDB\BSON\Binary)#%d (2) {
       ["data"]=>
       string(11) "LiquidClass"
       ["type"]=>
@@ -104,18 +104,18 @@ object(stdClass)#7 (1) {
 }
 
 { "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "data" : { "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "breakfast" : "cheese", "dinner" : "sausages" } }
-object(stdClass)#10 (2) {
+object(stdClass)#%d (2) {
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#7 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "LiquidClass"
     ["type"]=>
     int(128)
   }
   ["data"]=>
-  object(stdClass)#9 (3) {
+  object(stdClass)#%d (3) {
     ["__pclass"]=>
-    object(MongoDB\BSON\Binary)#8 (2) {
+    object(MongoDB\BSON\Binary)#%d (2) {
       ["data"]=>
       string(11) "LiquidClass"
       ["type"]=>

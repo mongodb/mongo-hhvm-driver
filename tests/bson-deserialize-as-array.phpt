@@ -22,7 +22,7 @@ foreach ( $tests as $test )
 	echo "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 [ 42, 43, 44 ]
 array(3) {
   [0]=>
@@ -68,7 +68,7 @@ array(1) {
 { "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "data" : [ "foo", "bar", "baz" ] }
 array(2) {
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#1 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "LiquidClass"
     ["type"]=>
@@ -90,7 +90,7 @@ array(1) {
   ["data"]=>
   array(3) {
     ["__pclass"]=>
-    object(MongoDB\BSON\Binary)#2 (2) {
+    object(MongoDB\BSON\Binary)#%d (2) {
       ["data"]=>
       string(11) "LiquidClass"
       ["type"]=>
@@ -106,7 +106,7 @@ array(1) {
 { "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "data" : { "__pclass": { "$type": "80", "$binary" : "TGlxdWlkQ2xhc3M=" }, "breakfast" : "cheese", "dinner" : "sausages" } }
 array(2) {
   ["__pclass"]=>
-  object(MongoDB\BSON\Binary)#3 (2) {
+  object(MongoDB\BSON\Binary)#%d (2) {
     ["data"]=>
     string(11) "LiquidClass"
     ["type"]=>
@@ -115,7 +115,7 @@ array(2) {
   ["data"]=>
   array(3) {
     ["__pclass"]=>
-    object(MongoDB\BSON\Binary)#4 (2) {
+    object(MongoDB\BSON\Binary)#%d (2) {
       ["data"]=>
       string(11) "LiquidClass"
       ["type"]=>
