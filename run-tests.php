@@ -1518,7 +1518,7 @@ TEST $file
 
 			junit_start_timer($shortname);
 
-			$output = system_with_timeout("$extra $php $pass_options -q $ini_settings -d display_errors=0 \"$test_skipif\"", $env);
+			$output = system_with_timeout("$extra $php $pass_options $ini_settings -d display_errors=0 \"$test_skipif\"", $env);
 
 			junit_finish_timer($shortname);
 
