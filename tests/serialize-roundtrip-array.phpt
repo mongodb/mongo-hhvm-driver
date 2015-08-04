@@ -2,7 +2,7 @@
 Serialization: empty array and empty class
 --FILE--
 <?php
-include 'tests/utils.inc';
+include dirname(__FILE__ ) . '/utils.inc';
 
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 cleanup( $m );
