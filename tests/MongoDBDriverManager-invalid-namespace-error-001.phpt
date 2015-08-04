@@ -16,4 +16,4 @@ catch ( InvalidArgumentException $e )
 }
 ?>
 --EXPECTF--
-Invalid namespace: demo
+Invalid namespace provided: demo

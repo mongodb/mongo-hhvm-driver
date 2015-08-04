@@ -239,7 +239,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
-		throw HPHP::Object(HPHP::SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace: " + ns));
+		throw HPHP::Object(HPHP::SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace provided: " + ns));
 		return NULL;
 	}
 
