@@ -63,6 +63,7 @@ Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const 
 	return MongoDriver::Utils::doExecuteCommand(
 		db.c_str(),
 		data->m_client,
+		data->m_server_id,
 		bson,
 		NULL
 	);
@@ -75,6 +76,7 @@ Object HHVM_METHOD(MongoDBDriverServer, executeQuery, const String &ns, const Ob
 	return MongoDriver::Utils::doExecuteQuery(
 		ns,
 		data->m_client,
+		data->m_server_id,
 		query,
 		NULL
 	);

@@ -73,6 +73,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 	return MongoDriver::Utils::doExecuteCommand(
 		db.c_str(),
 		data->m_client,
+		-1,
 		bson,
 		NULL
 	);
@@ -226,6 +227,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const O
 	return MongoDriver::Utils::doExecuteQuery(
 		ns,
 		manager_data->m_client,
+		-1,
 		query,
 		NULL
 	);
@@ -336,6 +338,12 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 	mongoc_bulk_operation_set_database(bulk_data->m_bulk, database);
 	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, collection);
 	mongoc_bulk_operation_set_client(bulk_data->m_bulk, data->m_client);
+
+	/* Handle server hint */
+	int server_id = -1;
+	if (server_id > 0) {
+		mongoc_bulk_operation_set_hint(bulk_data->m_bulk, server_id);
+	}
 
 	/* Run operation */
 	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);

@@ -147,7 +147,7 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 	}
 }
 
-HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bson_t *command, mongoc_read_prefs_t *read_pref)
+HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, mongoc_read_prefs_t *read_pref)
 {
 	static HPHP::Class* c_result;
 	mongoc_cursor_t *cursor;
@@ -157,6 +157,9 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bs
 
 	/* Run operation */
 	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, NULL);
+
+	/* Handle server hint */
+	cursor->hint = server_id;
 
 	if (!mongoc_cursor_next(cursor, &doc)) {
 		bson_error_t error;
@@ -224,7 +227,7 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, bs
 	return obj;
 }
 
-HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, HPHP::Object query, mongoc_read_prefs_t *read_pref)
+HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, mongoc_read_prefs_t *read_pref)
 {
 	static HPHP::Class* c_result;
 	bson_t *bson_query = NULL, *bson_fields = NULL;
@@ -269,6 +272,9 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	collection = mongoc_client_get_collection(client, dbname, collname);
 	cursor = mongoc_collection_find(collection, flags, skip, limit, batch_size, bson_query, bson_fields, NULL /*read_preference*/);
 	mongoc_collection_destroy(collection);
+
+	/* Handle server hint */
+	cursor->hint = server_id;
 
 	/* Check for errors */
 	if (!mongoc_cursor_next(cursor, &doc)) {
