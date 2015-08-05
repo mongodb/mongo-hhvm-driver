@@ -278,8 +278,8 @@ final class WriteResult {
 	private $nInserted = 0;
 	private $nModified = 0;
 	private $upsertedIds = null;
-	private $writeErrors = null;
-	private $writeConcernError = null;
+	private $writeErrors = [];
+	private $writeConcernError = [];
 	private $info = null;
 
 	private function __construct()
@@ -343,6 +343,33 @@ final class WriteResult {
 
 	<<__Native>>
 	public function isAcknowledged() : bool;
+
+	public function __debugInfo() : array
+	{
+		$ret = [];
+
+		$ret['nInserted'] = $this->nInserted;
+		$ret['nMatched'] = $this->nMatched;
+		if ($this->omit_nModified) {
+			$ret['nModified'] = null;
+		} else {
+			$ret['nModified'] = $this->nModified;
+		}
+		$ret['nRemoved'] = $this->nRemoved;
+		$ret['nUpserted'] = $this->nUpserted;
+
+		$ret['upsertedIds'] = (array) $this->upsertedIds;
+		$ret['writeErrors'] = $this->writeErrors;
+		$ret['writeConcernError'] = $this->writeConcernError;
+
+		if ($this->writeConcern) {
+			$ret['writeConcern'] = $this->writeConcern;
+		} else {
+			$ret['writeConcern'] = NULL;
+		}
+
+		return $ret;
+	}
 }
 /* }}} */
 

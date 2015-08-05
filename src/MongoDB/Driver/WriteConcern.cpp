@@ -29,6 +29,7 @@
 namespace HPHP {
 
 const StaticString s_MongoDriverWriteConcern_className("MongoDB\\Driver\\WriteConcern");
+const StaticString s_MongoDriverWriteConcern_debugInfo("__debugInfo");
 const StaticString s_MongoDriverWriteConcern_majority("majority");
 const StaticString s_MongoDriverWriteConcern_w("w");
 const StaticString s_MongoDriverWriteConcern_wmajority("wmajority");

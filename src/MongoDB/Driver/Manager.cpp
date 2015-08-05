@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/runtime/base/execution-context.h"
 
 #include "../../../bson.h"
 #include "../../../utils.h"
@@ -79,13 +80,16 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 	);
 }
 
-ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id)
+ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern)
 {
 	static Class* c_writeResult;
 
 	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
 	assert(c_writeResult);
 	ObjectData* obj = ObjectData::newInstance(c_writeResult);
+
+	MongoDBDriverWriteResultData* wr_data = Native::data<MongoDBDriverWriteResultData>(obj);
+	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
 	obj->o_set(String("nUpserted"), Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("nMatched"), Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className.get());
@@ -97,6 +101,27 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className.get());
 */
+	auto writeConcern_class = Unit::lookupClass(s_MongoDriverWriteConcern_className.get());
+	auto writeConcern = Object{writeConcern_class};
+	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(writeConcern);
+	data->m_write_concern = mongoc_write_concern_copy(write_concern);
+
+	Variant debugInfoResult;
+	{
+		Func *m = writeConcern_class->lookupMethod(s_MongoDriverWriteConcern_debugInfo.get());
+
+		TypedValue args[0];
+
+		g_context->invokeFuncFew(
+			debugInfoResult.asTypedValue(),
+			m,
+			writeConcern.get(),
+			nullptr,
+			0, args
+		);
+	}
+
+	obj->o_set(String("writeConcern"), debugInfoResult, s_MongoDriverWriteConcern_className.get());
 
 	Variant v;
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
@@ -143,7 +168,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 		}
 	}
 
-	/* Run operation */
+	/* Setup operation */
 	batch = mongoc_bulk_operation_new(true);
 	mongoc_bulk_operation_set_database(batch, database);
 	mongoc_bulk_operation_set_collection(batch, collection);
@@ -166,12 +191,11 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 		write_concern = mongoc_client_get_write_concern(data->m_client);
 	}
 
+	/* Run operation */
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
-	MongoDBDriverWriteResultData* wr_data = Native::data<MongoDBDriverWriteResultData>(obj);
-	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern);
 
 	/* Destroy */
 	bson_clear(&bquery);
@@ -190,6 +214,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	char *database;
 	char *collection;
 	int server_id;
+	const mongoc_write_concern_t *write_concern = NULL;
 
 	VariantToBsonConverter converter(document, HIPPO_BSON_ADD_ID);
 	bson = bson_new();
@@ -207,11 +232,22 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	mongoc_bulk_operation_set_collection(batch, collection);
 	mongoc_bulk_operation_set_client(batch, data->m_client);
 
+	/* Deal with write concerns */
+	if (!writeConcern.isNull()) {
+		MongoDBDriverWriteConcernData* wc_data = Native::data<MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
+		write_concern = wc_data->m_write_concern;
+	}
+	if (write_concern) {
+		mongoc_bulk_operation_set_write_concern(batch, write_concern);
+	} else {
+		write_concern = mongoc_client_get_write_concern(data->m_client);
+	}
+
 	/* Run operation */
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern);
 
 	/* Destroy */
 	bson_destroy(bson);
@@ -245,6 +281,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	char *collection;
 	int server_id;
 	int flags = MONGOC_UPDATE_NONE;
+	const mongoc_write_concern_t *write_concern = NULL;
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
 	bquery = bson_new();
@@ -280,7 +317,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 		}
 	}
 
-	/* Run operation */
+	/* Setup operation */
 	batch = mongoc_bulk_operation_new(true);
 	mongoc_bulk_operation_set_database(batch, database);
 	mongoc_bulk_operation_set_collection(batch, collection);
@@ -307,6 +344,18 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 		}
 	}
 
+	/* Deal with write concerns */
+	if (!writeConcern.isNull()) {
+		MongoDBDriverWriteConcernData* wc_data = Native::data<MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
+		write_concern = wc_data->m_write_concern;
+	}
+	if (write_concern) {
+		mongoc_bulk_operation_set_write_concern(batch, write_concern);
+	} else {
+		write_concern = mongoc_client_get_write_concern(data->m_client);
+	}
+
+	/* Run operation */
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Destroy */
@@ -315,7 +364,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	mongoc_bulk_operation_destroy(batch);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern);
 
 	return Object(obj);
 }
@@ -328,6 +377,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 	char *database;
 	char *collection;
 	int success;
+	const mongoc_write_concern_t *write_concern = NULL;
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
@@ -335,9 +385,21 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 		return NULL;
 	}
 
+	/* Setup operation */
 	mongoc_bulk_operation_set_database(bulk_data->m_bulk, database);
 	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, collection);
 	mongoc_bulk_operation_set_client(bulk_data->m_bulk, data->m_client);
+
+	/* Deal with write concerns */
+	if (!writeConcern.isNull()) {
+		MongoDBDriverWriteConcernData* wc_data = Native::data<MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
+		write_concern = wc_data->m_write_concern;
+	}
+	if (write_concern) {
+		mongoc_bulk_operation_set_write_concern(bulk_data->m_bulk, write_concern);
+	} else {
+		write_concern = mongoc_client_get_write_concern(data->m_client);
+	}
 
 	/* Handle server hint */
 	int server_id = -1;
@@ -353,7 +415,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 		/* throw exception */
 		throw Object(SystemLib::AllocExceptionObject("FIXME EXCEPTION"));
 	} else {
-		ObjectData* obj = hippo_write_result_init(&bulk_data->m_bulk->result, data->m_client, success);
+		ObjectData* obj = hippo_write_result_init(&bulk_data->m_bulk->result, data->m_client, success, write_concern);
 
 		return Object(obj);
 	}

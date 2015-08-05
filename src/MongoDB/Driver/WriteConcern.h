@@ -25,6 +25,7 @@
 namespace HPHP {
 
 extern const StaticString s_MongoDriverWriteConcern_className;
+extern const StaticString s_MongoDriverWriteConcern_debugInfo;
 extern const StaticString s_MongoDriverWriteConcern_majority;
 
 class MongoDBDriverWriteConcernData
