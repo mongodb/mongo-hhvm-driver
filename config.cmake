@@ -46,6 +46,7 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-gridfs-file-list.c
  libmongoc/src/mongoc/mongoc-gridfs-file-page.c
  libmongoc/src/mongoc/mongoc-gridfs-file.c libmongoc/src/mongoc/mongoc-gridfs.c
+ libmongoc/src/mongoc/mongoc-host-list.c
  libmongoc/src/mongoc/mongoc-index.c libmongoc/src/mongoc/mongoc-init.c
  libmongoc/src/mongoc/mongoc-list.c libmongoc/src/mongoc/mongoc-log.c
  libmongoc/src/mongoc/mongoc-matcher-op.c libmongoc/src/mongoc/mongoc-matcher.c
