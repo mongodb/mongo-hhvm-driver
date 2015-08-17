@@ -17,9 +17,7 @@
 #define __MONGODB_DRIVER_WRITECONCERN_H__
 
 #define MONGOC_I_AM_A_DRIVER
-#define delete not_delete
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
-#undef delete
 #undef MONGOC_I_AM_A_DRIVER
 
 namespace HPHP {

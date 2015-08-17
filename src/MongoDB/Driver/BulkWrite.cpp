@@ -23,9 +23,7 @@
 
 /* We need to access the internal bulk structure to access the bulk op count */
 #define MONGOC_I_AM_A_DRIVER
-#define delete not_delete
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
-#undef delete
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "../BSON/ObjectID.h"

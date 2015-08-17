@@ -20,10 +20,8 @@
 #include "../../../mongodb.h"
 
 #define MONGOC_I_AM_A_DRIVER
-#define delete not_delete
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
-#undef delete
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "WriteResult.h"

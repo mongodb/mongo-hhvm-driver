@@ -18,9 +18,7 @@
 #include "hphp/runtime/vm/native-data.h"
 
 #define MONGOC_I_AM_A_DRIVER
-#define delete not_delete
 #include "../../../libmongoc/src/mongoc/mongoc-cursor-private.h"
-#undef delete
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "../../../bson.h"
