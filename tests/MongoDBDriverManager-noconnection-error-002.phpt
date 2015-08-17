@@ -16,4 +16,4 @@ catch ( MongoDB\Driver\Exception\ConnectionTimeoutException $e )
 }
 ?>
 --EXPECTF--
-Timed out trying to select a server
+No suitable servers found
