@@ -23,6 +23,7 @@
 
 #include "Command.h"
 #include "Server.h"
+#include "WriteConcern.h"
 
 namespace HPHP {
 
@@ -79,6 +80,29 @@ Object HHVM_METHOD(MongoDBDriverServer, executeQuery, const String &ns, const Ob
 		data->m_server_id,
 		query,
 		NULL
+	);
+}
+
+Object HHVM_METHOD(MongoDBDriverServer, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern)
+{
+	const mongoc_write_concern_t *write_concern = NULL;
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+
+	/* Deal with write concerns */
+	if (!writeConcern.isNull()) {
+		MongoDBDriverWriteConcernData* wc_data = Native::data<MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
+		write_concern = wc_data->m_write_concern;
+	}
+	if (!write_concern) {
+		write_concern = mongoc_client_get_write_concern(data->m_client);
+	}
+
+	return MongoDriver::Utils::doExecuteBulkWrite(
+		ns,
+		data->m_client,
+		data->m_server_id,
+		bulk,
+		write_concern
 	);
 }
 

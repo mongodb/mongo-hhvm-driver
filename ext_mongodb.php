@@ -283,6 +283,9 @@ final class Server {
 	final public function getInfo(): array;
 
 	<<__Native>>
+	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
+
+	<<__Native>>
 	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>
