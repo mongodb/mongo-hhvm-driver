@@ -22,8 +22,10 @@
 #include "utils.h"
 #include "mongodb.h"
 
+#include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/Query.h"
+#include "src/MongoDB/Driver/WriteResult.h"
 
 namespace MongoDriver
 {
@@ -144,6 +146,49 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 #endif
 		default:
 			return HPHP::Object(HPHP::SystemLib::AllocRuntimeExceptionObject(error->message));
+	}
+}
+
+HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *client, int server_id, const HPHP::Object bulk, const mongoc_write_concern_t *write_concern)
+{
+	HPHP::MongoDBDriverBulkWriteData* bulk_data = HPHP::Native::data<HPHP::MongoDBDriverBulkWriteData>(bulk.get());
+	bson_error_t error;
+	char *database;
+	char *collection;
+	int success;
+
+	/* Prepare */
+	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
+		throw HPHP::Object(HPHP::SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace provided: " + ns));
+		return NULL;
+	}
+
+	/* Setup operation */
+	mongoc_bulk_operation_set_database(bulk_data->m_bulk, database);
+	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, collection);
+	mongoc_bulk_operation_set_client(bulk_data->m_bulk, client);
+
+	/* Deal with write concerns */
+	if (write_concern) {
+		mongoc_bulk_operation_set_write_concern(bulk_data->m_bulk, write_concern);
+	}
+
+	/* Handle server hint */
+	if (server_id > 0) {
+		mongoc_bulk_operation_set_hint(bulk_data->m_bulk, server_id);
+	}
+
+	/* Run operation */
+	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);
+
+	/* Prepare result */
+	if (!success) {
+		/* throw exception */
+		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+	} else {
+		HPHP::ObjectData* obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, success, write_concern);
+
+		return HPHP::Object(obj);
 	}
 }
 

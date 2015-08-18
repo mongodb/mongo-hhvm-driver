@@ -315,54 +315,25 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 
 Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern)
 {
-	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
-	MongoDBDriverBulkWriteData* bulk_data = Native::data<MongoDBDriverBulkWriteData>(bulk.get());
-	bson_error_t error;
-	char *database;
-	char *collection;
-	int success;
 	const mongoc_write_concern_t *write_concern = NULL;
-
-	/* Prepare */
-	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace provided: " + ns));
-		return NULL;
-	}
-
-	/* Setup operation */
-	mongoc_bulk_operation_set_database(bulk_data->m_bulk, database);
-	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, collection);
-	mongoc_bulk_operation_set_client(bulk_data->m_bulk, data->m_client);
+	MongoDBDriverManagerData* manager_data = Native::data<MongoDBDriverManagerData>(this_);
 
 	/* Deal with write concerns */
 	if (!writeConcern.isNull()) {
-		MongoDBDriverWriteConcernData* wc_data = Native::data<MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
+		HPHP::MongoDBDriverWriteConcernData* wc_data = HPHP::Native::data<HPHP::MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
 		write_concern = wc_data->m_write_concern;
 	}
-	if (write_concern) {
-		mongoc_bulk_operation_set_write_concern(bulk_data->m_bulk, write_concern);
-	} else {
-		write_concern = mongoc_client_get_write_concern(data->m_client);
+	if (!write_concern) {
+		write_concern = mongoc_client_get_write_concern(manager_data->m_client);
 	}
 
-	/* Handle server hint */
-	int server_id = -1;
-	if (server_id > 0) {
-		mongoc_bulk_operation_set_hint(bulk_data->m_bulk, server_id);
-	}
-
-	/* Run operation */
-	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);
-
-	/* Prepare result */
-	if (!success) {
-		/* throw exception */
-		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
-	} else {
-		ObjectData* obj = hippo_write_result_init(&bulk_data->m_bulk->result, data->m_client, success, write_concern);
-
-		return Object(obj);
-	}
+	return MongoDriver::Utils::doExecuteBulkWrite(
+		ns,
+		manager_data->m_client,
+		-1,
+		bulk,
+		write_concern
+	);
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPreference)
