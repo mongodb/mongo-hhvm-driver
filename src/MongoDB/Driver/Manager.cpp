@@ -411,7 +411,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 	/* Prepare result */
 	if (!success) {
 		/* throw exception */
-		throw Object(SystemLib::AllocExceptionObject("FIXME EXCEPTION"));
+		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
 	} else {
 		ObjectData* obj = hippo_write_result_init(&bulk_data->m_bulk->result, data->m_client, success, write_concern);
 
