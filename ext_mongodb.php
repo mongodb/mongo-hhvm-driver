@@ -43,7 +43,7 @@ class Utils {
 	{
 		switch ($domain) {
 			case self::ERROR_INVALID_ARGUMENT:
-				throw new \InvalidArgumentException($message);
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException($message);
 
 			case self::ERROR_RUNTIME:
 			case self::ERROR_MONGOC_FAILED:
