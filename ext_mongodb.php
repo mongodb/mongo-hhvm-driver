@@ -1,7 +1,107 @@
 <?hh
 namespace MongoDB\Driver;
 
+<<__NativeData("MongoDBDriverWriteResult")>>
+final class WriteResult {
+	private $nUpserted = 0;
+	private $nMatched = 0;
+	private $nRemoved = 0;
+	private $nInserted = 0;
+	private $nModified = 0;
+	private $upsertedIds = null;
+	private $writeErrors = [];
+	private $writeConcernError = [];
+	private $info = null;
 
+	private function __construct()
+	{
+		throw new Exception\RunTimeException("Accessing private constructor");
+	}
+
+	public function __wakeup()
+	{
+		throw new Exception\RunTimeException("MongoDB\\Driver objects cannot be serialized");
+	}
+
+	public function getInsertedCount() { return $this->nInserted; }
+	public function getMatchedCount()  { return $this->nMatched; }
+	public function getModifiedCount() { return $this->nModified; }
+	public function getDeletedCount()  { return $this->nRemoved; }
+	public function getUpsertedCount() { return $this->nUpserted; }
+
+	public function getInfo()
+	{
+		if ($this->info && gettype($this->info) == 'array') {
+			return $this->info;
+		}
+		return [];
+	}
+
+	<<__Native>>
+	public function getServer() : Server;
+
+	public function getUpsertedIds(): array
+	{
+		if ($this->upsertedIds && gettype($this->upsertedIds) == 'object') {
+			$upsertedIds = [];
+
+			foreach( (array) $this->upsertedIds as $idDoc )
+			{
+				$idDoc = (array) $idDoc;
+				$upsertedIds[$idDoc['index']] = $idDoc['_id'];
+			}
+
+			return $upsertedIds;
+		}
+		return [];
+	}
+
+	public function getWriteConcernError(): WriteConcernError
+	{
+		if ($this->writeConcernError && gettype($this->writeConcernError) == 'object') {
+			return $this->writeConcernError;
+		}
+		return false;
+	}
+
+	public function getWriteErrors(): array
+	{
+		if ($this->writeErrors && gettype($this->writeErrors) == 'array') {
+			return $this->writeErrors;
+		}
+		return [];
+	}
+
+	<<__Native>>
+	public function isAcknowledged() : bool;
+
+	public function __debugInfo() : array
+	{
+		$ret = [];
+
+		$ret['nInserted'] = $this->nInserted;
+		$ret['nMatched'] = $this->nMatched;
+		if ($this->omit_nModified) {
+			$ret['nModified'] = null;
+		} else {
+			$ret['nModified'] = $this->nModified;
+		}
+		$ret['nRemoved'] = $this->nRemoved;
+		$ret['nUpserted'] = $this->nUpserted;
+
+		$ret['upsertedIds'] = (array) $this->upsertedIds;
+		$ret['writeErrors'] = $this->writeErrors;
+		$ret['writeConcernError'] = $this->writeConcernError;
+
+		if ($this->writeConcern) {
+			$ret['writeConcern'] = $this->writeConcern;
+		} else {
+			$ret['writeConcern'] = NULL;
+		}
+
+		return $ret;
+	}
+}
 
 <<__NativeData("MongoDBDriverManager")>>
 class Manager {
@@ -273,110 +373,6 @@ final class WriteConcern {
 
 	<<__Native>>
 	function __debugInfo() : array;
-}
-
-<<__NativeData("MongoDBDriverWriteResult")>>
-final class WriteResult {
-	use NoSerialize;
-
-	private $nUpserted = 0;
-	private $nMatched = 0;
-	private $nRemoved = 0;
-	private $nInserted = 0;
-	private $nModified = 0;
-	private $upsertedIds = null;
-	private $writeErrors = [];
-	private $writeConcernError = [];
-	private $info = null;
-
-	private function __construct()
-	{
-		throw new Exception\RunTimeException("Accessing private constructor");
-	}
-
-	public function __wakeup()
-	{
-		throw new Exception\RunTimeException("MongoDB\\Driver objects cannot be serialized");
-	}
-
-	public function getInsertedCount() { return $this->nInserted; }
-	public function getMatchedCount()  { return $this->nMatched; }
-	public function getModifiedCount() { return $this->nModified; }
-	public function getDeletedCount()  { return $this->nRemoved; }
-	public function getUpsertedCount() { return $this->nUpserted; }
-
-	public function getInfo()
-	{
-		if ($this->info && gettype($this->info) == 'array') {
-			return $this->info;
-		}
-		return [];
-	}
-
-	<<__Native>>
-	public function getServer() : Server;
-
-	public function getUpsertedIds(): array
-	{
-		if ($this->upsertedIds && gettype($this->upsertedIds) == 'object') {
-			$upsertedIds = [];
-			
-			foreach( (array) $this->upsertedIds as $idDoc )
-			{
-				$idDoc = (array) $idDoc;
-				$upsertedIds[$idDoc['index']] = $idDoc['_id'];
-			}
-
-			return $upsertedIds;
-		}
-		return [];
-	}
-
-	public function getWriteConcernError(): WriteConcernError
-	{
-		if ($this->writeConcernError && gettype($this->writeConcernError) == 'object') {
-			return $this->writeConcernError;
-		}
-		return false;
-	}
-
-	public function getWriteErrors(): array
-	{
-		if ($this->writeErrors && gettype($this->writeErrors) == 'array') {
-			return $this->writeErrors;
-		}
-		return [];
-	}
-
-	<<__Native>>
-	public function isAcknowledged() : bool;
-
-	public function __debugInfo() : array
-	{
-		$ret = [];
-
-		$ret['nInserted'] = $this->nInserted;
-		$ret['nMatched'] = $this->nMatched;
-		if ($this->omit_nModified) {
-			$ret['nModified'] = null;
-		} else {
-			$ret['nModified'] = $this->nModified;
-		}
-		$ret['nRemoved'] = $this->nRemoved;
-		$ret['nUpserted'] = $this->nUpserted;
-
-		$ret['upsertedIds'] = (array) $this->upsertedIds;
-		$ret['writeErrors'] = $this->writeErrors;
-		$ret['writeConcernError'] = $this->writeConcernError;
-
-		if ($this->writeConcern) {
-			$ret['writeConcern'] = $this->writeConcern;
-		} else {
-			$ret['writeConcern'] = NULL;
-		}
-
-		return $ret;
-	}
 }
 /* }}} */
 
