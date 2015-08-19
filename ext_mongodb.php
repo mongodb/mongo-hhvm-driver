@@ -548,6 +548,11 @@ class UTCDateTime implements Type
 
 	<<__Native>>
 	function toDateTime() : \DateTime;
+
+	function __debugInfo() : array
+	{
+		return [ 'milliseconds' => $this->milliseconds ];
+	}
 }
 
 /* }}} */
