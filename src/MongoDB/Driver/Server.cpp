@@ -30,7 +30,55 @@ namespace HPHP {
 const StaticString s_MongoDriverServer_className("MongoDB\\Driver\\Server");
 Class* MongoDBDriverServerData::s_class = nullptr;
 const StaticString MongoDBDriverServerData::s_className("MongoDBDriverServer");
+const StaticString s_MongoDriverServer_host("host");
+const StaticString s_MongoDriverServer_port("port");
+const StaticString s_MongoDriverServer_type("type");
+const StaticString s_MongoDriverServer_is_primary("is_primary");
+const StaticString s_MongoDriverServer_is_secondary("is_secondary");
+const StaticString s_MongoDriverServer_is_arbiter("is_arbiter");
+const StaticString s_MongoDriverServer_hidden("hidden");
+const StaticString s_MongoDriverServer_passive("passive");
+const StaticString s_MongoDriverServer_is_hidden("is_hidden");
+const StaticString s_MongoDriverServer_is_passive("is_passive");
+const StaticString s_MongoDriverServer_tags("tags");
+const StaticString s_MongoDriverServer_last_is_master("last_is_master");
+const StaticString s_MongoDriverServer_round_trip_time("round_trip_time");
 IMPLEMENT_GET_CLASS(MongoDBDriverServerData);
+
+Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
+{
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+	mongoc_server_description_t *sd;
+
+	Array retval = Array::Create();
+
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+		Variant v_last_is_master;
+		Array   a_last_is_master;
+
+		retval.set(s_MongoDriverServer_host, sd->host.host);
+		retval.set(s_MongoDriverServer_port, sd->host.port);
+		retval.set(s_MongoDriverServer_type, sd->type);
+		retval.set(s_MongoDriverServer_is_primary, !!(sd->type == MONGOC_SERVER_RS_PRIMARY));
+		retval.set(s_MongoDriverServer_is_secondary, !!(sd->type == MONGOC_SERVER_RS_SECONDARY));
+		retval.set(s_MongoDriverServer_is_arbiter, !!(sd->type == MONGOC_SERVER_RS_ARBITER));
+
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
+		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
+		convertor.convert(&v_last_is_master);
+		a_last_is_master = v_last_is_master.toArray();
+
+		retval.set(s_MongoDriverServer_is_hidden, a_last_is_master.exists(s_MongoDriverServer_hidden) && !!a_last_is_master[s_MongoDriverServer_hidden].toBoolean());
+		retval.set(s_MongoDriverServer_is_passive, a_last_is_master.exists(s_MongoDriverServer_passive) && !!a_last_is_master[s_MongoDriverServer_passive].toBoolean());
+		retval.set(s_MongoDriverServer_last_is_master, a_last_is_master);
+
+		retval.set(s_MongoDriverServer_round_trip_time, sd->round_trip_time);
+
+		return retval;
+	}
+
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+}
 
 String HHVM_METHOD(MongoDBDriverServer, getHost)
 {

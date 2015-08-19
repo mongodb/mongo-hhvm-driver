@@ -49,6 +49,7 @@ class MongoDBDriverServerData
 		};
 };
 
+Array HHVM_METHOD(MongoDBDriverServer, __debugInfo);
 String HHVM_METHOD(MongoDBDriverServer, getHost);
 Array HHVM_METHOD(MongoDBDriverServer, getInfo);
 int64_t HHVM_METHOD(MongoDBDriverServer, getPort);
