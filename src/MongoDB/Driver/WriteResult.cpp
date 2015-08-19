@@ -56,6 +56,8 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	ObjectData* obj = ObjectData::newInstance(c_writeResult);
 
 	MongoDBDriverWriteResultData* wr_data = Native::data<MongoDBDriverWriteResultData>(obj);
+	wr_data->m_client = client;
+	wr_data->m_server_id = server_id;
 	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
 	obj->o_set(String("nUpserted"), Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className.get());

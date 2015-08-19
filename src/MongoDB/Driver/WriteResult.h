@@ -31,6 +31,8 @@ class MongoDBDriverWriteResultData
 		static const StaticString s_className;
 
 		/* properties go here */
+		mongoc_client_t    *m_client;
+		uint32_t            m_server_id;
 		mongoc_write_concern_t *m_write_concern;
 
 		static Class* getClass();
