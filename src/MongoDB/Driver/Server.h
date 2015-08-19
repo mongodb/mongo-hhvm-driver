@@ -51,6 +51,7 @@ class MongoDBDriverServerData
 
 String HHVM_METHOD(MongoDBDriverServer, getHost);
 Array HHVM_METHOD(MongoDBDriverServer, getInfo);
+int64_t HHVM_METHOD(MongoDBDriverServer, getPort);
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference);
 Object HHVM_METHOD(MongoDBDriverServer, executeQuery, const String &ns, const Object &quuery, const Variant &ReadPreference);
 Object HHVM_METHOD(MongoDBDriverServer, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern);

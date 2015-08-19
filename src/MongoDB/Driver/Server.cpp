@@ -62,6 +62,18 @@ Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
 }
 
+int64_t HHVM_METHOD(MongoDBDriverServer, getPort)
+{
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+	mongoc_server_description_t *sd;
+
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+		return (int64_t) (sd->host.port);
+	}
+
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+}
+
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference)
 {
 	bson_t *bson;
