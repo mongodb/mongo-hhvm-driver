@@ -1,22 +1,10 @@
 <?hh
 namespace MongoDB\Driver;
 
-trait NoSerialize {
-	public function __sleep()
-	{
-		throw Exception("Serialization of '" . get_class($this) . "' is not allowed");
-	}
 
-	public function __wakeUp()
-	{
-		throw Exception("Unserialization of '" . get_class($this) . "' is not allowed");
-	}
-}
 
 <<__NativeData("MongoDBDriverManager")>>
 class Manager {
-	use NoSerialize;
-
 	<<__Native>>
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
@@ -86,8 +74,6 @@ class Utils {
 /* {{{ Cursor Classes */
 <<__NativeData("MongoDBDriverCursorId")>>
 final class CursorId {
-	use NoSerialize;
-
 	<<__Native>>
 	public function __construct(string $id);
 
@@ -97,8 +83,6 @@ final class CursorId {
 
 <<__NativeData("MongoDBDriverCursor")>>
 final class Cursor implements Traversable, Iterator {
-	use NoSerialize;
-
 	public function __construct(Server $server, CursorId $cursorId, array $firstBatch)
 	{
 	}
@@ -164,8 +148,6 @@ final class Cursor implements Traversable, Iterator {
 
 /* {{{ Value Classes */
 final class Command {
-	use NoSerialize;
-
 	private array $command;
 
 	public function __construct(mixed $command)
@@ -175,8 +157,6 @@ final class Command {
 }
 
 final class Query {
-	use NoSerialize;
-
 	private array $query;
 
 	public function __construct(mixed $filter, array $options = array())
@@ -214,8 +194,6 @@ final class Query {
 
 <<__NativeData("MongoDBDriverBulkWrite")>>
 final class BulkWrite implements \Countable {
-	use NoSerialize;
-
 	<<__Native>>
 	function __construct(?boolean $ordered = true);
 
@@ -238,8 +216,6 @@ final class BulkWrite implements \Countable {
 
 <<__NativeData("MongoDBDriverReadPreference")>>
 final class ReadPreference {
-	use NoSerialize;
-
 	<<__Native>>
 	private function _setReadPreference(int $readPreference): void;
 
@@ -277,8 +253,6 @@ final class ReadPreference {
 
 <<__NativeData("MongoDBDriverServer")>>
 final class Server {
-	use NoSerialize;
-
 	<<__Native>>
 	final public function getInfo(): array;
 
@@ -294,8 +268,6 @@ final class Server {
 
 <<__NativeData("MongoDBDriverWriteConcern")>>
 final class WriteConcern {
-	use NoSerialize;
-
 	<<__Native>>
 	function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL, ?boolean $fsync = NULL);
 

@@ -33,6 +33,18 @@ class MongoDBDriverManagerData
 
 		static Class* getClass();
 
+		MongoDBDriverManagerData() {
+			m_client = NULL;
+		}
+
+		void wakeup (const Variant& context, ObjectData* obj) {
+			throw Object(SystemLib::AllocExceptionObject("Unserialization of MongoDB\\Driver\\Manager is not allowed"));
+		}
+
+		Variant sleep() const {
+			throw Object(SystemLib::AllocExceptionObject("Serialization of MongoDB\\Driver\\Manager is not allowed"));
+		}
+
 		void sweep() {
 			mongoc_client_destroy(m_client);
 		}
