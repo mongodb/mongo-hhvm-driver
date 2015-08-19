@@ -49,6 +49,7 @@ class MongoDBDriverServerData
 		};
 };
 
+String HHVM_METHOD(MongoDBDriverServer, getHost);
 Array HHVM_METHOD(MongoDBDriverServer, getInfo);
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference);
 Object HHVM_METHOD(MongoDBDriverServer, executeQuery, const String &ns, const Object &quuery, const Variant &ReadPreference);

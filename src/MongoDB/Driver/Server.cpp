@@ -32,6 +32,18 @@ Class* MongoDBDriverServerData::s_class = nullptr;
 const StaticString MongoDBDriverServerData::s_className("MongoDBDriverServer");
 IMPLEMENT_GET_CLASS(MongoDBDriverServerData);
 
+String HHVM_METHOD(MongoDBDriverServer, getHost)
+{
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+	mongoc_server_description_t *sd;
+
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+		return String(sd->host.host);
+	}
+
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+}
+
 Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);

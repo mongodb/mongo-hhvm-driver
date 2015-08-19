@@ -354,6 +354,9 @@ final class ReadPreference {
 <<__NativeData("MongoDBDriverServer")>>
 final class Server {
 	<<__Native>>
+	public function getHost(): string;
+
+	<<__Native>>
 	final public function getInfo(): array;
 
 	<<__Native>>
