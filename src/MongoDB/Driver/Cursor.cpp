@@ -199,10 +199,7 @@ Array HHVM_METHOD(MongoDBDriverCursor, toArray)
 Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 {
 	static Class* c_server;
-	mongoc_host_list_t host;
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
-
-	mongoc_cursor_get_host(data->cursor, &host);
 
 	/* Prepare result */
 	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
