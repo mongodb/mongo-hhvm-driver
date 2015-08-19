@@ -26,6 +26,7 @@
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
 #undef MONGOC_I_AM_A_DRIVER
 
+#include "Server.h"
 #include "WriteConcern.h"
 #include "WriteResult.h"
 
@@ -38,6 +39,20 @@ IMPLEMENT_GET_CLASS(MongoDBDriverWriteResultData);
 
 Object HHVM_METHOD(MongoDBDriverWriteResult, getServer)
 {
+	static Class* c_server;
+	MongoDBDriverWriteResultData* data = Native::data<MongoDBDriverWriteResultData>(this_);
+
+	/* Prepare result */
+	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
+	assert(c_server);
+	ObjectData* obj = ObjectData::newInstance(c_server);
+
+	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
+
+	result_data->m_client = data->m_client;
+	result_data->m_server_id = data->m_server_id;
+
+	return Object(obj);
 }
 
 bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged)
