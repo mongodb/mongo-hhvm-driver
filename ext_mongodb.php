@@ -375,6 +375,9 @@ final class Server {
 	public function getType(): int;
 
 	<<__Native>>
+	public function isPrimary() : bool;
+
+	<<__Native>>
 	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
