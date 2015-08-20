@@ -381,6 +381,9 @@ final class Server {
 	public function isSecondary() : bool;
 
 	<<__Native>>
+	public function isArbiter() : bool;
+
+	<<__Native>>
 	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
