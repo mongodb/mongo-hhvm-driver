@@ -63,7 +63,7 @@ Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 		retval.set(s_MongoDriverServer_is_secondary, !!(sd->type == MONGOC_SERVER_RS_SECONDARY));
 		retval.set(s_MongoDriverServer_is_arbiter, !!(sd->type == MONGOC_SERVER_RS_ARBITER));
 
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
 		convertor.convert(&v_last_is_master);
 		a_last_is_master = v_last_is_master.toArray();
@@ -99,7 +99,7 @@ Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 
 	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
 		Variant v;
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
 		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
 		convertor.convert(&v);

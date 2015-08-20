@@ -108,7 +108,7 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	obj->o_set(String("writeConcern"), debugInfoResult, s_MongoDriverWriteConcern_className.get());
 
 	Variant v;
-	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
 	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
 	convertor.convert(&v);
