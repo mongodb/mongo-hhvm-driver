@@ -62,6 +62,7 @@ Object HHVM_METHOD(MongoDBDriverServer, executeBulkWrite, const String &ns, cons
 bool HHVM_METHOD(MongoDBDriverServer, isPrimary);
 bool HHVM_METHOD(MongoDBDriverServer, isSecondary);
 bool HHVM_METHOD(MongoDBDriverServer, isArbiter);
+bool HHVM_METHOD(MongoDBDriverServer, isHidden);
 
 }
 #endif

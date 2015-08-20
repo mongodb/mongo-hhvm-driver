@@ -384,6 +384,9 @@ final class Server {
 	public function isArbiter() : bool;
 
 	<<__Native>>
+	public function isHidden() : bool;
+
+	<<__Native>>
 	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
