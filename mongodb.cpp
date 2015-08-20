@@ -155,6 +155,7 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\Server, executeQuery, MongoDBDriverServer, executeQuery);
 			HHVM_MALIAS(MongoDB\\Driver\\Server, getHost, MongoDBDriverServer, getHost);
 			HHVM_MALIAS(MongoDB\\Driver\\Server, getInfo, MongoDBDriverServer, getInfo);
+			HHVM_MALIAS(MongoDB\\Driver\\Server, getLatency, MongoDBDriverServer, getLatency);
 			HHVM_MALIAS(MongoDB\\Driver\\Server, getPort, MongoDBDriverServer, getPort);
 
 			Native::registerNativeDataInfo<MongoDBDriverServerData>(MongoDBDriverServerData::s_className.get());

@@ -363,6 +363,9 @@ final class Server {
 	final public function getInfo(): array;
 
 	<<__Native>>
+	public function getLatency() : int;
+
+	<<__Native>>
 	public function getPort(): int;
 
 	<<__Native>>
