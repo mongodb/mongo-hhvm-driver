@@ -63,6 +63,7 @@ bool HHVM_METHOD(MongoDBDriverServer, isPrimary);
 bool HHVM_METHOD(MongoDBDriverServer, isSecondary);
 bool HHVM_METHOD(MongoDBDriverServer, isArbiter);
 bool HHVM_METHOD(MongoDBDriverServer, isHidden);
+bool HHVM_METHOD(MongoDBDriverServer, isPassive);
 
 }
 #endif

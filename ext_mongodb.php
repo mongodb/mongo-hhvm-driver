@@ -387,6 +387,9 @@ final class Server {
 	public function isHidden() : bool;
 
 	<<__Native>>
+	public function isPassive() : bool;
+
+	<<__Native>>
 	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
