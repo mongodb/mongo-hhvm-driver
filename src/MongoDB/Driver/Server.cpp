@@ -134,6 +134,24 @@ int64_t HHVM_METHOD(MongoDBDriverServer, getPort)
 	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
 }
 
+Array HHVM_METHOD(MongoDBDriverServer, getTags)
+{
+	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
+	mongoc_server_description_t *sd;
+
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+		Variant v;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+
+		BsonToVariantConverter convertor(bson_get_data(&sd->tags), sd->tags.len, options);
+		convertor.convert(&v);
+
+		return v.toArray();
+	}
+
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+}
+
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference)
 {
 	bson_t *bson;

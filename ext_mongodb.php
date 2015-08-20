@@ -369,6 +369,9 @@ final class Server {
 	public function getPort(): int;
 
 	<<__Native>>
+	public function getTags() : array;
+
+	<<__Native>>
 	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
