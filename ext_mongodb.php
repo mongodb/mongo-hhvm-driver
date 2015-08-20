@@ -372,6 +372,9 @@ final class Server {
 	public function getTags() : array;
 
 	<<__Native>>
+	public function getType(): int;
+
+	<<__Native>>
 	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
