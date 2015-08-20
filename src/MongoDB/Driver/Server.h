@@ -60,6 +60,7 @@ Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const 
 Object HHVM_METHOD(MongoDBDriverServer, executeQuery, const String &ns, const Object &quuery, const Variant &ReadPreference);
 Object HHVM_METHOD(MongoDBDriverServer, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern);
 bool HHVM_METHOD(MongoDBDriverServer, isPrimary);
+bool HHVM_METHOD(MongoDBDriverServer, isSecondary);
 
 }
 #endif
