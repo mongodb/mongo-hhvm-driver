@@ -61,7 +61,7 @@ final class WriteResult {
 
 	public function getUpsertedIds(): array
 	{
-		if ($this->upsertedIds && gettype($this->upsertedIds) == 'object') {
+		if ($this->upsertedIds && gettype($this->upsertedIds) == 'array') {
 			$upsertedIds = [];
 
 			foreach( (array) $this->upsertedIds as $idDoc )

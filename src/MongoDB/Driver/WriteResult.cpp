@@ -112,7 +112,7 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 
 	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
 	convertor.convert(&v);
-	obj->o_set(String("upsertedIds"), v, s_MongoDriverWriteResult_className);
+	obj->o_set(String("upsertedIds"), v.toArray(), s_MongoDriverWriteResult_className);
 
 	return obj;
 }
