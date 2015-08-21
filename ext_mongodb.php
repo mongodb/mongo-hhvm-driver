@@ -207,6 +207,9 @@ final class Cursor implements Traversable, Iterator {
 	}
 
 	<<__Native>>
+	function __debugInfo() : array;
+
+	<<__Native>>
 	public function getId() : CursorId;
 
 	<<__Native>>

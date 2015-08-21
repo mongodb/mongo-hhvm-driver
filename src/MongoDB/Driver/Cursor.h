@@ -61,6 +61,8 @@ class MongoDBDriverCursorData
 		};
 };
 
+Array HHVM_METHOD(MongoDBDriverCursor, __debugInfo);
+
 Object HHVM_METHOD(MongoDBDriverCursor, getId);
 Object HHVM_METHOD(MongoDBDriverCursor, getServer);
 void HHVM_METHOD(MongoDBDriverCursor, setTypeMap, const Array &typemap);
