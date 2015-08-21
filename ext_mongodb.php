@@ -1,7 +1,26 @@
 <?hh
 namespace MongoDB\Driver;
 
-<<__NativeData("MongoDBDriverWriteResult")>>
+final class WriteConcernError {
+	private $code;
+	private $message;
+
+	private function __construct()
+	{
+		throw new Exception\RunTimeException("Accessing private constructor");
+	}
+
+	public function getCode() : int
+	{
+		return $this->code;
+	}
+
+	public function getMessage() : string
+	{
+		return $this->message;
+	}
+}
+
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;
@@ -56,12 +75,12 @@ final class WriteResult {
 		return [];
 	}
 
-	public function getWriteConcernError(): WriteConcernError
+	public function getWriteConcernError()
 	{
 		if ($this->writeConcernError && gettype($this->writeConcernError) == 'object') {
 			return $this->writeConcernError;
 		}
-		return false;
+		return null;
 	}
 
 	public function getWriteErrors(): array
