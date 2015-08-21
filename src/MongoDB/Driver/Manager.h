@@ -38,6 +38,7 @@ class MongoDBDriverManagerData
 		}
 
 		void wakeup (const Variant& context, ObjectData* obj) {
+			std::cout << "NEVER GETS RUN\n";
 			throw Object(SystemLib::AllocExceptionObject("Unserialization of MongoDB\\Driver\\Manager is not allowed"));
 		}
 
@@ -55,6 +56,7 @@ class MongoDBDriverManagerData
 };
 
 void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions);
+void HHVM_METHOD(MongoDBDriverManager, __wakeup);
 Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern);
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference);
 Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const Variant &query, const Variant &deleteOptions, const Variant &writeConcern);

@@ -87,6 +87,7 @@ static class MongoDBExtension : public Extension {
 
 			/* MongoDB\Driver\Manager */
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, __construct, MongoDBDriverManager, __construct);
+			HHVM_MALIAS(MongoDB\\Driver\\Manager, __wakeup, MongoDBDriverManager, __wakeup);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeBulkWrite, MongoDBDriverManager, executeBulkWrite);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeCommand, MongoDBDriverManager, executeCommand);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeDelete, MongoDBDriverManager, executeDelete);

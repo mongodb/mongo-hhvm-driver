@@ -150,6 +150,9 @@ class Manager {
 	}
 
 	<<__Native>>
+	function __wakeUp() : void;
+
+	<<__Native>>
 	function selectServer(ReadPreference $readPreference): Server;
 }
 
