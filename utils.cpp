@@ -69,6 +69,7 @@ HPHP::ObjectData *Utils::CreateAndConstruct(HPHP::StaticString classname, const 
 }
 
 const HPHP::StaticString s_MongoDriverExceptionAuthenticationException_className("MongoDB\\Driver\\Exception\\AuthenticationException");
+const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_className("MongoDB\\Driver\\Exception\\BulkWriteException");
 const HPHP::StaticString s_MongoDriverExceptionConnectionException_className("MongoDB\\Driver\\Exception\\ConnectionException");
 const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_className("MongoDB\\Driver\\Exception\\ConnectionTimeoutException");
 const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className("MongoDB\\Driver\\Exception\\DuplicateKeyException");
@@ -85,6 +86,11 @@ HPHP::Object Utils::throwInvalidArgumentException(char *errormessage)
 HPHP::Object Utils::throwInvalidArgumentException(HPHP::String errormessage)
 {
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionInvalidArgumentException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
+}
+
+HPHP::Object Utils::throwBulkWriteException(HPHP::String errormessage)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionBulkWriteException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
 }
 
 HPHP::Object Utils::throwRunTimeException(char *errormessage)
@@ -160,6 +166,8 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 	}
 }
 
+const HPHP::StaticString s_MongoDriverBulkWriteException_writeResult("writeResult");
+
 HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *client, int server_id, const HPHP::Object bulk, const mongoc_write_concern_t *write_concern)
 {
 	HPHP::MongoDBDriverBulkWriteData* bulk_data = HPHP::Native::data<HPHP::MongoDBDriverBulkWriteData>(bulk.get());
@@ -195,7 +203,18 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	/* Prepare result */
 	if (!success) {
 		/* throw exception */
-		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+		if (
+			bson_empty0(&bulk_data->m_bulk->result.writeErrors)
+			&& bson_empty0(&bulk_data->m_bulk->result.writeConcernError)
+		) {
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+		} else {
+			HPHP::ObjectData* obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, success, write_concern);
+			auto bw_exception = MongoDriver::Utils::throwBulkWriteException("BulkWrite error");
+			bw_exception->o_set(s_MongoDriverBulkWriteException_writeResult, obj, s_MongoDriverExceptionBulkWriteException_className);
+
+			throw bw_exception;
+		}
 	} else {
 		HPHP::ObjectData* obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, success, write_concern);
 

@@ -42,6 +42,7 @@ class Utils
 	public:
 		static HPHP::ObjectData *CreateAndConstruct(const HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code);
 		static bool splitNamespace(HPHP::String ns, char **db, char **col);
+		static HPHP::Object throwBulkWriteException(HPHP::String errormessage);
 		static HPHP::Object throwInvalidArgumentException(char *errormessage);
 		static HPHP::Object throwInvalidArgumentException(HPHP::String errormessage);
 		static HPHP::Object throwRunTimeException(char *errormessage);
