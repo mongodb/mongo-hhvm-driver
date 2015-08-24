@@ -57,6 +57,27 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	data->m_client = client;
 }
 
+const StaticString
+	s_MongoDBDriverManager_request_id("request_id"),
+	s_MongoDBDriverManager_uri("uri"),
+	s_MongoDBDriverManager_cluster("cluster");
+
+Array HHVM_METHOD(MongoDBDriverManager, __debugInfo)
+{
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	Array retval = Array::Create();
+	Array servers = Array::Create();
+
+	retval.add(s_MongoDBDriverManager_request_id, (int64_t) data->m_client->request_id);
+	retval.add(s_MongoDBDriverManager_uri, (char*) mongoc_uri_get_string(data->m_client->uri));
+
+	mongoc_set_for_each(data->m_client->topology->description.servers, mongodb_driver_add_server_debug_wrapper, &servers);
+
+	retval.add(s_MongoDBDriverManager_cluster, servers);
+
+	return retval;
+}
+
 void HHVM_METHOD(MongoDBDriverManager, __wakeup)
 {
 	throw MongoDriver::Utils::throwRunTimeException("Unserialization of MongoDB\\Driver\\Manager is not allowed");

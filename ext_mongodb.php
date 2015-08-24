@@ -128,6 +128,9 @@ class Manager {
 	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
+	function __debugInfo() : array;
+
+	<<__Native>>
 	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>

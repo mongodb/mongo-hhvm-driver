@@ -83,6 +83,19 @@ static bool mongodb_driver_add_server_debug(mongoc_server_description_t *sd, Arr
 	return true;
 }
 
+bool mongodb_driver_add_server_debug_wrapper(void *item, void *context)
+{
+	mongoc_server_description_t *server = (mongoc_server_description_t*) item;
+	Array                       *retval = (Array*) context;
+	Array                        server_info = Array::Create();
+	bool                         ret;
+
+	ret = mongodb_driver_add_server_debug(server, &server_info);
+	retval->append(server_info);
+
+	return ret;
+}
+
 Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);

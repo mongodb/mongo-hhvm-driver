@@ -49,6 +49,8 @@ class MongoDBDriverServerData
 		};
 };
 
+bool mongodb_driver_add_server_debug_wrapper(void *item, void *context);
+
 Array HHVM_METHOD(MongoDBDriverServer, __debugInfo);
 String HHVM_METHOD(MongoDBDriverServer, getHost);
 Array HHVM_METHOD(MongoDBDriverServer, getInfo);

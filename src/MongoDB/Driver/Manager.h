@@ -57,6 +57,7 @@ class MongoDBDriverManagerData
 };
 
 void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions);
+Array HHVM_METHOD(MongoDBDriverManager, __debugInfo);
 void HHVM_METHOD(MongoDBDriverManager, __wakeup);
 Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern);
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference);
