@@ -244,7 +244,7 @@ Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const 
 		data->m_client,
 		data->m_server_id,
 		bson,
-		NULL
+		readPreference
 	);
 }
 

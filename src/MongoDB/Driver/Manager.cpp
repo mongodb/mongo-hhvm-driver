@@ -78,7 +78,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 		data->m_client,
 		-1,
 		bson,
-		NULL
+		readPreference
 	);
 }
 

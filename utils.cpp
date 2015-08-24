@@ -25,6 +25,7 @@
 #include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/Query.h"
+#include "src/MongoDB/Driver/ReadPreference.h"
 #include "src/MongoDB/Driver/WriteResult.h"
 
 namespace MongoDriver
@@ -197,16 +198,24 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	}
 }
 
-HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, mongoc_read_prefs_t *read_pref)
+HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, HPHP::Variant readPreference)
 {
 	static HPHP::Class* c_result;
 	mongoc_cursor_t *cursor;
 	const bson_t *doc;
 	bson_iter_t iter;
 	bson_iter_t child;
+	mongoc_read_prefs_t *read_preference = NULL;
+
+	if (!readPreference.isNull()) {
+		HPHP::Object o_rp = readPreference.toObject();
+		HPHP::MongoDBDriverReadPreferenceData* data = HPHP::Native::data<HPHP::MongoDBDriverReadPreferenceData>(o_rp);
+
+		read_preference = data->m_read_preference;
+	}
 
 	/* Run operation */
-	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, NULL);
+	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, read_preference);
 
 	/* Handle server hint */
 	cursor->hint = server_id;
