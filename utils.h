@@ -13,6 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+#ifndef __MONGODB_UTILS_H__
+#define __MONGODB_UTILS_H__
 
 #include "hphp/runtime/ext/extension.h"
 
@@ -42,6 +44,7 @@ class Utils
 		static bool splitNamespace(HPHP::String ns, char **db, char **col);
 		static HPHP::Object throwInvalidArgumentException(char *errormessage);
 		static HPHP::Object throwInvalidArgumentException(HPHP::String errormessage);
+		static HPHP::Object throwRunTimeException(char *errormessage);
 		static HPHP::Object throwUnexpectedValueException(char *errormessage);
 		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
 
@@ -51,3 +54,4 @@ class Utils
 };
 
 }
+#endif

@@ -59,7 +59,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 
 void HHVM_METHOD(MongoDBDriverManager, __wakeup)
 {
-	throw Object(SystemLib::AllocExceptionObject("Unserialization of MongoDB\\Driver\\Manager is not allowed"));
+	throw MongoDriver::Utils::throwRunTimeException("Unserialization of MongoDB\\Driver\\Manager is not allowed");
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference)

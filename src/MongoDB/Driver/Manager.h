@@ -21,6 +21,8 @@ extern "C" {
 #include "../../../libmongoc/src/mongoc/mongoc.h"
 }
 
+#include "../../../utils.h"
+
 namespace HPHP {
 
 class MongoDBDriverManagerData
@@ -38,12 +40,11 @@ class MongoDBDriverManagerData
 		}
 
 		void wakeup (const Variant& context, ObjectData* obj) {
-			std::cout << "NEVER GETS RUN\n";
-			throw Object(SystemLib::AllocExceptionObject("Unserialization of MongoDB\\Driver\\Manager is not allowed"));
+			throw MongoDriver::Utils::throwRunTimeException("Unserialization of MongoDB\\Driver\\Manager is not allowed");
 		}
 
 		Variant sleep() const {
-			throw Object(SystemLib::AllocExceptionObject("Serialization of MongoDB\\Driver\\Manager is not allowed"));
+			throw MongoDriver::Utils::throwRunTimeException("Serialization of MongoDB\\Driver\\Manager is not allowed");
 		}
 
 		void sweep() {
