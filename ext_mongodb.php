@@ -374,6 +374,9 @@ final class ReadPreference {
 				break;
 		}
 	}
+
+	<<__Native>>
+	public function __debugInfo() : array;
 }
 
 <<__NativeData("MongoDBDriverServer")>>

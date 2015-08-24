@@ -141,6 +141,7 @@ static class MongoDBExtension : public Extension {
 			/* MongoDb\Driver\ReadPreference */
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreference, MongoDBDriverReadPreference, _setReadPreference);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreferenceTags, MongoDBDriverReadPreference, _setReadPreferenceTags);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, __debugInfo, MongoDBDriverReadPreference, __debugInfo);
 
 			Native::registerNativeDataInfo<MongoDBDriverReadPreferenceData>(MongoDBDriverReadPreferenceData::s_className.get());
 

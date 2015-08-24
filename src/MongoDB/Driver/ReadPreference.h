@@ -49,6 +49,7 @@ class MongoDBDriverReadPreferenceData
 
 void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPreference);
 void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Array &tagSets);
+Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo);
 
 }
 #endif

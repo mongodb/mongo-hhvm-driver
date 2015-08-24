@@ -17,6 +17,8 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 
+#include "../../../libmongoc/src/mongoc/mongoc-read-prefs-private.h"
+
 #include "../../../mongodb.h"
 
 #include "ReadPreference.h"
@@ -52,6 +54,27 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 		/* Throw exception */
 		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid tagSet"));
 	}
+}
+
+const StaticString
+	s_mode("mode"),
+	s_tags("tags");
+
+
+Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+	Array retval = Array::Create();
+	Variant v_tags;
+
+	retval.set(s_mode, data->m_read_preference->mode);
+
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+	BsonToVariantConverter convertor(bson_get_data(&data->m_read_preference->tags), data->m_read_preference->tags.len, options);
+	convertor.convert(&v_tags);
+	retval.set(s_tags, v_tags.toArray());
+
+	return retval;
 }
 
 }
