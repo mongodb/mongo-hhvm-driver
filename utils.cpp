@@ -81,6 +81,11 @@ HPHP::Object Utils::throwInvalidArgumentException(char *errormessage)
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionInvalidArgumentException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
 }
 
+HPHP::Object Utils::throwInvalidArgumentException(HPHP::String errormessage)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionInvalidArgumentException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
+}
+
 HPHP::Object Utils::throwUnexpectedValueException(char *errormessage)
 {
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionUnexpectedValueException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
@@ -159,7 +164,7 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
-		throw HPHP::Object(HPHP::SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace provided: " + ns));
+		throw throwInvalidArgumentException("Invalid namespace provided: " + ns);
 		return NULL;
 	}
 
@@ -287,7 +292,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
-		throw HPHP::Object(HPHP::SystemLib::AllocInvalidArgumentExceptionObject("Invalid namespace provided: " + ns));
+		throw throwInvalidArgumentException("Invalid namespace provided: " + ns);
 		return NULL;
 	}
 
