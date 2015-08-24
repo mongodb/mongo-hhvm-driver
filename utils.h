@@ -47,7 +47,7 @@ class Utils
 
 		static HPHP::Object doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *client, int server_id, const HPHP::Object bulk, const mongoc_write_concern_t *write_concern);
 		static HPHP::Object doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, HPHP::Variant readPreference);
-		static HPHP::Object doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, mongoc_read_prefs_t *read_pref);
+		static HPHP::Object doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, HPHP::Variant readPreference);
 };
 
 }

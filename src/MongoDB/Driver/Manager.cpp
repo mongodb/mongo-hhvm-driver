@@ -214,7 +214,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const O
 		manager_data->m_client,
 		-1,
 		query,
-		NULL
+		readPreference
 	);
 }
 
