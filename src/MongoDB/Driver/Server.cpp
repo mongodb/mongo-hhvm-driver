@@ -30,20 +30,58 @@ namespace HPHP {
 const StaticString s_MongoDriverServer_className("MongoDB\\Driver\\Server");
 Class* MongoDBDriverServerData::s_class = nullptr;
 const StaticString MongoDBDriverServerData::s_className("MongoDBDriverServer");
-const StaticString s_MongoDriverServer_host("host");
-const StaticString s_MongoDriverServer_port("port");
-const StaticString s_MongoDriverServer_type("type");
-const StaticString s_MongoDriverServer_is_primary("is_primary");
-const StaticString s_MongoDriverServer_is_secondary("is_secondary");
-const StaticString s_MongoDriverServer_is_arbiter("is_arbiter");
-const StaticString s_MongoDriverServer_hidden("hidden");
-const StaticString s_MongoDriverServer_passive("passive");
-const StaticString s_MongoDriverServer_is_hidden("is_hidden");
-const StaticString s_MongoDriverServer_is_passive("is_passive");
-const StaticString s_MongoDriverServer_tags("tags");
-const StaticString s_MongoDriverServer_last_is_master("last_is_master");
-const StaticString s_MongoDriverServer_round_trip_time("round_trip_time");
 IMPLEMENT_GET_CLASS(MongoDBDriverServerData);
+
+const StaticString
+	s_MongoDriverServer_host("host"),
+	s_MongoDriverServer_port("port"),
+	s_MongoDriverServer_type("type"),
+	s_MongoDriverServer_is_primary("is_primary"),
+	s_MongoDriverServer_is_secondary("is_secondary"),
+	s_MongoDriverServer_is_arbiter("is_arbiter"),
+	s_MongoDriverServer_hidden("hidden"),
+	s_MongoDriverServer_passive("passive"),
+	s_MongoDriverServer_is_hidden("is_hidden"),
+	s_MongoDriverServer_is_passive("is_passive"),
+	s_MongoDriverServer_tags("tags"),
+	s_MongoDriverServer_last_is_master("last_is_master"),
+	s_MongoDriverServer_round_trip_time("round_trip_time");
+
+static bool mongodb_driver_add_server_debug(mongoc_server_description_t *sd, Array *retval)
+{
+	Variant v_last_is_master;
+	Array   a_last_is_master;
+
+	retval->set(s_MongoDriverServer_host, sd->host.host);
+	retval->set(s_MongoDriverServer_port, sd->host.port);
+	retval->set(s_MongoDriverServer_type, sd->type);
+	retval->set(s_MongoDriverServer_is_primary, !!(sd->type == MONGOC_SERVER_RS_PRIMARY));
+	retval->set(s_MongoDriverServer_is_secondary, !!(sd->type == MONGOC_SERVER_RS_SECONDARY));
+	retval->set(s_MongoDriverServer_is_arbiter, !!(sd->type == MONGOC_SERVER_RS_ARBITER));
+
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+	BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
+	convertor.convert(&v_last_is_master);
+	a_last_is_master = v_last_is_master.toArray();
+
+	retval->set(s_MongoDriverServer_is_hidden, a_last_is_master.exists(s_MongoDriverServer_hidden) && !!a_last_is_master[s_MongoDriverServer_hidden].toBoolean());
+	retval->set(s_MongoDriverServer_is_passive, a_last_is_master.exists(s_MongoDriverServer_passive) && !!a_last_is_master[s_MongoDriverServer_passive].toBoolean());
+
+	if (sd->tags.len) {
+		Variant v_tags;
+
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+		BsonToVariantConverter convertor(bson_get_data(&sd->tags), sd->tags.len, options);
+		convertor.convert(&v_tags);
+		retval->set(s_MongoDriverServer_tags, v_tags);
+	}
+
+	retval->set(s_MongoDriverServer_last_is_master, a_last_is_master);
+
+	retval->set(s_MongoDriverServer_round_trip_time, sd->round_trip_time);
+
+	return true;
+}
 
 Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 {
@@ -53,27 +91,7 @@ Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 	Array retval = Array::Create();
 
 	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
-		Variant v_last_is_master;
-		Array   a_last_is_master;
-
-		retval.set(s_MongoDriverServer_host, sd->host.host);
-		retval.set(s_MongoDriverServer_port, sd->host.port);
-		retval.set(s_MongoDriverServer_type, sd->type);
-		retval.set(s_MongoDriverServer_is_primary, !!(sd->type == MONGOC_SERVER_RS_PRIMARY));
-		retval.set(s_MongoDriverServer_is_secondary, !!(sd->type == MONGOC_SERVER_RS_SECONDARY));
-		retval.set(s_MongoDriverServer_is_arbiter, !!(sd->type == MONGOC_SERVER_RS_ARBITER));
-
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
-		convertor.convert(&v_last_is_master);
-		a_last_is_master = v_last_is_master.toArray();
-
-		retval.set(s_MongoDriverServer_is_hidden, a_last_is_master.exists(s_MongoDriverServer_hidden) && !!a_last_is_master[s_MongoDriverServer_hidden].toBoolean());
-		retval.set(s_MongoDriverServer_is_passive, a_last_is_master.exists(s_MongoDriverServer_passive) && !!a_last_is_master[s_MongoDriverServer_passive].toBoolean());
-		retval.set(s_MongoDriverServer_last_is_master, a_last_is_master);
-
-		retval.set(s_MongoDriverServer_round_trip_time, sd->round_trip_time);
-
+		mongodb_driver_add_server_debug(sd, &retval);
 		return retval;
 	}
 
