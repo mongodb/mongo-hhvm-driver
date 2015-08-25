@@ -113,7 +113,7 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const A
 		} else if (0 == strcasecmp("nearest", rp_str)) {
 			mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_NEAREST);
 		} else {
-			throw MongoDriver::Utils::throwInvalidArgumentException("Unsupported readPreference value: " + Variant(rp_str).toString());
+			throw MongoDriver::Utils::throwInvalidArgumentException("Unsupported readPreference value: '" + Variant(rp_str).toString() + "'");
 			mongoc_read_prefs_destroy(new_rp);
 
 			return false;
@@ -136,7 +136,7 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const A
 		mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY &&
 		!bson_empty(mongoc_read_prefs_get_tags(new_rp))
 	) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preferences mode conflicts with tags");
+		throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with tags");
 		mongoc_read_prefs_destroy(new_rp);
 
 		return false;
@@ -213,7 +213,7 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 						mongoc_write_concern_set_w(new_wc, value);
 						break;
 					}
-					throw MongoDriver::Utils::throwInvalidArgumentException("Unsupported w value: " + value);
+					throw MongoDriver::Utils::throwInvalidArgumentException("Unsupported w value: " + Variant(value).toString());
 					mongoc_write_concern_destroy(new_wc);
 
 					return false;
@@ -242,7 +242,7 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 		int32_t w = mongoc_write_concern_get_w(new_wc);
 
 		if (w == MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED || w == MONGOC_WRITE_CONCERN_W_ERRORS_IGNORED) {
-			throw MongoDriver::Utils::throwInvalidArgumentException("Journal conclicts with w value: " + w);
+			throw MongoDriver::Utils::throwInvalidArgumentException("Journal conflicts with w value: " + Variant(w).toString());
 			mongoc_write_concern_destroy(new_wc);
 
 			return false;
