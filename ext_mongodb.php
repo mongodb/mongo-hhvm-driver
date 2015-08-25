@@ -286,7 +286,12 @@ final class Command {
 
 	public function __construct(mixed $command)
 	{
-		$this->command = $command;
+		$this->command = (object) $command;
+	}
+
+	public function __debugInfo()
+	{
+		return [ 'command' => $this->command ];
 	}
 }
 
