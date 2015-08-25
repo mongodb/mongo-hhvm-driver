@@ -268,12 +268,19 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	mongoc_uri_t *uri;
 	mongoc_client_t *client;
 
-	client = mongoc_client_new(dsn.c_str());
+	uri = mongoc_uri_new(dsn.c_str());
+
+	if (!uri) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Failed to parse MongoDB URI: '" + dsn + "'");
+	}
+
+	client = mongoc_client_new_from_uri(uri);
 
 	if (!client) {
-		throw Object(SystemLib::AllocExceptionObject("Can't connect"));
+		throw MongoDriver::Utils::throwRunTimeException("Failed to create Manager from URI: '" + dsn + "'");
 	}
 
 	data->m_client = client;
