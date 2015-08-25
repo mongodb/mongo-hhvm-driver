@@ -46,6 +46,13 @@ const StaticString MongoDBDriverManagerData::s_className("MongoDBDriverManager")
 IMPLEMENT_GET_CLASS(MongoDBDriverManagerData);
 
 const StaticString
+	s_MongoDBDriverManager_slaveok("slaveok"),
+	s_MongoDBDriverManager_readpreference("readpreference"),
+	s_MongoDBDriverManager_readpreferencetags("readpreferencetags"),
+	s_MongoDBDriverManager_readPreference("readPreference"),
+	s_MongoDBDriverManager_readPreferenceTags("readPreferenceTags"),
+	s_MongoDBDriverManager_mode("mode"),
+	s_MongoDBDriverManager_tags("tags"),
 	s_MongoDBDriverManager_w("w"),
 	s_MongoDBDriverManager_wmajority("wmajority"),
 	s_MongoDBDriverManager_wtimeout("wtimeout"),
@@ -53,6 +60,102 @@ const StaticString
 	s_MongoDBDriverManager_fsync("fsync"),
 	s_MongoDBDriverManager_safe("safe"),
 	s_MongoDBDriverManager_journal("journal");
+
+static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const Array options)
+{
+	mongoc_read_prefs_t *new_rp;
+	const mongoc_read_prefs_t *old_rp;
+	const char *rp_str = NULL;
+	bson_t *b_tags;
+
+	if (!(old_rp = mongoc_client_get_read_prefs(client))) {
+		throw MongoDriver::Utils::throwRunTimeException("Client does not have a read preference");
+
+		return false;
+	}
+
+	if (options.size() == 0) {
+		return true;
+	}
+
+	if (
+		!options.exists(s_MongoDBDriverManager_slaveok) &&
+		!options.exists(s_MongoDBDriverManager_readpreference) &&
+		!options.exists(s_MongoDBDriverManager_readpreferencetags) &&
+		!options.exists(s_MongoDBDriverManager_readPreference) &&
+		!options.exists(s_MongoDBDriverManager_readPreferenceTags)
+	) {
+		return true;
+	}
+
+	new_rp = mongoc_read_prefs_copy(old_rp);
+
+	if (options.exists(s_MongoDBDriverManager_slaveok) && options[s_MongoDBDriverManager_slaveok].isBoolean()) {
+		mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_SECONDARY_PREFERRED);
+	}
+
+	if (options.exists(s_MongoDBDriverManager_readpreference) && options[s_MongoDBDriverManager_readpreference].isString()) {
+		rp_str = options[s_MongoDBDriverManager_readpreference].toString().c_str();
+	}
+	if (options.exists(s_MongoDBDriverManager_readPreference) && options[s_MongoDBDriverManager_readPreference].isString()) {
+		rp_str = options[s_MongoDBDriverManager_readPreference].toString().c_str();
+	}
+
+	if (rp_str) {
+		if (0 == strcasecmp("primary", rp_str)) {
+			mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_PRIMARY);
+		} else if (0 == strcasecmp("primarypreferred", rp_str)) {
+			mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_PRIMARY_PREFERRED);
+		} else if (0 == strcasecmp("secondary", rp_str)) {
+			mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_SECONDARY);
+		} else if (0 == strcasecmp("secondarypreferred", rp_str)) {
+			mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_SECONDARY_PREFERRED);
+		} else if (0 == strcasecmp("nearest", rp_str)) {
+			mongoc_read_prefs_set_mode(new_rp, MONGOC_READ_NEAREST);
+		} else {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Unsupported readPreference value: " + Variant(rp_str).toString());
+			mongoc_read_prefs_destroy(new_rp);
+
+			return false;
+		}
+	}
+
+	if (options.exists(s_MongoDBDriverManager_readpreferencetags) && options[s_MongoDBDriverManager_readpreferencetags].isArray()) {
+		VariantToBsonConverter converter(options[s_MongoDBDriverManager_readpreferencetags].toArray(), HIPPO_BSON_NO_FLAGS);
+		b_tags = bson_new();
+		converter.convert(b_tags);
+		mongoc_read_prefs_set_tags(new_rp, b_tags);
+	} else if (options.exists(s_MongoDBDriverManager_readPreferenceTags) && options[s_MongoDBDriverManager_readPreferenceTags].isArray()) {
+		VariantToBsonConverter converter(options[s_MongoDBDriverManager_readPreferenceTags].toArray(), HIPPO_BSON_NO_FLAGS);
+		b_tags = bson_new();
+		converter.convert(b_tags);
+		mongoc_read_prefs_set_tags(new_rp, b_tags);
+	}
+
+	if (
+		mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY &&
+		!bson_empty(mongoc_read_prefs_get_tags(new_rp))
+	) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preferences mode conflicts with tags");
+		mongoc_read_prefs_destroy(new_rp);
+
+		return false;
+	}
+
+	/* This may be redundant in light of the last check (primary with tags),
+	 * but we'll check anyway in case additional validation is implemented. */
+	if (!mongoc_read_prefs_is_valid(new_rp)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Read preference is not valid");
+		mongoc_read_prefs_destroy(new_rp);
+
+		return false;
+	}
+
+	mongoc_client_set_read_prefs(client, new_rp);
+	mongoc_read_prefs_destroy(new_rp);
+
+	return true;
+}
 
 static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const Array options)
 {
@@ -175,6 +278,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 
 	data->m_client = client;
 
+	hippo_mongo_driver_manager_apply_rp(data->m_client, options);
 	hippo_mongo_driver_manager_apply_wc(data->m_client, options);
 }
 
