@@ -21,10 +21,12 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+#include "../../../libmongoc/src/mongoc/mongoc-client.h"
 #define MONGOC_I_AM_A_DRIVER
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-client-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-cluster-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "BulkWrite.h"
@@ -43,6 +45,123 @@ Class* MongoDBDriverManagerData::s_class = nullptr;
 const StaticString MongoDBDriverManagerData::s_className("MongoDBDriverManager");
 IMPLEMENT_GET_CLASS(MongoDBDriverManagerData);
 
+const StaticString
+	s_MongoDBDriverManager_w("w"),
+	s_MongoDBDriverManager_wmajority("wmajority"),
+	s_MongoDBDriverManager_wtimeout("wtimeout"),
+	s_MongoDBDriverManager_wtimeoutms("wtimeoutms"),
+	s_MongoDBDriverManager_fsync("fsync"),
+	s_MongoDBDriverManager_safe("safe"),
+	s_MongoDBDriverManager_journal("journal");
+
+static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const Array options)
+{
+	int32_t wtimeoutms;
+	mongoc_write_concern_t *new_wc;
+	const mongoc_write_concern_t *old_wc;
+
+	if (!(old_wc = mongoc_client_get_write_concern(client))) {
+		throw MongoDriver::Utils::throwRunTimeException("Client does not have a write concern");
+
+		return false;
+	}
+
+	if (options.size() == 0) {
+		return true;
+	}
+
+	if (
+		!options.exists(s_MongoDBDriverManager_journal) &&
+		!options.exists(s_MongoDBDriverManager_safe) &&
+		!options.exists(s_MongoDBDriverManager_w) &&
+		!options.exists(s_MongoDBDriverManager_wtimeoutms)
+	) {
+		return true;
+	}
+
+	wtimeoutms = mongoc_write_concern_get_wtimeout(old_wc);
+
+	new_wc = mongoc_write_concern_copy(old_wc);
+
+	if (options.exists(s_MongoDBDriverManager_safe) && options[s_MongoDBDriverManager_safe].isBoolean()) {
+		mongoc_write_concern_set_w(new_wc, options[s_MongoDBDriverManager_safe].toBoolean() ? 1 : MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED);
+	}
+
+	if (options.exists(s_MongoDBDriverManager_wtimeoutms) && options[s_MongoDBDriverManager_wtimeoutms].isInteger()) {
+		wtimeoutms = (int32_t) options[s_MongoDBDriverManager_wtimeoutms].toInt64();
+	}
+
+	if (options.exists(s_MongoDBDriverManager_journal) && options[s_MongoDBDriverManager_journal].isBoolean()) {
+		mongoc_write_concern_set_journal(new_wc, !!options[s_MongoDBDriverManager_journal].toBoolean());
+	}
+
+	if (options.exists(s_MongoDBDriverManager_w)) {
+		if (options[s_MongoDBDriverManager_w].isInteger()) {
+			int32_t value = (int32_t) options[s_MongoDBDriverManager_w].toInt64();
+
+			switch (value) {
+				case MONGOC_WRITE_CONCERN_W_ERRORS_IGNORED:
+				case MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED:
+					mongoc_write_concern_set_w(new_wc, value);
+					break;
+
+				default:
+					if (value > 0) {
+						mongoc_write_concern_set_w(new_wc, value);
+						break;
+					}
+					throw MongoDriver::Utils::throwInvalidArgumentException("Unsupported w value: " + value);
+					mongoc_write_concern_destroy(new_wc);
+
+					return false;
+			}
+		} else if (options[s_MongoDBDriverManager_w].isString()) {
+			const char *str = options[s_MongoDBDriverManager_w].toString().c_str();
+
+			if (0 == strcasecmp("majority", str)) {
+				mongoc_write_concern_set_wmajority(new_wc, wtimeoutms);
+			} else {
+				mongoc_write_concern_set_wtag(new_wc, str);
+			}
+		}
+	}
+
+	/* Only set wtimeout if it's still applicable; otherwise, clear it. */
+	if (mongoc_write_concern_get_w(new_wc) > 1 ||
+		mongoc_write_concern_get_wmajority(new_wc) ||
+		mongoc_write_concern_get_wtag(new_wc)) {
+		mongoc_write_concern_set_wtimeout(new_wc, wtimeoutms);
+	} else {
+		mongoc_write_concern_set_wtimeout(new_wc, 0);
+	}
+
+	if (mongoc_write_concern_get_journal(new_wc)) {
+		int32_t w = mongoc_write_concern_get_w(new_wc);
+
+		if (w == MONGOC_WRITE_CONCERN_W_UNACKNOWLEDGED || w == MONGOC_WRITE_CONCERN_W_ERRORS_IGNORED) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Journal conclicts with w value: " + w);
+			mongoc_write_concern_destroy(new_wc);
+
+			return false;
+		}
+	}
+
+	/* This may be redundant in light of the last check (unacknowledged w with
+	 * journal), but we'll check anyway in case additional validation is
+	 * implemented. */
+	if (!_mongoc_write_concern_is_valid(new_wc)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Write concern is not valid");
+		mongoc_write_concern_destroy(new_wc);
+
+		return false;
+	}
+
+	mongoc_client_set_write_concern(client, new_wc);
+	mongoc_write_concern_destroy(new_wc);
+
+	return true;
+}
+
 void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
@@ -55,6 +174,8 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	}
 
 	data->m_client = client;
+
+	hippo_mongo_driver_manager_apply_wc(data->m_client, options);
 }
 
 const StaticString
