@@ -65,6 +65,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Variant &writeConcern);
 Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const Object &query, const Variant &readPreference);
 Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const Variant &query, const Variant &newObj, const Variant &updateOptions, const Variant &writeConcern);
+Array HHVM_METHOD(MongoDBDriverManager, getReadPreference);
 Array HHVM_METHOD(MongoDBDriverManager, getWriteConcern);
 Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPreference);
 

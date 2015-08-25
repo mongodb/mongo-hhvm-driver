@@ -153,6 +153,9 @@ class Manager {
 	}
 
 	<<__Native>>
+	function getReadPreference() : array;
+
+	<<__Native>>
 	function getWriteConcern() : array;
 
 	<<__Native>>

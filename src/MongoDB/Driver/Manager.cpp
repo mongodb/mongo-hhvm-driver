@@ -587,6 +587,29 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 	);
 }
 
+Array HHVM_METHOD(MongoDBDriverManager, getReadPreference)
+{
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	const mongoc_read_prefs_t *read_prefs = mongoc_client_get_read_prefs(data->m_client);
+
+	Array retval = Array::Create();
+
+	retval.add(s_MongoDBDriverManager_mode, read_prefs->mode);
+	if (read_prefs->tags.len) {
+		Variant v_tags;
+
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+		BsonToVariantConverter convertor(bson_get_data(&read_prefs->tags), read_prefs->tags.len, options);
+		convertor.convert(&v_tags);
+
+		retval.add(s_MongoDBDriverManager_tags, v_tags);
+	} else {
+		retval.add(s_MongoDBDriverManager_tags, Variant());
+	}
+
+	return retval;
+}
+
 Array HHVM_METHOD(MongoDBDriverManager, getWriteConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
