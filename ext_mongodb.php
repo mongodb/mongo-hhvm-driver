@@ -153,6 +153,9 @@ class Manager {
 	}
 
 	<<__Native>>
+	function getWriteConcern() : array;
+
+	<<__Native>>
 	function __wakeUp() : void;
 
 	<<__Native>>

@@ -483,6 +483,39 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 	);
 }
 
+Array HHVM_METHOD(MongoDBDriverManager, getWriteConcern)
+{
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	const mongoc_write_concern_t *write_concern = mongoc_client_get_write_concern(data->m_client);
+	const char *wtag = mongoc_write_concern_get_wtag(write_concern);
+	const int32_t w = mongoc_write_concern_get_w(write_concern);
+
+	Array retval = Array::Create();
+
+	if (wtag) {
+		retval.add(s_MongoDBDriverManager_w, wtag);
+	} else if (mongoc_write_concern_get_wmajority(write_concern)) {
+		retval.add(s_MongoDBDriverManager_w, "majority");
+	} else if (w != MONGOC_WRITE_CONCERN_W_DEFAULT) {
+		retval.add(s_MongoDBDriverManager_w, (int64_t) w);
+	}
+
+	retval.add(s_MongoDBDriverManager_wmajority, !!(mongoc_write_concern_get_wmajority(write_concern)));
+	retval.add(s_MongoDBDriverManager_wtimeout, (int64_t) mongoc_write_concern_get_wtimeout(write_concern));
+	if (write_concern->fsync_ != MONGOC_WRITE_CONCERN_FSYNC_DEFAULT) {
+		retval.add(s_MongoDBDriverManager_fsync, mongoc_write_concern_get_fsync(write_concern));
+	} else {
+		retval.add(s_MongoDBDriverManager_fsync, Variant());
+	}
+	if (write_concern->journal != MONGOC_WRITE_CONCERN_JOURNAL_DEFAULT) {
+		retval.add(s_MongoDBDriverManager_journal, mongoc_write_concern_get_journal(write_concern));
+	} else {
+		retval.add(s_MongoDBDriverManager_journal, Variant());
+	}
+
+	return retval;
+}
+
 Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPreference)
 {
 	static Class* c_server;
