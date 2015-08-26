@@ -324,10 +324,22 @@ final class Query {
 
 		if (array_key_exists('sort', $options)) {
 			Utils::mustBeArrayOrObject('sort', $options['sort']);
-			$this->query['query']['$orderby'] = (array) $options['sort'];
+			$this->query['query']['$orderby'] = (object) $options['sort'];
 		}
 
-		$this->query['query']['$query'] = $filter;
+		$this->query['query']['$query'] = (object) $filter;
+	}
+
+	public function __debugInfo() : Array
+	{
+		return [
+			'query' => (object) $this->query['query'],
+			'selector' => array_key_exists('fields', $this->query) ? (object) $this->query['fields'] : NULL,
+			'flags' => $this->query['flags'],
+			'skip' => $this->query['skip'],
+			'limit' => $this->query['limit'],
+			'batch_size' => $this->query['batchSize'],
+		];
 	}
 }
 
