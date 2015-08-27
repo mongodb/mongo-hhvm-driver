@@ -915,6 +915,24 @@ bool BsonToVariantConverter::convert(Variant *v)
 /* {{{ TypeMap helper functions */
 #define CASECMP(a,b) (bstrcasecmp((a).data(), (a).size(), (b).data(), (b).size()) == 0)
 
+static void validateClass(String class_name)
+{
+	static Class* c_class;
+	static Class* c_unserializable_interface = Unit::lookupClass(s_MongoDriverBsonUnserializable_className.get());
+
+	c_class = Unit::lookupClass(class_name.get());
+
+	if (!c_class) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not exist");
+	}
+	if (c_class && (!isNormalClass(c_class) || isAbstract(c_class))) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " is not instantiatable");
+	}
+	if (c_class && !c_class->classof(c_unserializable_interface)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not implement MongoDB\\BSON\\Unserializable");
+	}
+}
+
 void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap)
 {
 	if (typemap.exists(s_root) && typemap[s_root].isString()) {
@@ -927,6 +945,8 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 		} else if (CASECMP(root_type, s_array)) {
 			options->root_type = HIPPO_TYPEMAP_ARRAY;
 		} else {
+			validateClass(root_type); /* Might throw an exception */
+
 			options->root_type = HIPPO_TYPEMAP_NAMEDCLASS;
 			options->root_class_name = root_type;
 		}
@@ -942,6 +962,8 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 		} else if (CASECMP(document_type, s_array)) {
 			options->document_type = HIPPO_TYPEMAP_ARRAY;
 		} else {
+			validateClass(document_type); /* Might throw an exception */
+
 			options->document_type = HIPPO_TYPEMAP_NAMEDCLASS;
 			options->document_class_name = document_type;
 		}
@@ -957,6 +979,8 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 		} else if (CASECMP(array_type, s_array)) {
 			options->array_type = HIPPO_TYPEMAP_ARRAY;
 		} else {
+			validateClass(array_type); /* Might throw an exception */
+
 			options->array_type = HIPPO_TYPEMAP_NAMEDCLASS;
 			options->array_class_name = array_type;
 		}
