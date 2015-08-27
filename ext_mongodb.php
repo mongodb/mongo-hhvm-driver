@@ -558,6 +558,14 @@ class Javascript implements Type
 	function __construct(private string $code, private ?mixed $scope = NULL)
 	{
 	}
+
+	function __debugInfo() : array
+	{
+		return [
+			'javascript' => $this->code,
+			'scope' => (object) $this->scope
+		];
+	}
 }
 
 class MaxKey implements Type
@@ -601,6 +609,14 @@ class Regex implements Type
 	{
 		return "/{$this->pattern}/{$this->flags}";
 	}
+
+	function __debugInfo() : array
+	{
+		return [
+			'pattern' => $this->pattern,
+			'flags' => $this->flags
+		];
+	}
 }
 
 class Timestamp implements Type
@@ -612,6 +628,14 @@ class Timestamp implements Type
 	function __toString() : string
 	{
 		return sprintf( "[%d:%d]", $this->increment, $this->timestamp );
+	}
+
+	function __debugInfo() : array
+	{
+		return [
+			'increment' => $this->increment,
+			'timestamp' => $this->timestamp
+		];
 	}
 }
 
