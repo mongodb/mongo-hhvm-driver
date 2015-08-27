@@ -917,7 +917,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap)
 {
-	if (typemap.exists(s_root)) {
+	if (typemap.exists(s_root) && typemap[s_root].isString()) {
 		String root_type;
 
 		root_type = typemap[s_root].toString();
@@ -932,7 +932,7 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 		}
 	}
 
-	if (typemap.exists(s_document)) {
+	if (typemap.exists(s_document) && typemap[s_document].isString()) {
 		String document_type;
 
 		document_type = typemap[s_document].toString();
@@ -947,7 +947,7 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 		}
 	}
 
-	if (typemap.exists(s_array)) {
+	if (typemap.exists(s_array) && typemap[s_array].isString()) {
 		String array_type;
 
 		array_type = typemap[s_array].toString();
