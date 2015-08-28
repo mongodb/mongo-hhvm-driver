@@ -43,12 +43,12 @@ foreach ( $typemaps as $typemap )
 --EXPECT--
 root => NoSerialize
 { "foo" : "yes" }
-The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+Class NoSerialize does not implement MongoDB\BSON\Unserializable
 
 root => DoesNotExist
 { "foo" : "yes" }
-The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+Class DoesNotExist does not exist
 
 root => LiquidClass
 { "foo" : "yes" }
-The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+Class LiquidClass does not exist

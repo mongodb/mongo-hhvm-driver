@@ -250,19 +250,19 @@ object(stdClass)#%d (2) {
 === NONEXISTING CLASS ===
 
 { "foo": "yes" }
-The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+Class MissingClass does not exist
 
 
 === DOES NOT IMPLEMENT UNSERIALIZABLE ===
 
 { "foo": "yes", "__pclass": { "$type": "80", "$binary": "TXlDbGFzcw==" } }
-The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+Class MyClass does not implement MongoDB\BSON\Unserializable
 
 
 === IS NOT A CONCRETE CLASS ===
 
 { "foo": "yes" }
-The typemap does not provide a class that implements MongoDB\BSON\Unserializable
+Class MongoDB\BSON\Unserializable is not instantiatable
 
 
 === IS NOT A CONCRETE CLASS VIA PCLASS ===
