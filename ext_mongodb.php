@@ -209,6 +209,9 @@ final class CursorId {
 	public function __construct(string $id);
 
 	<<__Native>>
+	public function __debugInfo() : array;
+
+	<<__Native>>
 	public function __toString() : string;
 }
 
