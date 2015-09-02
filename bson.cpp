@@ -201,7 +201,7 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 		if (m_level == 0 && (m_flags & HIPPO_BSON_ADD_ID)) {
 
 			if (strncmp(s_key.c_str(), "_id", s_key.length()) == 0) {
-				m_flags &= !HIPPO_BSON_ADD_ID;
+				m_flags &= ~HIPPO_BSON_ADD_ID;
 			}
 		}
 
