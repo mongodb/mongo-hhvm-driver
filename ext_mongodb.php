@@ -125,43 +125,43 @@ final class WriteResult {
 <<__NativeData("MongoDBDriverManager")>>
 class Manager {
 	<<__Native>>
-	function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
+	public function __construct(string $dsn = "localhost", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 
 	<<__Native>>
-	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
+	public function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>
-	function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
+	public function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>
-	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
+	public function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeInsert(string $namespace, mixed $document, ?WriteConcern $writeConcern = null): WriteResult;
+	public function executeInsert(string $namespace, mixed $document, ?WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
+	public function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), WriteConcern $writeConcern = null): WriteResult;
+	public function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function getServers(): array;
+	public function getServers(): array;
 
 	<<__Native>>
-	function getReadPreference() : array;
+	public function getReadPreference() : array;
 
 	<<__Native>>
-	function getWriteConcern() : array;
+	public function getWriteConcern() : array;
 
 	<<__Native>>
-	function __wakeUp() : void;
+	public function __wakeUp() : void;
 
 	<<__Native>>
-	function selectServer(ReadPreference $readPreference): Server;
+	public function selectServer(ReadPreference $readPreference): Server;
 }
 
 class Utils {
@@ -171,7 +171,7 @@ class Utils {
 	const ERROR_WRITE_FAILED      = 4;
 	const ERROR_CONNECTION_FAILED = 5;
 
-	static function throwHippoException($domain, $message)
+	static public function throwHippoException($domain, $message)
 	{
 		switch ($domain) {
 			case self::ERROR_INVALID_ARGUMENT:
@@ -189,7 +189,7 @@ class Utils {
 		}
 	}
 
-	static function mustBeArrayOrObject(string $name, mixed $value, string $context = '')
+	static public function mustBeArrayOrObject(string $name, mixed $value, string $context = '')
 	{
 		$valueType = gettype($value);
 		if (!in_array($valueType, [ 'array', 'object' ])) {
@@ -205,7 +205,7 @@ class Utils {
 <<__NativeData("MongoDBDriverCursorId")>>
 final class CursorId {
 	<<__Native>>
-	private function __construct(string $id);
+	public function __construct(string $id);
 
 	<<__Native>>
 	public function __debugInfo() : array;
@@ -218,10 +218,11 @@ final class CursorId {
 final class Cursor implements Traversable, Iterator {
 	private function __construct(Server $server, CursorId $cursorId, array $firstBatch)
 	{
+		throw new Exception\RunTimeException("Accessing private constructor");
 	}
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 
 	<<__Native>>
 	public function getId() : CursorId;
@@ -348,22 +349,22 @@ final class Query {
 <<__NativeData("MongoDBDriverBulkWrite")>>
 final class BulkWrite implements \Countable {
 	<<__Native>>
-	function __construct(?boolean $ordered = true);
+	public function __construct(?boolean $ordered = true);
 
 	<<__Native>>
-	function insert(mixed $document) : \MongoDB\BSON\ObjectID;
+	public function insert(mixed $document) : \MongoDB\BSON\ObjectID;
 
 	<<__Native>>
-	function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
+	public function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
 
 	<<__Native>>
-	function delete(mixed $query, ?array $deleteOptions = array()) : void;
+	public function delete(mixed $query, ?array $deleteOptions = array()) : void;
 
 	<<__Native>>
-	function count() : int;
+	public function count() : int;
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 
@@ -410,7 +411,7 @@ final class ReadPreference {
 <<__NativeData("MongoDBDriverServer")>>
 final class Server {
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 
 	<<__Native>>
 	public function getHost(): string;
@@ -446,22 +447,22 @@ final class Server {
 	public function isPassive() : bool;
 
 	<<__Native>>
-	function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
+	public function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
+	public function executeCommand(string $db, Command $command, ReadPreference $readPreference = null): Cursor;
 
 	<<__Native>>
-	function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
+	public function executeQuery(string $namespace, Query $query, ReadPreference $readPreference = null): Cursor;
 }
 
 <<__NativeData("MongoDBDriverWriteConcern")>>
 final class WriteConcern {
 	<<__Native>>
-	function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL, ?boolean $fsync = NULL);
+	public function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL, ?boolean $fsync = NULL);
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 /* }}} */
 
@@ -532,11 +533,11 @@ interface Persistable extends Serializable, Unserializable
 
 class Binary implements Type
 {
-	function __construct(private string $data, private int $type)
+	public function __construct(private string $data, private int $type)
 	{
 	}
 
-	function getType()
+	public function getType()
 	{
 		$func_args = func_num_args();
 		if ($func_args != 0) {
@@ -546,7 +547,7 @@ class Binary implements Type
 		return $this->type;
 	}
 
-	function getData() : string
+	public function getData() : string
 	{
 		return $this->data;
 	}
@@ -557,11 +558,11 @@ class Binary implements Type
 
 class Javascript implements Type
 {
-	function __construct(private string $code, private ?mixed $scope = NULL)
+	public function __construct(private string $code, private ?mixed $scope = NULL)
 	{
 	}
 
-	function __debugInfo() : array
+	public function __debugInfo() : array
 	{
 		return [
 			'javascript' => $this->code,
@@ -582,37 +583,37 @@ class MinKey implements Type
 class ObjectID implements Type
 {
 	<<__Native>>
-	function __construct(string $objectId = null);
+	public function __construct(string $objectId = null);
 
 	<<__Native>>
-	function __toString() : string;
+	public function __toString() : string;
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 class Regex implements Type
 {
-	function __construct(private string $pattern, private string $flags)
+	public function __construct(private string $pattern, private string $flags)
 	{
 	}
 
-	function getPattern() : string
+	public function getPattern() : string
 	{
 		return $this->pattern;
 	}
 
-	function getFlags() : string
+	public function getFlags() : string
 	{
 		return $this->flags;
 	}
 
-	function __toString() : string
+	public function __toString() : string
 	{
 		return "/{$this->pattern}/{$this->flags}";
 	}
 
-	function __debugInfo() : array
+	public function __debugInfo() : array
 	{
 		return [
 			'pattern' => $this->pattern,
@@ -623,16 +624,16 @@ class Regex implements Type
 
 class Timestamp implements Type
 {
-	function __construct(private int $increment, private int $timestamp)
+	public function __construct(private int $increment, private int $timestamp)
 	{
 	}
 
-	function __toString() : string
+	public function __toString() : string
 	{
 		return sprintf( "[%d:%d]", $this->increment, $this->timestamp );
 	}
 
-	function __debugInfo() : array
+	public function __debugInfo() : array
 	{
 		return [
 			'increment' => $this->increment,
@@ -646,17 +647,17 @@ class UTCDateTime implements Type
 	private int $milliseconds;
 
 	<<__Native>>
-	function __construct(mixed $milliseconds);
+	public function __construct(mixed $milliseconds);
 
-	function __toString() : string
+	public function __toString() : string
 	{
 		return (string) $this->milliseconds;
 	}
 
 	<<__Native>>
-	function toDateTime() : \DateTime;
+	public function toDateTime() : \DateTime;
 
-	function __debugInfo() : array
+	public function __debugInfo() : array
 	{
 		return [ 'milliseconds' => $this->milliseconds ];
 	}
