@@ -47,6 +47,22 @@ const StaticString
 	s_MongoDriverServer_last_is_master("last_is_master"),
 	s_MongoDriverServer_round_trip_time("round_trip_time");
 
+Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_t server_id)
+{
+	static Class* c_server;
+
+	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
+	Object tmp = Object{c_server};
+
+	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(tmp);
+
+	result_data->m_client = client;
+	result_data->m_server_id = server_id;
+
+	return tmp;
+}
+
+
 static bool mongodb_driver_add_server_debug(mongoc_server_description_t *sd, Array *retval)
 {
 	Variant v_last_is_master;

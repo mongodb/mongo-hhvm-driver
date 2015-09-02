@@ -49,6 +49,7 @@ class MongoDBDriverServerData
 		};
 };
 
+Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_t server_id);
 bool mongodb_driver_add_server_debug_wrapper(void *item, void *context);
 
 Array HHVM_METHOD(MongoDBDriverServer, __debugInfo);

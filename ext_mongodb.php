@@ -148,9 +148,8 @@ class Manager {
 	<<__Native>>
 	function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), WriteConcern $writeConcern = null): WriteResult;
 
-	function getServers(): void
-	{
-	}
+	<<__Native>>
+	function getServers(): array;
 
 	<<__Native>>
 	function getReadPreference() : array;

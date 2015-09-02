@@ -617,6 +617,32 @@ Array HHVM_METHOD(MongoDBDriverManager, getReadPreference)
 	return retval;
 }
 
+Array HHVM_METHOD(MongoDBDriverManager, getServers)
+{
+	MongoDBDriverManagerData *data = Native::data<MongoDBDriverManagerData>(this_);
+	size_t                    i;
+	mongoc_set_t             *set;
+
+	Array retval = Array::Create();
+
+	set = data->m_client->topology->description.servers;
+	for (i = 0; i < set->items_len; i++) {
+		mongoc_server_description_t *sd = (mongoc_server_description_t*) set->items[i].item;
+
+		if (sd->type == MONGOC_SERVER_UNKNOWN) {
+			continue;
+		}
+
+		retval.add(
+			(int64_t) i,
+			hippo_mongo_driver_server_create_from_id(data->m_client, sd->id)
+		);
+
+	}
+
+	return retval;
+}
+
 Array HHVM_METHOD(MongoDBDriverManager, getWriteConcern)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
@@ -652,24 +678,13 @@ Array HHVM_METHOD(MongoDBDriverManager, getWriteConcern)
 
 Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPreference)
 {
-	static Class* c_server;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	MongoDBDriverReadPreferenceData *rp_data = Native::data<MongoDBDriverReadPreferenceData>(readPreference.get());
 	uint32_t server_id;
 
 	server_id = mongoc_cluster_preselect(&data->m_client->cluster, MONGOC_OPCODE_QUERY, rp_data->m_read_preference, NULL);
 
-	/* Prepare result */
-	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
-	assert(c_server);
-	ObjectData* obj = ObjectData::newInstance(c_server);
-
-	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
-
-	result_data->m_client = data->m_client;
-	result_data->m_server_id = server_id;
-
-	return Object(obj);
+	return hippo_mongo_driver_server_create_from_id(data->m_client, server_id);
 }
 
 }
