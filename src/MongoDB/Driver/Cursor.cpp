@@ -310,20 +310,9 @@ Array HHVM_METHOD(MongoDBDriverCursor, toArray)
 
 Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 {
-	static Class* c_server;
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
-	/* Prepare result */
-	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
-	assert(c_server);
-	ObjectData* obj = ObjectData::newInstance(c_server);
-
-	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(obj);
-
-	result_data->m_client = data->cursor->client;
-	result_data->m_server_id = data->m_server_id;
-
-	return Object(obj);
+	return hippo_mongo_driver_server_create_from_id(data->cursor->client, data->m_server_id);
 }
 
 
