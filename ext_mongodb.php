@@ -205,7 +205,7 @@ class Utils {
 <<__NativeData("MongoDBDriverCursorId")>>
 final class CursorId {
 	<<__Native>>
-	public function __construct(string $id);
+	private function __construct(string $id);
 
 	<<__Native>>
 	public function __debugInfo() : array;
