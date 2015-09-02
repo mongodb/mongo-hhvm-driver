@@ -33,6 +33,7 @@ const StaticString MongoDBDriverServerData::s_className("MongoDBDriverServer");
 IMPLEMENT_GET_CLASS(MongoDBDriverServerData);
 
 const StaticString
+	s_MongoDriverServer___serverId("__serverId"),
 	s_MongoDriverServer_host("host"),
 	s_MongoDriverServer_port("port"),
 	s_MongoDriverServer_type("type"),
@@ -50,9 +51,22 @@ const StaticString
 Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_t server_id)
 {
 	static Class* c_server;
+	mongoc_server_description_t *sd;
 
 	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
 	Object tmp = Object{c_server};
+
+	sd = mongoc_topology_description_server_by_id(&client->topology->description, server_id);
+
+	if (!sd) {
+		throw MongoDriver::Utils::CreateAndConstruct(
+			MongoDriver::s_MongoDriverExceptionRuntimeException_className,
+			HPHP::Variant("Failed to get server description, server likely gone"),
+			HPHP::Variant((uint64_t) 0)
+		);
+	}
+
+	tmp->o_set(s_MongoDriverServer___serverId, sd->host.host_and_port, s_MongoDriverServer_className);
 
 	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(tmp);
 

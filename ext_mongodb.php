@@ -412,6 +412,8 @@ final class ReadPreference {
 
 <<__NativeData("MongoDBDriverServer")>>
 final class Server {
+	private $__serverId = NULL;
+
 	private function __construct()
 	{
 		throw new Exception\RunTimeException("Accessing private constructor");
