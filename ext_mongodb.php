@@ -205,7 +205,7 @@ class Utils {
 <<__NativeData("MongoDBDriverCursorId")>>
 final class CursorId {
 	<<__Native>>
-	public function __construct(string $id);
+	private function __construct(string $id);
 
 	<<__Native>>
 	public function __debugInfo() : array;
@@ -216,7 +216,7 @@ final class CursorId {
 
 <<__NativeData("MongoDBDriverCursor")>>
 final class Cursor implements Traversable, Iterator {
-	public function __construct(Server $server, CursorId $cursorId, array $firstBatch)
+	private function __construct(Server $server, CursorId $cursorId, array $firstBatch)
 	{
 	}
 
