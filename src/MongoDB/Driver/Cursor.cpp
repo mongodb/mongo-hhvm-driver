@@ -22,6 +22,7 @@
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "../../../bson.h"
+#include "../../../utils.h"
 #include "../../../mongodb.h"
 
 #include "CursorId.h"
