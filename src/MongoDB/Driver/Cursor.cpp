@@ -200,6 +200,8 @@ static bool hippo_cursor_next(MongoDBDriverCursorData* data)
 {
 	invalidate_current(data);
 
+	data->next_after_rewind++;
+
 	data->current++;
 	if (data->is_command_cursor && bson_iter_next(&data->first_batch_iter)) {
 		if (BSON_ITER_HOLDS_DOCUMENT(&data->first_batch_iter)) {
@@ -230,6 +232,14 @@ Variant HHVM_METHOD(MongoDBDriverCursor, next)
 
 static void hippo_cursor_rewind(MongoDBDriverCursorData* data)
 {
+	if (data->next_after_rewind != 0) {
+		if (data->zchild_active) {
+			throw MongoDriver::Utils::throwLogicException("Cursors cannot rewind after starting iteration");
+		} else { /* If we're not active, image we're now have fully iterated */
+			throw MongoDriver::Utils::throwLogicException("Cursors cannot yield multiple iterators");
+		}
+	}
+
 	invalidate_current(data);
 	data->current = 0;
 	data->zchild_active = false;

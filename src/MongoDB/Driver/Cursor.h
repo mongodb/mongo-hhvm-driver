@@ -39,6 +39,7 @@ class MongoDBDriverCursorData
 		bool             is_command_cursor;
 		bson_t          *first_batch;
 		int64_t          current;
+		int              next_after_rewind = 0;
 
 		/* Iterators */
 		bson_iter_t      first_batch_iter;

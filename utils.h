@@ -45,6 +45,7 @@ class Utils
 		static HPHP::Object throwBulkWriteException(HPHP::String errormessage);
 		static HPHP::Object throwInvalidArgumentException(char *errormessage);
 		static HPHP::Object throwInvalidArgumentException(HPHP::String errormessage);
+		static HPHP::Object throwLogicException(char *errormessage);
 		static HPHP::Object throwRunTimeException(char *errormessage);
 		static HPHP::Object throwRunTimeException(HPHP::String errormessage);
 		static HPHP::Object throwUnexpectedValueException(char *errormessage);

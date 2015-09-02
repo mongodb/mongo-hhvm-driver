@@ -75,6 +75,7 @@ const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_classN
 const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className("MongoDB\\Driver\\Exception\\DuplicateKeyException");
 const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className("MongoDB\\Driver\\Exception\\ExecutionTimeoutException");
 const HPHP::StaticString s_MongoDriverExceptionInvalidArgumentException_className("MongoDB\\Driver\\Exception\\InvalidArgumentException");
+const HPHP::StaticString s_MongoDriverExceptionLogicException_className("MongoDB\\Driver\\Exception\\LogicException");
 const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className("MongoDB\\Driver\\Exception\\RuntimeException");
 const HPHP::StaticString s_MongoDriverExceptionUnexpectedValueException_className("MongoDB\\Driver\\Exception\\UnexpectedValueException");
 
@@ -91,6 +92,11 @@ HPHP::Object Utils::throwInvalidArgumentException(HPHP::String errormessage)
 HPHP::Object Utils::throwBulkWriteException(HPHP::String errormessage)
 {
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionBulkWriteException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
+}
+
+HPHP::Object Utils::throwLogicException(char *errormessage)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionLogicException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
 }
 
 HPHP::Object Utils::throwRunTimeException(char *errormessage)
@@ -397,6 +403,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
+	cursor_data->next_after_rewind = 0;
 
 	return obj;
 }
