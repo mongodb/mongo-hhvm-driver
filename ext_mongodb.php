@@ -317,7 +317,9 @@ final class Query {
 
 		if (array_key_exists('modifiers', $options)) {
 			Utils::mustBeArrayOrObject('modifiers', $options['modifiers']);
-			$zquery += (array) $options['modifiers'];
+			foreach ($options['modifiers'] as $key => $value) {
+				$this->query['query'][$key] = $value;
+			}
 		}
 
 		if (array_key_exists('projection', $options)) {
