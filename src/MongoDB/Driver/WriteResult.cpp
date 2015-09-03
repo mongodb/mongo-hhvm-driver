@@ -20,6 +20,7 @@
 
 #include "../../../bson.h"
 #include "../../../mongodb.h"
+#include "../../../utils.h"
 
 #define MONGOC_I_AM_A_DRIVER
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
@@ -36,6 +37,8 @@ const StaticString s_MongoDriverWriteResult_className("MongoDB\\Driver\\WriteRes
 Class* MongoDBDriverWriteResultData::s_class = nullptr;
 const StaticString MongoDBDriverWriteResultData::s_className("MongoDBDriverWriteResult");
 IMPLEMENT_GET_CLASS(MongoDBDriverWriteResultData);
+
+const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_writeResult("writeResult");
 
 Object HHVM_METHOD(MongoDBDriverWriteResult, getServer)
 {
@@ -102,6 +105,22 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
 	convertor.convert(&v);
 	obj->o_set(String("upsertedIds"), v.toArray(), s_MongoDriverWriteResult_className);
+
+	/* If the result is null (typically a server_id, but 0 in case there was an
+	 * error) */
+	if (server_id == 0) {
+		if (
+			bson_empty0(&write_result->writeErrors) &&
+			bson_empty0(&write_result->writeConcernError)
+		) {
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&write_result->error);
+		} else {
+			auto bw_exception = MongoDriver::Utils::throwBulkWriteException("BulkWrite error");
+			bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
+
+			throw bw_exception;
+		}
+	}
 
 	return obj;
 }

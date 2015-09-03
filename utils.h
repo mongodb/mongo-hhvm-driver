@@ -30,6 +30,7 @@ extern "C" {
 namespace MongoDriver {
 
 extern const HPHP::StaticString s_MongoDriverExceptionAuthenticationException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionConnectionException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className;
