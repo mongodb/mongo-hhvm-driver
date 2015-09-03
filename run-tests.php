@@ -1368,9 +1368,7 @@ TEST $file
 		}
 	}
 
-	if (!$SHOW_ONLY_GROUPS) {
-		show_test($test_idx, $shortname);
-	}
+	show_test($test_idx, $shortname);
 
 	if (is_array($IN_REDIRECT)) {
 		$temp_dir = $test_dir = $IN_REDIRECT['dir'];
@@ -2563,8 +2561,13 @@ function show_test($test_idx, $shortname)
 {
 	global $test_cnt;
 	global $line_length;
+	global $SHOW_ONLY_GROUPS;
 
-	$str = "TEST $test_idx/$test_cnt [$shortname]\r";
+	$str = "TEST $test_idx/$test_cnt";
+	if (!$SHOW_ONLY_GROUPS) {
+		$str .= " [$shortname]";
+	}
+	$str .= "\r";
 	$line_length = strlen($str);
 	echo $str;
 	flush();
