@@ -27,6 +27,7 @@
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "../BSON/ObjectID.h"
+#include "WriteConcern.h"
 
 #include "BulkWrite.h"
 
@@ -206,7 +207,9 @@ Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 	retval.set(s_server_id, (int64_t) data->m_bulk->hint);
 
 	if (data->m_bulk->write_concern) {
-		retval.set(s_write_concern, Variant(true));
+		Array wc_retval = Array::Create();
+		mongodb_driver_add_write_concern_debug(data->m_bulk->write_concern, &wc_retval);
+		retval.set(s_write_concern, wc_retval);
 	} else {
 		retval.set(s_write_concern, Variant());
 	}
