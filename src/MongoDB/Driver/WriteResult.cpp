@@ -38,6 +38,8 @@ Class* MongoDBDriverWriteResultData::s_class = nullptr;
 const StaticString MongoDBDriverWriteResultData::s_className("MongoDBDriverWriteResult");
 IMPLEMENT_GET_CLASS(MongoDBDriverWriteResultData);
 
+const StaticString s_MongoDriverWriteConcernError_className("MongoDB\\Driver\\WriteConcernError");
+
 const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_writeResult("writeResult");
 
 Object HHVM_METHOD(MongoDBDriverWriteResult, getServer)
@@ -54,7 +56,58 @@ bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged)
 	return !!_mongoc_write_concern_needs_gle(data->m_write_concern);
 }
 
-ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern)
+bool hippo_writeresult_get_write_errors(mongoc_write_result_t *writeresult, Object *errorObject)
+{   
+	const char *err = NULL;
+	uint32_t code = 0;
+
+	bson_iter_t iter;
+	bson_iter_t citer;
+	if (
+		!bson_empty0(&writeresult->writeErrors) &&
+		bson_iter_init(&iter, &writeresult->writeErrors) &&
+		bson_iter_next(&iter) &&
+		BSON_ITER_HOLDS_DOCUMENT(&iter) &&
+		bson_iter_recurse(&iter, &citer)
+	) {
+		while (bson_iter_next(&citer)) { 
+			if (BSON_ITER_IS_KEY(&citer, "errmsg")) {
+				err = bson_iter_utf8(&citer, NULL);
+			} else if (BSON_ITER_IS_KEY(&citer, "code")) {
+				code = bson_iter_int32(&citer);
+			}
+		}
+
+		*errorObject = MongoDriver::Utils::throwWriteException((char*) err, (int64_t) code);
+		return true;
+	}
+
+	return false;
+}
+
+bool hippo_writeresult_get_writeconcern_error(mongoc_write_result_t *writeresult, Object *errorObject)
+{
+	const char *err = NULL;
+	uint32_t code = 0;
+			
+	if (!bson_empty0(&writeresult->writeConcernError)) {
+		bson_iter_t iter;
+
+		if (bson_iter_init_find(&iter, &writeresult->writeConcernError, "code") && BSON_ITER_HOLDS_INT32(&iter)) {
+			code = bson_iter_int32(&iter);
+		}
+		if (bson_iter_init_find(&iter, &writeresult->writeConcernError, "errmsg") && BSON_ITER_HOLDS_UTF8(&iter)) {
+			err = bson_iter_utf8(&iter, NULL);
+		}
+
+		*errorObject = MongoDriver::Utils::throwWriteConcernException((char*) err, (int64_t) code);
+		return true;
+	}
+
+	return false;
+}
+
+ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception)
 {
 	static Class* c_writeResult;
 
@@ -106,6 +159,41 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 	convertor.convert(&v);
 	obj->o_set(String("upsertedIds"), v.toArray(), s_MongoDriverWriteResult_className);
 
+	if (!bson_empty0(&write_result->writeErrors)) {
+		BsonToVariantConverter convertor(bson_get_data(&write_result->writeErrors), write_result->writeErrors.len, options);
+		convertor.convert(&v);
+		obj->o_set(String("writeErrors"), v.toArray(), s_MongoDriverWriteResult_className);
+	}
+
+	if (!bson_empty0(&write_result->writeConcernError)) {
+		Array a_v;
+
+		BsonToVariantConverter convertor(bson_get_data(&write_result->writeConcernError), write_result->writeConcernError.len, options);
+		convertor.convert(&v);
+
+		a_v = v.toArray();
+	
+		static Class* c_writeConcernError;
+
+		c_writeConcernError = Unit::lookupClass(s_MongoDriverWriteConcernError_className.get());
+		assert(c_writeConcernError);
+		Object wce_obj = Object{c_writeConcernError};
+		
+		if (a_v.exists(String("errmsg"))) {
+			wce_obj->o_set(String("message"), a_v[String("errmsg")], s_MongoDriverWriteConcernError_className);
+		}
+		if (a_v.exists(String("code"))) {
+			wce_obj->o_set(String("code"), a_v[String("code")], s_MongoDriverWriteConcernError_className);
+		}
+		if (a_v.exists(String("info"))) {
+			wce_obj->o_set(String("info"), a_v[String("info")], s_MongoDriverWriteConcernError_className);
+		} else {
+			wce_obj->o_set(String("info"), Variant(), s_MongoDriverWriteConcernError_className);
+		}
+
+		obj->o_set(String("writeConcernError"), Variant(wce_obj), s_MongoDriverWriteResult_className);
+	}
+
 	/* If the result is null (typically a server_id, but 0 in case there was an
 	 * error) */
 	if (server_id == 0) {
@@ -115,10 +203,22 @@ ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_
 		) {
 			throw MongoDriver::Utils::throwExceptionFromBsonError(&write_result->error);
 		} else {
-			auto bw_exception = MongoDriver::Utils::throwBulkWriteException("BulkWrite error");
-			bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
+			Object errorObject;
 
-			throw bw_exception;
+			if (unwrap_bw_exception && hippo_writeresult_get_writeconcern_error(write_result, &errorObject)) {
+				errorObject->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
+
+				throw errorObject;
+			} else if (unwrap_bw_exception && hippo_writeresult_get_write_errors(write_result, &errorObject)) {
+				errorObject->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
+
+				throw errorObject;
+			} else {
+				auto bw_exception = MongoDriver::Utils::throwBulkWriteException("BulkWrite error");
+				bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
+
+				throw bw_exception;
+			}
 		}
 	}
 

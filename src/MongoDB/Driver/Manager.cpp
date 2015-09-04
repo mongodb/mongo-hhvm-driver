@@ -397,7 +397,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
 
 	/* Destroy */
 	bson_clear(&bquery);
@@ -449,7 +449,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
 
 	/* Destroy */
 	bson_destroy(bson);
@@ -566,7 +566,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	mongoc_bulk_operation_destroy(batch);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern);
+	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
 
 	return Object(obj);
 }
