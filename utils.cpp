@@ -78,6 +78,8 @@ const HPHP::StaticString s_MongoDriverExceptionInvalidArgumentException_classNam
 const HPHP::StaticString s_MongoDriverExceptionLogicException_className("MongoDB\\Driver\\Exception\\LogicException");
 const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className("MongoDB\\Driver\\Exception\\RuntimeException");
 const HPHP::StaticString s_MongoDriverExceptionUnexpectedValueException_className("MongoDB\\Driver\\Exception\\UnexpectedValueException");
+const HPHP::StaticString s_MongoDriverExceptionWriteException_className("MongoDB\\Driver\\Exception\\WriteException");
+const HPHP::StaticString s_MongoDriverExceptionWriteConcernException_className("MongoDB\\Driver\\Exception\\WriteConcernException");
 
 HPHP::Object Utils::throwInvalidArgumentException(char *errormessage)
 {
@@ -112,6 +114,16 @@ HPHP::Object Utils::throwRunTimeException(HPHP::String errormessage)
 HPHP::Object Utils::throwUnexpectedValueException(char *errormessage)
 {
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionUnexpectedValueException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
+}
+
+HPHP::Object Utils::throwWriteException(char *errormessage, int64_t code)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionWriteException_className, HPHP::Variant(errormessage), HPHP::Variant(code));
+}
+
+HPHP::Object Utils::throwWriteConcernException(char *errormessage, int64_t code)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionWriteConcernException_className, HPHP::Variant(errormessage), HPHP::Variant(code));
 }
 
 HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)

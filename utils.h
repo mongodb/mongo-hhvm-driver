@@ -37,6 +37,8 @@ extern const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_clas
 extern const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionUnexpectedValueException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionWriteException_className;
+extern const HPHP::StaticString s_MongoDriverExceptionWriteConcernException_className;
 
 class Utils
 {
@@ -51,6 +53,8 @@ class Utils
 		static HPHP::Object throwRunTimeException(HPHP::String errormessage);
 		static HPHP::Object throwUnexpectedValueException(char *errormessage);
 		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
+		static HPHP::Object throwWriteException(char *errormessage, int64_t code);
+		static HPHP::Object throwWriteConcernException(char *errormessage, int64_t code);
 
 		static HPHP::Object doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *client, int server_id, const HPHP::Object bulk, const mongoc_write_concern_t *write_concern);
 		static HPHP::Object doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, HPHP::Variant readPreference);
