@@ -4,6 +4,7 @@ namespace MongoDB\Driver;
 final class WriteConcernError {
 	private $code;
 	private $message;
+	private $info;
 
 	private function __construct()
 	{
@@ -19,6 +20,16 @@ final class WriteConcernError {
 	{
 		return $this->message;
 	}
+
+	public function __debugInfo() : array
+	{
+		return [
+			'message' => $this->message,
+			'code' => $this->code,
+			'info' => $this->info,
+		];
+	}
+
 }
 
 final class WriteResult {
