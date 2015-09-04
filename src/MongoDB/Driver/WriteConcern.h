@@ -46,6 +46,8 @@ class MongoDBDriverWriteConcernData
 		};
 };
 
+bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *retval);
+
 void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const Variant &w_timeout, const Variant &journal, const Variant &fsync);
 Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo);
 
