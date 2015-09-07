@@ -43,15 +43,15 @@ Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 	/* Prepare result */
 	c_dt = HPHP::Unit::lookupClass(HPHP::s_DateTime.get());
 	assert(c_dt);
-	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_dt);
+	HPHP::Object obj{DateTimeData::getClass()};
 
-	DateTimeData* data = Native::data<DateTimeData>(obj);
+	DateTimeData* data = Native::data<DateTimeData>(obj.get());
 #if HIPPO_HHVM_VERSION >= 30900
-	data->m_dt = req::make<DateTime>(0, false);
+	data->m_dt = req::make<DateTime>(milliseconds / 1000, true);
 #else
-	data->m_dt = makeSmartPtr<DateTime>(0, false);
+	data->m_dt = makeSmartPtr<DateTime>(milliseconds / 1000, true);
 #endif
-	data->m_dt->fromTimeStamp(milliseconds / 1000, true);
+	data->m_dt->setTimezone(TimeZone::Current());
 
 	return obj;
 }
