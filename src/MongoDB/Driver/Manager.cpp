@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/runtime/base/array-iterator.h"
 
 #include "../../../bson.h"
 #include "../../../utils.h"
@@ -27,6 +28,7 @@
 #include "../../../libmongoc/src/mongoc/mongoc-client-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-cluster-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-uri-private.h"
 #undef MONGOC_I_AM_A_DRIVER
 
 #include "BulkWrite.h"
@@ -265,18 +267,68 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 	return true;
 }
 
+static mongoc_uri_t *hippo_mongo_driver_manager_make_uri(const char *dsn, const Array options)
+{
+	mongoc_uri_t *uri = mongoc_uri_new(dsn);
+
+	if (!uri) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Failed to parse MongoDB URI: '" + String(dsn) + "'");
+	}
+
+	for (ArrayIter iter(options); iter; ++iter) {
+		const Variant& key = iter.first();
+		const Variant& value = iter.second();
+		const char *s_key = key.toString().c_str();
+
+		if (
+			!strcasecmp(s_key, "journal") ||
+			!strcasecmp(s_key, "readpreference") ||
+			!strcasecmp(s_key, "readpreferencetags") ||
+			!strcasecmp(s_key, "safe") ||
+			!strcasecmp(s_key, "slaveok") ||
+			!strcasecmp(s_key, "w") ||
+			!strcasecmp(s_key, "wtimeoutms")
+		) {
+			continue;
+		}
+
+		if (mongoc_uri_option_is_bool(s_key)) {
+			mongoc_uri_set_option_as_bool(uri, s_key, value.toBoolean());
+		} else if (mongoc_uri_option_is_int32(s_key) && value.isInteger()) {
+			mongoc_uri_set_option_as_int32(uri, s_key, (int32_t) value.toInt64());
+		} else if (mongoc_uri_option_is_utf8(s_key) && value.isString()) {
+			mongoc_uri_set_option_as_utf8(uri, s_key, value.toString().c_str());
+		} else if (value.isArray()) {
+			for (ArrayIter h_iter(value.toArray()); h_iter; ++h_iter) {
+				const Variant& h_value = h_iter.second();
+
+				if (h_value.isString()) {
+					mongoc_uri_parse_host(uri, h_value.toString().c_str());
+				}
+			}
+		} else if (value.isString()) {
+			if (!strcasecmp(s_key, "username")) {
+				mongoc_uri_set_username(uri, value.toString().c_str());
+			} else if (!strcasecmp(s_key, "password")) {
+				mongoc_uri_set_password(uri, value.toString().c_str());
+			} else if (!strcasecmp(s_key, "database")) {
+				mongoc_uri_set_database(uri, value.toString().c_str());
+			} else if (!strcasecmp(s_key, "authsource")) {
+				mongoc_uri_set_auth_source(uri, value.toString().c_str());
+			}
+		}
+	}
+
+	return uri;
+}
+
 void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	mongoc_uri_t *uri;
 	mongoc_client_t *client;
 
-	uri = mongoc_uri_new(dsn.c_str());
-
-	if (!uri) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("Failed to parse MongoDB URI: '" + dsn + "'");
-	}
-
+	uri = hippo_mongo_driver_manager_make_uri(dsn.c_str(), options);
 	client = mongoc_client_new_from_uri(uri);
 
 	if (!client) {
