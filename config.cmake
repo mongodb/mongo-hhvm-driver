@@ -71,6 +71,8 @@ HHVM_EXTENSION(mongodb
 )
 HHVM_DEFINE(mongodb "-DBSON_COMPILATION=1")
 HHVM_DEFINE(mongodb "-DMONGOC_COMPILATION=1")
+HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_SSL")
+HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_SASL")
 HHVM_ADD_INCLUDES(mongodb libbson/src)
 HHVM_ADD_INCLUDES(mongodb libbson/src/bson)
 HHVM_SYSTEMLIB(mongodb ext_mongodb.php)

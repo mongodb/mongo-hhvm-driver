@@ -17,6 +17,7 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/array-iterator.h"
+#include "hphp/runtime/ext/stream/ext_stream.h"
 
 #include "../../../bson.h"
 #include "../../../utils.h"
@@ -61,7 +62,14 @@ const StaticString
 	s_MongoDBDriverManager_wtimeoutms("wtimeoutms"),
 	s_MongoDBDriverManager_fsync("fsync"),
 	s_MongoDBDriverManager_safe("safe"),
-	s_MongoDBDriverManager_journal("journal");
+	s_MongoDBDriverManager_journal("journal"),
+	s_MongoDBDriverManager_context("context"),
+	s_MongoDBDriverManager_context_ssl("ssl"),
+	s_MongoDBDriverManager_context_ssl_allow_self_signed("allow_self_signed"),
+	s_MongoDBDriverManager_context_ssl_local_cert("local_cert"),
+	s_MongoDBDriverManager_context_ssl_passphrase("passphrase"),
+	s_MongoDBDriverManager_context_ssl_cafile("cafile"),
+	s_MongoDBDriverManager_context_ssl_capath("capath");
 
 static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const Array options)
 {
@@ -322,6 +330,67 @@ static mongoc_uri_t *hippo_mongo_driver_manager_make_uri(const char *dsn, const 
 	return uri;
 }
 
+static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, const Array options)
+{
+	mongoc_ssl_opt_t ssl_opt = { NULL, NULL, NULL, NULL, 0 };
+	Array ssl;
+	bool apply_ssl = false;
+
+	if (options.exists(s_MongoDBDriverManager_context)) {
+		Array context;
+
+		if (!options[s_MongoDBDriverManager_context].isResource()) {
+			return 0;
+		}
+
+#if HIPPO_HHVM_VERSION >= 30900
+		req::ptr<StreamContext> sc;
+#else
+		SmartPtr<StreamContext> sc;
+#endif
+		sc = cast<StreamContext>(options[s_MongoDBDriverManager_context]);
+		context = sc->getOptions();
+
+		if (!context.exists(s_MongoDBDriverManager_context_ssl)) {
+			return 0;
+		}
+
+		if (!context[s_MongoDBDriverManager_context_ssl].isArray()) {
+			return 0;
+		}
+
+		ssl = context[s_MongoDBDriverManager_context_ssl].toArray();
+	} else {
+		ssl = options;
+	}
+
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_allow_self_signed) && ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].isBoolean()) {
+		apply_ssl = true;
+		ssl_opt.weak_cert_validation = (bool) ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].toBoolean();
+	}
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_local_cert) && ssl[s_MongoDBDriverManager_context_ssl_local_cert].isString()) {
+		apply_ssl = true;
+		ssl_opt.pem_file = ssl[s_MongoDBDriverManager_context_ssl_local_cert].toString().c_str();
+	}
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_passphrase) && ssl[s_MongoDBDriverManager_context_ssl_passphrase].isString()) {
+		apply_ssl = true;
+		ssl_opt.pem_pwd = ssl[s_MongoDBDriverManager_context_ssl_passphrase].toString().c_str();
+	}
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_cafile) && ssl[s_MongoDBDriverManager_context_ssl_cafile].isString()) {
+		apply_ssl = true;
+		ssl_opt.ca_file = ssl[s_MongoDBDriverManager_context_ssl_cafile].toString().c_str();
+	}
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_capath) && ssl[s_MongoDBDriverManager_context_ssl_capath].isString()) {
+		apply_ssl = true;
+		ssl_opt.ca_dir = ssl[s_MongoDBDriverManager_context_ssl_capath].toString().c_str();
+	}
+
+	if (apply_ssl) {
+		mongoc_client_set_ssl_opts(client, &ssl_opt);
+	}
+	return 1;
+}
+
 void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Array &options, const Array &driverOptions)
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
@@ -336,6 +405,8 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	}
 
 	data->m_client = client;
+
+	hippo_mongo_driver_manager_apply_ssl_opts(data->m_client, driverOptions);
 
 	hippo_mongo_driver_manager_apply_rp(data->m_client, options);
 	hippo_mongo_driver_manager_apply_wc(data->m_client, options);
