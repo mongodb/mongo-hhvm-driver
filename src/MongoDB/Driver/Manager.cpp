@@ -332,9 +332,13 @@ static mongoc_uri_t *hippo_mongo_driver_manager_make_uri(const char *dsn, const 
 
 static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, const Array options)
 {
-	mongoc_ssl_opt_t ssl_opt = { NULL, NULL, NULL, NULL, 0 };
+	mongoc_ssl_opt_t ssl_opt = { NULL, NULL, NULL, NULL, NULL, true };
 	Array ssl;
 	bool apply_ssl = false;
+
+	if (!mongoc_uri_get_ssl(mongoc_client_get_uri(client))) {
+		return 0;
+	}
 
 	if (options.exists(s_MongoDBDriverManager_context)) {
 		Array context;
@@ -366,7 +370,7 @@ static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, c
 
 	if (ssl.exists(s_MongoDBDriverManager_context_ssl_allow_self_signed) && ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].isBoolean()) {
 		apply_ssl = true;
-		ssl_opt.weak_cert_validation = (bool) ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].toBoolean();
+		ssl_opt.weak_cert_validation = (bool)true;//ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].toBoolean();
 	}
 	if (ssl.exists(s_MongoDBDriverManager_context_ssl_local_cert) && ssl[s_MongoDBDriverManager_context_ssl_local_cert].isString()) {
 		apply_ssl = true;
