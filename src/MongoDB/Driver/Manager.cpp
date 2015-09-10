@@ -419,7 +419,11 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 const StaticString
 	s_MongoDBDriverManager_request_id("request_id"),
 	s_MongoDBDriverManager_uri("uri"),
-	s_MongoDBDriverManager_cluster("cluster");
+	s_MongoDBDriverManager_cluster("cluster"),
+	s_MongoDBDriverManager_limit("limit"),
+	s_MongoDBDriverManager_multi("multi"),
+	s_MongoDBDriverManager_upsert("upsert"),
+	s_MongoDBDriverManager_command("command");
 
 Array HHVM_METHOD(MongoDBDriverManager, __debugInfo)
 {
@@ -447,7 +451,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const
 	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 
-	auto zquery = command->o_get(String("command"), false, s_MongoDriverCommand_className);
+	auto zquery = command->o_get(s_MongoDBDriverManager_command, false, s_MongoDriverCommand_className);
 
 	VariantToBsonConverter converter(zquery, HIPPO_BSON_NO_FLAGS);
 	bson = bson_new();
@@ -487,8 +491,8 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	}
 
 	if (!options.isNull()) {
-		if (options.exists(String("limit"))) {
-			Variant v_multi = options[String("limit")];
+		if (options.exists(s_MongoDBDriverManager_limit)) {
+			Variant v_multi = options[s_MongoDBDriverManager_limit];
 			bool multi = v_multi.toBoolean();
 
 			if (multi) {
@@ -627,8 +631,8 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	}
 
 	if (!options.isNull()) {
-		if (options.exists(String("multi"))) {
-			Variant v_multi = options[String("multi")];
+		if (options.exists(s_MongoDBDriverManager_multi)) {
+			Variant v_multi = options[s_MongoDBDriverManager_multi];
 			bool multi = v_multi.toBoolean();
 
 			if (multi) {
@@ -636,8 +640,8 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 			}
 		}
 
-		if (options.exists(String("upsert"))) {
-			Variant v_upsert = options[String("upsert")];
+		if (options.exists(s_MongoDBDriverManager_upsert)) {
+			Variant v_upsert = options[s_MongoDBDriverManager_upsert];
 			bool upsert = v_upsert.toBoolean();
 
 			if (upsert) {

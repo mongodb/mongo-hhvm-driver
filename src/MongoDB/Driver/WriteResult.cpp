@@ -107,6 +107,22 @@ bool hippo_writeresult_get_writeconcern_error(mongoc_write_result_t *writeresult
 	return false;
 }
 
+const StaticString
+	s_nUpserted("nUpserted"),
+	s_nMatched("nMatched"),
+	s_nRemoved("nRemoved"),
+	s_nInserted("nInserted"),
+	s_nModified("nModified"),
+	s_omit_nModified("omit_nModified"),
+	s_writeConcern("writeConcern"),
+	s_upsertedIds("upsertedIds"),
+	s_writeErrors("writeErrors"),
+	s_errmsg("errmsg"),
+	s_message("message"),
+	s_code("code"),
+	s_info("info"),
+	s_writeConcernError("writeConcernError");
+
 Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception)
 {
 	static Class* c_writeResult;
@@ -120,12 +136,12 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	wr_data->m_server_id = server_id;
 	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
-	obj->o_set(String("nUpserted"), Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nMatched"), Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nRemoved"), Variant((int64_t) write_result->nRemoved), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nInserted"), Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("nModified"), Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("omit_nModified"), Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_nUpserted, Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_nMatched, Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_nRemoved, Variant((int64_t) write_result->nRemoved), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_nInserted, Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_nModified, Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className.get());
 /*
 	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className.get());
 	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className.get());
@@ -150,19 +166,19 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		);
 	}
 
-	obj->o_set(String("writeConcern"), debugInfoResult, s_MongoDriverWriteConcern_className.get());
+	obj->o_set(s_writeConcern, debugInfoResult, s_MongoDriverWriteConcern_className.get());
 
 	Variant v;
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
 	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
 	convertor.convert(&v);
-	obj->o_set(String("upsertedIds"), v.toArray(), s_MongoDriverWriteResult_className);
+	obj->o_set(s_upsertedIds, v.toArray(), s_MongoDriverWriteResult_className);
 
 	if (!bson_empty0(&write_result->writeErrors)) {
 		BsonToVariantConverter convertor(bson_get_data(&write_result->writeErrors), write_result->writeErrors.len, options);
 		convertor.convert(&v);
-		obj->o_set(String("writeErrors"), v.toArray(), s_MongoDriverWriteResult_className);
+		obj->o_set(s_writeErrors, v.toArray(), s_MongoDriverWriteResult_className);
 	}
 
 	if (!bson_empty0(&write_result->writeConcernError)) {
@@ -179,19 +195,19 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		assert(c_writeConcernError);
 		Object wce_obj = Object{c_writeConcernError};
 		
-		if (a_v.exists(String("errmsg"))) {
-			wce_obj->o_set(String("message"), a_v[String("errmsg")], s_MongoDriverWriteConcernError_className);
+		if (a_v.exists(s_errmsg)) {
+			wce_obj->o_set(s_message, a_v[s_errmsg], s_MongoDriverWriteConcernError_className);
 		}
-		if (a_v.exists(String("code"))) {
-			wce_obj->o_set(String("code"), a_v[String("code")], s_MongoDriverWriteConcernError_className);
+		if (a_v.exists(s_code)) {
+			wce_obj->o_set(s_code, a_v[s_code], s_MongoDriverWriteConcernError_className);
 		}
-		if (a_v.exists(String("info"))) {
-			wce_obj->o_set(String("info"), a_v[String("info")], s_MongoDriverWriteConcernError_className);
+		if (a_v.exists(s_info)) {
+			wce_obj->o_set(s_info, a_v[s_info], s_MongoDriverWriteConcernError_className);
 		} else {
-			wce_obj->o_set(String("info"), Variant(), s_MongoDriverWriteConcernError_className);
+			wce_obj->o_set(s_info, Variant(), s_MongoDriverWriteConcernError_className);
 		}
 
-		obj->o_set(String("writeConcernError"), Variant(wce_obj), s_MongoDriverWriteResult_className);
+		obj->o_set(s_writeConcernError, Variant(wce_obj), s_MongoDriverWriteResult_className);
 	}
 
 	/* If the result is null (typically a server_id, but 0 in case there was an

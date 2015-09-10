@@ -82,6 +82,11 @@ Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 	return NULL;
 }
 
+const StaticString
+	s_multi("multi"),
+	s_upsert("upsert");
+
+
 void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &update, const Variant &updateOptions)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
@@ -99,8 +104,8 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 	update_converter.convert(bupdate);
 
 	if (!updateOptions.isNull()) {
-		if (options.exists(String("multi"))) {
-			Variant v_multi = options[String("multi")];
+		if (options.exists(s_multi)) {
+			Variant v_multi = options[s_multi];
 			bool multi = v_multi.toBoolean();
 
 			if (multi) {
@@ -108,8 +113,8 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 			}
 		}
 
-		if (options.exists(String("upsert"))) {
-			Variant v_upsert = options[String("upsert")];
+		if (options.exists(s_upsert)) {
+			Variant v_upsert = options[s_upsert];
 			bool upsert = v_upsert.toBoolean();
 
 			if (upsert) {
@@ -143,6 +148,9 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 	bson_clear(&bupdate);
 }
 
+const StaticString
+	s_limit("limit");
+
 void HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &query, const Variant &deleteOptions)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
@@ -153,8 +161,8 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &query, const Var
 	bquery = bson_new();
 	query_converter.convert(bquery);
 
-	if ((!deleteOptions.isNull()) && (options.exists(String("limit")))) {
-		Variant v_limit = options[String("limit")];
+	if ((!deleteOptions.isNull()) && (options.exists(s_limit))) {
+		Variant v_limit = options[s_limit];
 		bool limit = v_limit.toBoolean();
 
 		if (limit) {
@@ -183,7 +191,6 @@ const StaticString
 	s_executed("executed"),
 	s_server_id("server_id"),
 	s_write_concern("write_concern");
-
 
 Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 {

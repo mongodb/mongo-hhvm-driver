@@ -46,7 +46,8 @@ const StaticString
 	s_MongoDriverServer_is_passive("is_passive"),
 	s_MongoDriverServer_tags("tags"),
 	s_MongoDriverServer_last_is_master("last_is_master"),
-	s_MongoDriverServer_round_trip_time("round_trip_time");
+	s_MongoDriverServer_round_trip_time("round_trip_time"),
+	s_command("command");
 
 Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_t server_id)
 {
@@ -294,7 +295,7 @@ Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const 
 	bson_t *bson;
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 
-	auto zquery = command->o_get(String("command"), false, s_MongoDriverCommand_className);
+	auto zquery = command->o_get(s_command, false, s_MongoDriverCommand_className);
 
 	VariantToBsonConverter converter(zquery, HIPPO_BSON_NO_FLAGS);
 	bson = bson_new();

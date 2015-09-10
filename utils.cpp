@@ -312,6 +312,14 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	return obj;
 }
 
+const HPHP::StaticString
+	s_query("query"),
+	s_skip("skip"),
+	s_limit("limit"),
+	s_batch_size("batch_size"),
+	s_flags("flags"),
+	s_fields("fields");
+
 HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, HPHP::Variant readPreference)
 {
 	static HPHP::Class* c_result;
@@ -334,22 +342,22 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	}
 
 	/* Get query properties */
-	auto zquery = query->o_get(HPHP::String("query"), false, HPHP::s_MongoDriverQuery_className);
+	auto zquery = query->o_get(s_query, false, HPHP::s_MongoDriverQuery_className);
 
 	if (zquery.getType() == HPHP::KindOfArray) {
 		const HPHP::Array& aquery = zquery.toArray();
 
-		skip = aquery[HPHP::String("skip")].toInt32();
-		limit = aquery[HPHP::String("limit")].toInt32();
-		batch_size = aquery[HPHP::String("batch_size")].toInt32();
-		flags = (mongoc_query_flags_t) aquery[HPHP::String("flags")].toInt32();
+		skip = aquery[s_skip].toInt32();
+		limit = aquery[s_limit].toInt32();
+		batch_size = aquery[s_batch_size].toInt32();
+		flags = (mongoc_query_flags_t) aquery[s_flags].toInt32();
 
-		HPHP::VariantToBsonConverter converter(aquery[HPHP::String("query")], HIPPO_BSON_NO_FLAGS);
+		HPHP::VariantToBsonConverter converter(aquery[s_query], HIPPO_BSON_NO_FLAGS);
 		bson_query = bson_new();
 		converter.convert(bson_query);
 
-		if (aquery.exists(HPHP::String("fields"))) {
-			HPHP::VariantToBsonConverter converter(aquery[HPHP::String("fields")], HIPPO_BSON_NO_FLAGS);
+		if (aquery.exists(s_fields)) {
+			HPHP::VariantToBsonConverter converter(aquery[s_fields], HIPPO_BSON_NO_FLAGS);
 			bson_fields = bson_new();
 			converter.convert(bson_fields);
 		}
