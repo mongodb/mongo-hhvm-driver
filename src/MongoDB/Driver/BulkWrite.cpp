@@ -66,9 +66,9 @@ Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 			static Class* c_objectId;
 			c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
 			assert(c_objectId);
-			ObjectData* obj = ObjectData::newInstance(c_objectId);
+			Object obj = Object{c_objectId};
 
-			MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj);
+			MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
 			bson_oid_copy(bson_iter_oid(&iter), &obj_data->m_oid);
 
 			bson_clear(&converter.m_out);

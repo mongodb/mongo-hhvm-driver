@@ -50,19 +50,16 @@ bool Utils::splitNamespace(HPHP::String ns, char **db, char **col)
 	return true;  
 }
 
-HPHP::ObjectData *Utils::CreateAndConstruct(HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code)
+HPHP::Object Utils::CreateAndConstruct(HPHP::StaticString classname, const HPHP::Variant &message, const HPHP::Variant &code)
 {
 	static HPHP::Class* c_class;
 
 	c_class = HPHP::Unit::lookupClass(classname.get());
 	assert(c_class);
-	HPHP::ObjectData *inst = HPHP::ObjectData::newInstance(c_class);
+	HPHP::Object inst = HPHP::Object{c_class};
 
 	HPHP::TypedValue ret;
-	{
-		HPHP::CountableHelper cnt(inst);
-		HPHP::g_context->invokeFunc(&ret, c_class->getCtor(), HPHP::make_packed_array(message, code), inst);
-	}
+	HPHP::g_context->invokeFunc(&ret, c_class->getCtor(), HPHP::make_packed_array(message, code), inst.get());
 	HPHP::tvRefcountedDecRef(&ret);
 
 	return inst;
@@ -222,9 +219,9 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);
 
 	/* Prepare result */
-	HPHP::ObjectData* obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, success, write_concern, false);
+	HPHP::Object obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, success, write_concern, false);
 
-	return HPHP::Object(obj);
+	return obj;
 }
 
 HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, HPHP::Variant readPreference)
@@ -300,9 +297,9 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	/* Prepare result */
 	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
 	assert(c_result);
-	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_result);
+	HPHP::Object obj = HPHP::Object{c_result};
 
-	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj);
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
 
 	cursor_data->cursor = cursor;
 	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
@@ -389,9 +386,9 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	/* Prepare result */
 	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
 	assert(c_result);
-	HPHP::ObjectData* obj = HPHP::ObjectData::newInstance(c_result);
+	HPHP::Object obj = HPHP::Object{c_result};
 
-	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj);
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
 
 	cursor_data->cursor = cursor;
 	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);

@@ -157,13 +157,13 @@ Object HHVM_METHOD(MongoDBDriverCursor, getId)
 	/* Prepare result */
 	c_cursor = Unit::lookupClass(s_MongoDriverCursorId_className.get());
 	assert(c_cursor);
-	ObjectData* obj = ObjectData::newInstance(c_cursor);
+	Object obj = Object{c_cursor};
 
-	MongoDBDriverCursorIdData* cursorid_data = Native::data<MongoDBDriverCursorIdData>(obj);
+	MongoDBDriverCursorIdData* cursorid_data = Native::data<MongoDBDriverCursorIdData>(obj.get());
 
 	cursorid_data->id = cursorid;
 
-	return Object(obj);
+	return obj;
 }
 
 Variant HHVM_METHOD(MongoDBDriverCursor, current)

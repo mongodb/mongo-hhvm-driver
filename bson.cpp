@@ -377,12 +377,12 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 	if (m_level > 0 || (m_flags & HIPPO_BSON_NO_ROOT_ODS) == 0) {
 		if (v.instanceof(s_MongoDriverBsonPersistable_className)) {
 			const char *class_name = cls->nameStr().c_str();
-			ObjectData *obj = createMongoBsonBinaryObject(
+			Object obj = createMongoBsonBinaryObject(
 				(const uint8_t *) class_name,
 				strlen(class_name),
 				(bson_subtype_t) 0x80
 			);
-			properties.add(String(s_MongoDriverBsonODM_fieldName), obj);
+			properties.add(String(s_MongoDriverBsonODM_fieldName), obj.get());
 		}
 	}
 
@@ -499,7 +499,7 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), const char *key, bson_subtype_t v_subtype, size_t v_binary_len, const uint8_t *v_binary, void *data)
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
-	ObjectData *obj;
+	Object obj;
 
 	obj = createMongoBsonBinaryObject(v_binary, v_binary_len, v_subtype);
 
@@ -515,9 +515,9 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 
 	c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
 	assert(c_objectId);
-	ObjectData* obj = ObjectData::newInstance(c_objectId);
+	Object obj = Object{c_objectId};
 
-	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj);
+	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
 	bson_oid_copy(v_oid, &obj_data->m_oid);
 
 	state->zchild.add(String(key), Variant(obj));
@@ -540,7 +540,7 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 
 	c_datetime = Unit::lookupClass(s_MongoBsonUTCDateTime_className.get());
 	assert(c_datetime);
-	ObjectData* obj = ObjectData::newInstance(c_datetime);
+	Object obj = Object{c_datetime};
 
 	obj->o_set(s_MongoBsonUTCDateTime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUTCDateTime_className.get());
 
@@ -564,7 +564,7 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 
 	c_regex = Unit::lookupClass(s_MongoBsonRegex_className.get());
 	assert(c_regex);
-	ObjectData* obj = ObjectData::newInstance(c_regex);
+	Object obj = Object{c_regex};
 
 	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className.get());
 	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className.get());
@@ -588,7 +588,7 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 
 	c_code = Unit::lookupClass(s_MongoBsonJavascript_className.get());
 	assert(c_code);
-	ObjectData* obj = ObjectData::newInstance(c_code);
+	Object obj = Object{c_code};
 
 	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
 
@@ -618,7 +618,7 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	/* create object */
 	c_code = Unit::lookupClass(s_MongoBsonJavascript_className.get());
 	assert(c_code);
-	ObjectData* obj = ObjectData::newInstance(c_code);
+	Object obj = Object{c_code};
 
 	/* set properties */
 	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
@@ -645,7 +645,7 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 
 	c_timestamp = Unit::lookupClass(s_MongoBsonTimestamp_className.get());
 	assert(c_timestamp);
-	ObjectData* obj = ObjectData::newInstance(c_timestamp);
+	Object obj = Object{c_timestamp};
 
 	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className.get());
 	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className.get());
@@ -670,7 +670,7 @@ bool hippo_bson_visit_maxkey(const bson_iter_t *iter __attribute__((unused)), co
 
 	c_objectId = Unit::lookupClass(s_MongoBsonMaxKey_className.get());
 	assert(c_objectId);
-	ObjectData* obj = ObjectData::newInstance(c_objectId);
+	Object obj = Object{c_objectId};
 
 	state->zchild.add(String(key), Variant(obj));
 
@@ -684,7 +684,7 @@ bool hippo_bson_visit_minkey(const bson_iter_t *iter __attribute__((unused)), co
 
 	c_objectId = Unit::lookupClass(s_MongoBsonMinKey_className.get());
 	assert(c_objectId);
-	ObjectData* obj = ObjectData::newInstance(c_objectId);
+	Object obj = Object{c_objectId};
 
 	state->zchild.add(String(key), Variant(obj));
 
@@ -865,7 +865,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 		}
 
 		/* Instantiate */
-		ObjectData *obj = ObjectData::newInstance(c_class);
+		Object obj = Object{c_class};
 
 		/* If the class does not implement Persistable, make it a stdClass */
 		if (!obj->instanceof(s_MongoDriverBsonPersistable_className)) {
@@ -879,7 +879,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 		g_context->invokeFuncFew(
 			result.asTypedValue(),
 			m,
-			obj,
+			obj.get(),
 			nullptr,
 			1, args
 		);

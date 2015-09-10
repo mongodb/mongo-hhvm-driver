@@ -49,7 +49,7 @@ class MongoDBDriverWriteResultData
 Object HHVM_METHOD(MongoDBDriverWriteResult, getServer);
 bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged);
 
-ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception);
+Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception);
 
 }
 #endif

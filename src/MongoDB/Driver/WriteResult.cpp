@@ -107,15 +107,15 @@ bool hippo_writeresult_get_writeconcern_error(mongoc_write_result_t *writeresult
 	return false;
 }
 
-ObjectData *hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception)
+Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception)
 {
 	static Class* c_writeResult;
 
 	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
 	assert(c_writeResult);
-	ObjectData* obj = ObjectData::newInstance(c_writeResult);
+	Object obj = Object{c_writeResult};
 
-	MongoDBDriverWriteResultData* wr_data = Native::data<MongoDBDriverWriteResultData>(obj);
+	MongoDBDriverWriteResultData* wr_data = Native::data<MongoDBDriverWriteResultData>(obj.get());
 	wr_data->m_client = client;
 	wr_data->m_server_id = server_id;
 	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);

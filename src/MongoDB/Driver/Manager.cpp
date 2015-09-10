@@ -524,13 +524,13 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
+	Object obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
 
 	/* Destroy */
 	bson_clear(&bquery);
 	mongoc_bulk_operation_destroy(batch);
 
-	return Object(obj);
+	return obj;
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Variant &writeConcern)
@@ -576,13 +576,13 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	server_id = mongoc_bulk_operation_execute(batch, &reply, &error);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
+	Object obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
 
 	/* Destroy */
 	bson_destroy(bson);
 	mongoc_bulk_operation_destroy(batch);
 
-	return Object(obj);
+	return obj;
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const Object &query, const Variant &readPreference)
@@ -693,9 +693,9 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	mongoc_bulk_operation_destroy(batch);
 
 	/* Prepare result */
-	ObjectData* obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
+	Object obj = hippo_write_result_init(&batch->result, data->m_client, server_id, write_concern, true);
 
-	return Object(obj);
+	return obj;
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern)
