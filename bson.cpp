@@ -582,7 +582,7 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 	unsigned char *data_s;
 
 	s = String(v_code_len, ReserveString);
-	data_s = (unsigned char*) s.bufferSlice().ptr;
+	data_s = (unsigned char*) s.bufferSlice().data();
 	memcpy(data_s, v_code, v_code_len);
 	s.setSize(v_code_len);
 
@@ -607,7 +607,7 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 
 	/* code */
 	s = String(v_code_len, ReserveString);
-	data_s = (unsigned char*) s.bufferSlice().ptr;
+	data_s = (unsigned char*) s.bufferSlice().data();
 	memcpy(data_s, v_code, v_code_len);
 	s.setSize(v_code_len);
 

@@ -51,7 +51,7 @@ static String oidAsString(MongoDBBsonObjectIDData* data)
 	char *data_s;
 
 	s = String(24, ReserveString);
-	data_s = s.bufferSlice().ptr;
+	data_s = s.bufferSlice().data();
 	bson_oid_to_string(&data->m_oid, data_s);
 	s.setSize(24);
 

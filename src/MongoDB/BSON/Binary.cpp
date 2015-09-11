@@ -32,7 +32,7 @@ Object createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary_len,
 	unsigned char *data_s;
 
 	s = String(v_binary_len, ReserveString);
-	data_s = (unsigned char*) s.bufferSlice().ptr;
+	data_s = (unsigned char*) s.bufferSlice().data();
 	memcpy(data_s, v_binary, v_binary_len);
 	s.setSize(v_binary_len);
 

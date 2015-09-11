@@ -38,7 +38,7 @@ String HHVM_FUNCTION(MongoDBBsonFromPHP, const Variant &data)
 	converter.convert(bson);
 
 	s = String(bson->len, ReserveString);
-	data_s = (unsigned char*) s.bufferSlice().ptr;
+	data_s = (unsigned char*) s.bufferSlice().data();
 	memcpy(data_s, bson_get_data(bson), bson->len);
 	s.setSize(bson->len);
 
@@ -55,7 +55,7 @@ Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
 		unsigned char *data_s;
 
 		s = String(bson.len, ReserveString);
-		data_s = (unsigned char*) s.bufferSlice().ptr;
+		data_s = (unsigned char*) s.bufferSlice().data();
 		memcpy(data_s, bson_get_data(&bson), bson.len);
 		s.setSize(bson.len);
 
@@ -97,7 +97,7 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 		str = bson_as_json(b, &str_len);
 
 		s = String(str_len, ReserveString);
-		data_s = (unsigned char*) s.bufferSlice().ptr;
+		data_s = (unsigned char*) s.bufferSlice().data();
 		memcpy(data_s, str, str_len);
 		s.setSize(str_len);
 
