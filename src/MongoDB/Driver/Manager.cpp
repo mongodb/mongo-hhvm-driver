@@ -487,7 +487,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Invalid namespace provided: " + ns);
-		return NULL;
 	}
 
 	if (!options.isNull()) {
@@ -556,7 +555,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Invalid namespace provided: " + ns);
-		return NULL;
 	}
 
 	batch = mongoc_bulk_operation_new(true);
@@ -627,7 +625,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeUpdate, const String &ns, const 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Invalid namespace provided: " + ns);
-		return NULL;
 	}
 
 	if (!options.isNull()) {

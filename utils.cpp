@@ -197,7 +197,6 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
 		throw throwInvalidArgumentException("Invalid namespace provided: " + ns);
-		return NULL;
 	}
 
 	/* Setup operation */
@@ -252,8 +251,6 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 		if (mongoc_cursor_error(cursor, &error)) {
 			mongoc_cursor_destroy(cursor);
 			throw Utils::throwExceptionFromBsonError(&error);
-
-			return NULL;
 		}
 	}
 
@@ -338,7 +335,6 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &dbname, &collname)) {
 		throw throwInvalidArgumentException("Invalid namespace provided: " + ns);
-		return NULL;
 	}
 
 	/* Get query properties */
@@ -386,8 +382,6 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 		if (mongoc_cursor_error(cursor, &error)) {
 			mongoc_cursor_destroy(cursor);
 			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
-
-			return NULL;
 		}
 	}
 
