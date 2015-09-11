@@ -382,7 +382,7 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 				strlen(class_name),
 				(bson_subtype_t) 0x80
 			);
-			properties.add(String(s_MongoDriverBsonODM_fieldName), obj.get());
+			properties.add(String(s_MongoDriverBsonODM_fieldName), obj);
 		}
 	}
 
@@ -542,7 +542,7 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 	assert(c_datetime);
 	Object obj = Object{c_datetime};
 
-	obj->o_set(s_MongoBsonUTCDateTime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUTCDateTime_className.get());
+	obj->o_set(s_MongoBsonUTCDateTime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUTCDateTime_className);
 
 	state->zchild.add(String(key), Variant(obj));
 
@@ -566,8 +566,8 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 	assert(c_regex);
 	Object obj = Object{c_regex};
 
-	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className.get());
-	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className.get());
+	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className);
+	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className);
 
 	state->zchild.add(String(key), Variant(obj));
 
@@ -590,7 +590,7 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 	assert(c_code);
 	Object obj = Object{c_code};
 
-	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
+	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className);
 
 	state->zchild.add(String(key), Variant(obj));
 
@@ -621,8 +621,8 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	Object obj = Object{c_code};
 
 	/* set properties */
-	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className.get());
-	obj->o_set(s_MongoBsonJavascript_scope, scope_v, s_MongoBsonJavascript_className.get());
+	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className);
+	obj->o_set(s_MongoBsonJavascript_scope, scope_v, s_MongoBsonJavascript_className);
 
 	/* add to array */
 	state->zchild.add(String(key), Variant(obj));
@@ -647,8 +647,8 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 	assert(c_timestamp);
 	Object obj = Object{c_timestamp};
 
-	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className.get());
-	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className.get());
+	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className);
+	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className);
 
 	state->zchild.add(String(key), Variant(obj));
 

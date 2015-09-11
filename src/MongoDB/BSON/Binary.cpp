@@ -40,8 +40,8 @@ Object createMongoBsonBinaryObject(const uint8_t *v_binary, size_t v_binary_len,
 	assert(c_binary);
 	Object obj = Object{c_binary};
 
-	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className.get());
-	obj->o_set(s_MongoBsonBinary_type, Variant(v_subtype), s_MongoBsonBinary_className.get());
+	obj->o_set(s_MongoBsonBinary_data, s, s_MongoBsonBinary_className);
+	obj->o_set(s_MongoBsonBinary_type, Variant(v_subtype), s_MongoBsonBinary_className);
 
 	return obj;
 }

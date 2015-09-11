@@ -136,15 +136,15 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	wr_data->m_server_id = server_id;
 	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
-	obj->o_set(s_nUpserted, Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className.get());
-	obj->o_set(s_nMatched, Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className.get());
-	obj->o_set(s_nRemoved, Variant((int64_t) write_result->nRemoved), s_MongoDriverWriteResult_className.get());
-	obj->o_set(s_nInserted, Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className.get());
-	obj->o_set(s_nModified, Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className.get());
-	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className.get());
+	obj->o_set(s_nUpserted, Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nMatched, Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nRemoved, Variant((int64_t) write_result->nRemoved), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nInserted, Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nModified, Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className);
+	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className);
 /*
-	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className.get());
-	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className.get());
+	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className);
+	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className);
 */
 	auto writeConcern_class = Unit::lookupClass(s_MongoDriverWriteConcern_className.get());
 	auto writeConcern = Object{writeConcern_class};
@@ -166,7 +166,7 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		);
 	}
 
-	obj->o_set(s_writeConcern, debugInfoResult, s_MongoDriverWriteConcern_className.get());
+	obj->o_set(s_writeConcern, debugInfoResult, s_MongoDriverWriteConcern_className);
 
 	Variant v;
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
