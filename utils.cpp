@@ -313,7 +313,7 @@ const HPHP::StaticString
 	s_query("query"),
 	s_skip("skip"),
 	s_limit("limit"),
-	s_batch_size("batch_size"),
+	s_batchSize("batchSize"),
 	s_flags("flags"),
 	s_fields("fields");
 
@@ -345,7 +345,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 
 		skip = aquery[s_skip].toInt32();
 		limit = aquery[s_limit].toInt32();
-		batch_size = aquery[s_batch_size].toInt32();
+		batch_size = aquery[s_batchSize].toInt32();
 		flags = (mongoc_query_flags_t) aquery[s_flags].toInt32();
 
 		HPHP::VariantToBsonConverter converter(aquery[s_query], HIPPO_BSON_NO_FLAGS);
