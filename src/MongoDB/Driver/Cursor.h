@@ -50,7 +50,6 @@ class MongoDBDriverCursorData
 		hippo_bson_conversion_options_t bson_options;
 
 		void sweep() {
-			/* Do nothing, for now */
 			mongoc_cursor_destroy(cursor);
 		}
 
