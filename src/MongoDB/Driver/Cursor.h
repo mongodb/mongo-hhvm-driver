@@ -51,6 +51,7 @@ class MongoDBDriverCursorData
 
 		void sweep() {
 			/* Do nothing, for now */
+			mongoc_cursor_destroy(cursor);
 		}
 
 		MongoDBDriverCursorData() {
@@ -73,6 +74,7 @@ int64_t HHVM_METHOD(MongoDBDriverCursor, key);
 Variant HHVM_METHOD(MongoDBDriverCursor, next);
 void HHVM_METHOD(MongoDBDriverCursor, rewind);
 bool HHVM_METHOD(MongoDBDriverCursor, valid);
+bool HHVM_METHOD(MongoDBDriverCursor, isDead);
 
 Array HHVM_METHOD(MongoDBDriverCursor, toArray);
 

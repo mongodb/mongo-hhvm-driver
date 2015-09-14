@@ -293,6 +293,13 @@ bool HHVM_METHOD(MongoDBDriverCursor, valid)
 	return false;
 }
 
+bool HHVM_METHOD(MongoDBDriverCursor, isDead)
+{
+	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
+
+	return !(mongoc_cursor_is_alive(data->cursor));
+}
+
 Array HHVM_METHOD(MongoDBDriverCursor, toArray)
 {
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);

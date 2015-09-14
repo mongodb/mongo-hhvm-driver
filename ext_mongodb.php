@@ -241,10 +241,8 @@ final class Cursor implements Traversable, Iterator {
 	<<__Native>>
 	public function getServer() : Server;
 
-	public function isDead() : bool
-	{
-		throw new \Exception("isDead is not implemented yet");
-	}
+	<<__Native>>
+	public function isDead() : bool;
 
 	/**
 	* Get the current element
