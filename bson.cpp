@@ -74,7 +74,7 @@ VariantToBsonConverter::VariantToBsonConverter(const Variant& document, int flag
 	m_document = document;
 	m_level = 0;
 	m_flags = flags;
-	m_out = NULL;
+	m_out = Variant();
 }
 
 void VariantToBsonConverter::convert(bson_t *bson)
@@ -199,9 +199,14 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 		String s_key = key.toString();
 
 		if (m_level == 0 && (m_flags & HIPPO_BSON_ADD_ID)) {
-
+			/* If we have an ID, we don't need to add it. But we also need to
+			 * set m_out to the value! */
 			if (strncmp(s_key.c_str(), "_id", s_key.length()) == 0) {
 				m_flags &= ~HIPPO_BSON_ADD_ID;
+				if (m_flags & HIPPO_BSON_RETURN_ID) {
+					/* FIXME: Should we add a ref here? */
+					m_out = data;
+				}
 			}
 		}
 
@@ -225,8 +230,15 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 		bson_append_oid(bson, "_id", strlen("_id"), &oid);
 
 		if (m_flags & HIPPO_BSON_RETURN_ID) {
-			m_out = bson_new();
-			bson_append_oid(m_out, "_id", sizeof("_id")-1, &oid);
+			static Class* c_objectId;
+			c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
+			assert(c_objectId);
+			Object obj = Object{c_objectId};
+
+			MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
+			bson_oid_copy(&oid, &obj_data->m_oid);
+
+			m_out = obj;
 		}
 	}
 

@@ -47,7 +47,7 @@ class VariantToBsonConverter
 {
 	public:
 		Variant m_document;
-		bson_t *m_out;
+		Variant m_out;
 
 /* {{{ public methods */
 		VariantToBsonConverter(const Variant& document, int flags);

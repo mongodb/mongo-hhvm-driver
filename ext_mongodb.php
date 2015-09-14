@@ -365,7 +365,7 @@ final class BulkWrite implements \Countable {
 	public function __construct(?boolean $ordered = true);
 
 	<<__Native>>
-	public function insert(mixed $document) : \MongoDB\BSON\ObjectID;
+	public function insert(mixed $document) : mixed;
 
 	<<__Native>>
 	public function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;

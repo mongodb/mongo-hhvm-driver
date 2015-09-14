@@ -45,7 +45,7 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered)
 	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
 }
 
-Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
+Variant HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 	bson_t *bson;
@@ -56,30 +56,7 @@ Object HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 
 	mongoc_bulk_operation_insert(data->m_bulk, bson);
 
-	/* Should always trigger, because we set HIPPO_BSON_RETURN_ID. We would
-	 * like to do this only when the return value is used, but unlike PHP, this
-	 * is not detectable in HHVM */
-	if (converter.m_out) {
-		bson_iter_t iter;
-
-		if (bson_iter_init_find(&iter, converter.m_out, "_id")) {
-			static Class* c_objectId;
-			c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
-			assert(c_objectId);
-			Object obj = Object{c_objectId};
-
-			MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
-			bson_oid_copy(bson_iter_oid(&iter), &obj_data->m_oid);
-
-			bson_clear(&converter.m_out);
-
-			return obj;
-		}
-
-		bson_clear(&converter.m_out);
-	}
-
-	return NULL;
+	return Variant(converter.m_out);
 }
 
 const StaticString
