@@ -163,10 +163,10 @@ class Manager {
 	public function getServers(): array;
 
 	<<__Native>>
-	public function getReadPreference() : array;
+	public function getReadPreference() : MongoDB\Driver\ReadPreference;
 
 	<<__Native>>
-	public function getWriteConcern() : array;
+	public function getWriteConcern() : MongoDB\Driver\WriteConcern;
 
 	<<__Native>>
 	public function __wakeUp() : void;
