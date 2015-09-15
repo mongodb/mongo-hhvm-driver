@@ -52,6 +52,7 @@ class Utils
 		static HPHP::Object throwRunTimeException(char *errormessage);
 		static HPHP::Object throwRunTimeException(HPHP::String errormessage);
 		static HPHP::Object throwUnexpectedValueException(char *errormessage);
+		static HPHP::Object throwUnexpectedValueException(HPHP::String errormessage);
 		static HPHP::Object throwExceptionFromBsonError(bson_error_t *error);
 		static HPHP::Object throwWriteException(char *errormessage, int64_t code);
 		static HPHP::Object throwWriteConcernException(char *errormessage, int64_t code);

@@ -43,6 +43,11 @@ Objects
 
 If an object is of the *stdClass*, serialize as a **BSON document**.
 
+If an object is a supported class that implements ``MongoDB\BSON\Type``, then
+use the BSON serialization logic for that specific type. If an object (root or
+embedded) is of an unknown class implementing the ``MongoDB\BSON\Type``
+interface, then throw a ``MongoDB\Driver\Exception\UnexpectedValueException``.
+
 If an object is of any other class, without implementing any special
 interface, serialize as a **BSON document**. Keep only *public* properties,
 and ignore *protected* and *private* properties.

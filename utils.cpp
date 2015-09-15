@@ -113,6 +113,11 @@ HPHP::Object Utils::throwUnexpectedValueException(char *errormessage)
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionUnexpectedValueException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
 }
 
+HPHP::Object Utils::throwUnexpectedValueException(HPHP::String errormessage)
+{
+	return Utils::CreateAndConstruct(s_MongoDriverExceptionUnexpectedValueException_className, HPHP::Variant(errormessage), HPHP::Variant((uint64_t) 0));
+}
+
 HPHP::Object Utils::throwWriteException(char *errormessage, int64_t code)
 {
 	return Utils::CreateAndConstruct(s_MongoDriverExceptionWriteException_className, HPHP::Variant(errormessage), HPHP::Variant(code));

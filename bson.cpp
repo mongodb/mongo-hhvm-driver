@@ -443,6 +443,8 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 			_convertSerializable(bson, key, v);
 			return true;
 		}
+
+		throw MongoDriver::Utils::throwUnexpectedValueException("Unexpected MongoDB\\BSON\\Type instance: " + String(v->getClassName()));
 	}
 	return false;
 }
