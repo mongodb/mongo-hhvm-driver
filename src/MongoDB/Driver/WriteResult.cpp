@@ -146,27 +146,31 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className);
 	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className);
 */
-	auto writeConcern_class = Unit::lookupClass(s_MongoDriverWriteConcern_className.get());
-	auto writeConcern = Object{writeConcern_class};
-	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(writeConcern);
-	data->m_write_concern = mongoc_write_concern_copy(write_concern);
+	if (write_concern) {
+		auto writeConcern_class = Unit::lookupClass(s_MongoDriverWriteConcern_className.get());
+		auto writeConcern = Object{writeConcern_class};
+		MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(writeConcern);
+		data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
-	Variant debugInfoResult;
-	{
-		Func *m = writeConcern_class->lookupMethod(s_MongoDriverWriteConcern_debugInfo.get());
+		Variant debugInfoResult;
+		{
+			Func *m = writeConcern_class->lookupMethod(s_MongoDriverWriteConcern_debugInfo.get());
 
-		TypedValue args[0];
+			TypedValue args[0];
 
-		g_context->invokeFuncFew(
-			debugInfoResult.asTypedValue(),
-			m,
-			writeConcern.get(),
-			nullptr,
-			0, args
-		);
+			g_context->invokeFuncFew(
+				debugInfoResult.asTypedValue(),
+				m,
+				writeConcern.get(),
+				nullptr,
+				0, args
+			);
+		}
+
+		obj->o_set(s_writeConcern, debugInfoResult, s_MongoDriverWriteConcern_className);
+	} else {
+		obj->o_set(s_writeConcern, Variant(), s_MongoDriverWriteConcern_className);
 	}
-
-	obj->o_set(s_writeConcern, debugInfoResult, s_MongoDriverWriteConcern_className);
 
 	Variant v;
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;

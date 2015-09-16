@@ -709,9 +709,6 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 		HPHP::MongoDBDriverWriteConcernData* wc_data = HPHP::Native::data<HPHP::MongoDBDriverWriteConcernData>(writeConcern.toObject().get());
 		write_concern = wc_data->m_write_concern;
 	}
-	if (!write_concern) {
-		write_concern = mongoc_client_get_write_concern(manager_data->m_client);
-	}
 
 	return MongoDriver::Utils::doExecuteBulkWrite(
 		ns,
