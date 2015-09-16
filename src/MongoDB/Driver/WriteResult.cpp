@@ -142,10 +142,7 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	obj->o_set(s_nInserted, Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className);
 	obj->o_set(s_nModified, Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className);
 	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className);
-/*
-	obj->o_set(String("offset"), Variant((int64_t) write_result->offset), s_MongoDriverWriteResult_className);
-	obj->o_set(String("n_commands"), Variant((int64_t) write_result->n_commands), s_MongoDriverWriteResult_className);
-*/
+
 	if (write_concern) {
 		auto writeConcern_class = Unit::lookupClass(s_MongoDriverWriteConcern_className.get());
 		auto writeConcern = Object{writeConcern_class};
