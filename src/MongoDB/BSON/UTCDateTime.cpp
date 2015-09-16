@@ -51,7 +51,7 @@ Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 #else
 	data->m_dt = makeSmartPtr<DateTime>(milliseconds / 1000, true);
 #endif
-	data->m_dt->setTimezone(TimeZone::Current());
+	data->m_dt->setTimezone(req::make<TimeZone>(String("UTC")));
 
 	return obj;
 }
