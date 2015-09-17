@@ -407,6 +407,15 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key, Object v)
 {
 	if (v.instanceof(s_MongoDriverBsonType_className)) {
+		if (v.instanceof(s_MongoDriverBsonSerializable_className)) {
+			_convertSerializable(bson, key, v);
+			return true;
+		}
+
+		if (m_level == 0) {
+			throw MongoDriver::Utils::throwUnexpectedValueException("MongoDB\\BSON\\Type instance " + String(v->getClassName())+ " cannot be serialized as a root element");
+		}
+
 		if (v.instanceof(s_MongoBsonBinary_className)) {
 			_convertBinary(bson, key, v);
 			return true;
@@ -437,10 +446,6 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 		}
 		if (v.instanceof(s_MongoBsonUTCDateTime_className)) {
 			_convertUTCDateTime(bson, key, v);
-			return true;
-		}
-		if (v.instanceof(s_MongoDriverBsonSerializable_className)) {
-			_convertSerializable(bson, key, v);
 			return true;
 		}
 

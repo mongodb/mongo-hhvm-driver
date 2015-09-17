@@ -5,7 +5,6 @@ BSON serialization: Unknown BSON Type class
 class UnknownType implements MongoDB\BSON\Type {}
 
 $tests = [
-	new UnknownType,
 	[ 'x' => new UnknownType ],
 ];
 
@@ -22,5 +21,4 @@ foreach ( $tests as $test )
 }
 ?>
 --EXPECT--
-Unexpected MongoDB\BSON\Type instance: UnknownType
 Unexpected MongoDB\BSON\Type instance: UnknownType
