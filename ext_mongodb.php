@@ -32,6 +32,48 @@ final class WriteConcernError {
 
 }
 
+final class WriteError {
+	private $message;
+	private $code;
+	private $index;
+	private $info;
+
+	private function __construct()
+	{
+		throw new Exception\RunTimeException("Accessing private constructor");
+	}
+
+	public function getMessage()
+	{
+		return $this->message;
+	}
+
+	public function getCode()
+	{
+		return $this->code;
+	}
+
+	public function getIndex()
+	{
+		return $this->index;
+	}
+
+	public function getInfo()
+	{
+		return $this->info;
+	}
+
+	public function __debugInfo()
+	{
+		return [
+			'message' => $this->message,
+			'code' => $this->code,
+			'index' => $this->index,
+			'info' => $this->info
+		];
+	}
+}
+
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;

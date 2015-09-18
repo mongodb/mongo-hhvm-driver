@@ -39,6 +39,7 @@ const StaticString MongoDBDriverWriteResultData::s_className("MongoDBDriverWrite
 IMPLEMENT_GET_CLASS(MongoDBDriverWriteResultData);
 
 const StaticString s_MongoDriverWriteConcernError_className("MongoDB\\Driver\\WriteConcernError");
+const StaticString s_MongoDriverWriteError_className("MongoDB\\Driver\\WriteError");
 
 const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_writeResult("writeResult");
 
@@ -177,9 +178,38 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	obj->o_set(s_upsertedIds, v.toArray(), s_MongoDriverWriteResult_className);
 
 	if (!bson_empty0(&write_result->writeErrors)) {
+		Array writeErrors = Array::Create();
+
 		BsonToVariantConverter convertor(bson_get_data(&write_result->writeErrors), write_result->writeErrors.len, options);
 		convertor.convert(&v);
-		obj->o_set(s_writeErrors, v.toArray(), s_MongoDriverWriteResult_className);
+
+		for (ArrayIter iter(v.toArray()); iter; ++iter) {
+			const Variant& value = iter.second();
+			static Class* c_writeError;
+
+			Array a_we = value.toArray();
+
+			c_writeError = Unit::lookupClass(s_MongoDriverWriteError_className.get());
+			assert(c_writeError);
+			Object we_obj = Object{c_writeError};
+
+			if (a_we.exists(s_errmsg)) {
+				we_obj->o_set(s_message, a_we[s_errmsg], s_MongoDriverWriteError_className);
+			}
+			if (a_we.exists(s_code)) {
+				we_obj->o_set(s_code, a_we[s_code], s_MongoDriverWriteError_className);
+			}
+			if (a_we.exists(s_index)) {
+				we_obj->o_set(s_index, a_we[s_index], s_MongoDriverWriteError_className);
+			}
+			if (a_we.exists(s_info)) {
+				we_obj->o_set(s_info, a_we[s_info], s_MongoDriverWriteError_className);
+			}
+
+			writeErrors.append(we_obj);
+		}
+
+		obj->o_set(s_writeErrors, writeErrors, s_MongoDriverWriteResult_className);
 	}
 
 	if (!bson_empty0(&write_result->writeConcernError)) {
