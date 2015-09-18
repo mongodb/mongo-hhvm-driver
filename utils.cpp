@@ -187,7 +187,7 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 			return phongo_ce_mongo_connection_exception;
 #endif
 		default:
-			return HPHP::Object(HPHP::SystemLib::AllocRuntimeExceptionObject(error->message));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionRuntimeException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 	}
 }
 
