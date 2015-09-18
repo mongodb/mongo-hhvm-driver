@@ -27,16 +27,16 @@ foreach ($data as $item) {
 array (  0 => 1,  1 => 42,):
 Expected parameter 2 to be array or object, integer given
 array (  0 => 1,  1 =>   array (    0 => 42,  ),):
-Invalid tagSet
+Invalid tagSets
 array (  0 => 1,  1 =>   array (    'dcs' => 'east',  ),):
-Invalid tagSet
+Invalid tagSets
 array (  0 => 1,  1 =>   array (    0 =>     array (      'dcs' => 'east',    ),  ),):
-Invalid tagSet
+Invalid tagSets
 array (  0 => 99,  1 => 42,):
 Expected parameter 2 to be array or object, integer given
 array (  0 => 99,  1 =>   array (    0 => 42,  ),):
-Invalid ReadPreference
+Invalid mode: 99
 array (  0 => 99,  1 =>   array (    'dcs' => 'east',  ),):
-Invalid ReadPreference
+Invalid mode: 99
 array (  0 => 99,  1 =>   array (    0 =>     array (      'dcs' => 'east',    ),  ),):
-Invalid ReadPreference
+Invalid mode: 99

@@ -452,7 +452,7 @@ final class ReadPreference {
 				break;
 
 			default:
-				Utils::throwHippoException(Utils::ERROR_INVALID_ARGUMENT, "Invalid ReadPreference");
+				Utils::throwHippoException(Utils::ERROR_INVALID_ARGUMENT, "Invalid mode: " . $readPreference);
 				break;
 		}
 	}

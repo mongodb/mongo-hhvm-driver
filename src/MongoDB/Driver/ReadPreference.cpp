@@ -20,6 +20,7 @@
 #include "../../../libmongoc/src/mongoc/mongoc-read-prefs-private.h"
 
 #include "../../../mongodb.h"
+#include "../../../utils.h"
 
 #include "ReadPreference.h"
 
@@ -52,7 +53,7 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	bson_destroy(bson);
 	if (!mongoc_read_prefs_is_valid(data->m_read_preference)) {
 		/* Throw exception */
-		throw Object(SystemLib::AllocInvalidArgumentExceptionObject("Invalid tagSet"));
+		throw MongoDriver::Utils::throwInvalidArgumentException("Invalid tagSets");
 	}
 }
 
