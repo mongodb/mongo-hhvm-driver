@@ -551,6 +551,18 @@ class WriteException extends RunTimeException
 
 	final public function getWriteResult() : \MongoDB\Driver\WriteResult
 	{
+		if (func_num_args() != 0) {
+			trigger_error(
+				sprintf(
+					"%s() expects exactly 0 parameters, %d given in %s on line %d",
+					"MongoDB\Driver\Exception\WriteException::getWriteResult",
+					func_num_args(),
+					__FILE__,
+					__LINE__
+				),
+				E_WARNING
+			);
+		}
 		return $this->writeResult;
 	}
 }
