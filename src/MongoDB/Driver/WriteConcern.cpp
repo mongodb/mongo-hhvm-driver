@@ -60,7 +60,9 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 	if (!w_timeout.isNull()) {
 		int64_t w_int = w_timeout.toInt64();
 
-		mongoc_write_concern_set_wtimeout(data->m_write_concern, w_int);
+		if (w_int > 0) {
+			mongoc_write_concern_set_wtimeout(data->m_write_concern, w_int);
+		}
 	}
 
 	if (!journal.isNull()) {
