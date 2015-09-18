@@ -85,6 +85,8 @@ bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *r
 		retval->set(s_MongoDriverWriteConcern_w, "majority");
 	} else if (w != MONGOC_WRITE_CONCERN_W_DEFAULT) {
 		retval->set(s_MongoDriverWriteConcern_w, w);
+	} else {
+		retval->set(s_MongoDriverWriteConcern_w, Variant());
 	}
 
 	retval->set(s_MongoDriverWriteConcern_wmajority, mongoc_write_concern_get_wmajority(wc));

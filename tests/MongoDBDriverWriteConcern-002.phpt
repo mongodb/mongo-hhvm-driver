@@ -13,6 +13,8 @@ var_dump($w);
 ?>
 --EXPECTF--
 object(MongoDB\Driver\WriteConcern)#%d (%d) {
+  ["w"]=>
+  NULL
   ["wmajority"]=>
   bool(false)
   ["wtimeout"]=>
