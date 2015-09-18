@@ -107,6 +107,56 @@ bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *r
 	return true;
 }
 
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, getFsync)
+{
+	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
+	mongoc_write_concern_t *wc = data->m_write_concern;
+
+	if (wc->fsync_ != MONGOC_WRITE_CONCERN_FSYNC_DEFAULT) {
+		return !!mongoc_write_concern_get_fsync(wc);
+	} else {
+		return Variant();
+	}
+}
+
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, getJournal)
+{
+	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
+	mongoc_write_concern_t *wc = data->m_write_concern;
+
+	if (wc->journal != MONGOC_WRITE_CONCERN_JOURNAL_DEFAULT) {
+		return !!mongoc_write_concern_get_journal(wc);
+	} else {
+		return Variant();
+	}
+}
+
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, getW)
+{
+	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
+	mongoc_write_concern_t *wc = data->m_write_concern;
+	const char *wtag = mongoc_write_concern_get_wtag(wc);
+	const int32_t w = mongoc_write_concern_get_w(wc);
+
+	if (wtag) {
+		return Variant(wtag);
+	} else if (mongoc_write_concern_get_wmajority(wc)) {
+		return Variant("majority");
+	} else if (w != MONGOC_WRITE_CONCERN_W_DEFAULT) {
+		return Variant((int64_t) w);
+	} else {
+		return Variant();
+	}
+}
+
+int64_t HHVM_METHOD(MongoDBDriverWriteConcern, getWtimeout)
+{
+	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
+	mongoc_write_concern_t *wc = data->m_write_concern;
+
+	return (int64_t) mongoc_write_concern_get_wtimeout(wc);
+}
+
 Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo)
 {
 	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);

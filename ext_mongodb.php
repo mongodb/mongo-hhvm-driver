@@ -458,6 +458,12 @@ final class ReadPreference {
 	}
 
 	<<__Native>>
+	public function getMode() : int;
+
+	<<__Native>>
+	public function getTagSets() : array;
+
+	<<__Native>>
 	public function __debugInfo() : array;
 }
 
@@ -520,6 +526,18 @@ final class Server {
 final class WriteConcern {
 	<<__Native>>
 	public function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL, ?boolean $fsync = NULL);
+
+	<<__Native>>
+	public function getFsync() : mixed;
+
+	<<__Native>>
+	public function getJournal() : mixed;
+
+	<<__Native>>
+	public function getW() : mixed;
+
+	<<__Native>>
+	public function getWtimeout() : int;
 
 	<<__Native>>
 	public function __debugInfo() : array;

@@ -77,4 +77,23 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 	return retval;
 }
 
+int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMode)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+
+	return data->m_read_preference->mode;
+}
+
+Array HHVM_METHOD(MongoDBDriverReadPreference, getTagSets)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+	Variant v_tags;
+	
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+	BsonToVariantConverter convertor(bson_get_data(&data->m_read_preference->tags), data->m_read_preference->tags.len, options);
+	convertor.convert(&v_tags);
+
+	return v_tags.toArray();
+}
+
 }

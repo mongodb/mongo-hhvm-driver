@@ -50,6 +50,10 @@ bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *r
 
 void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const Variant &w_timeout, const Variant &journal, const Variant &fsync);
 Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo);
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, getFsync);
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, getJournal);
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, getW);
+int64_t HHVM_METHOD(MongoDBDriverWriteConcern, getWtimeout);
 
 }
 #endif

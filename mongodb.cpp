@@ -148,6 +148,8 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreference, MongoDBDriverReadPreference, _setReadPreference);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreferenceTags, MongoDBDriverReadPreference, _setReadPreferenceTags);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, __debugInfo, MongoDBDriverReadPreference, __debugInfo);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, getTagSets, MongoDBDriverReadPreference, getTagSets);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, getMode, MongoDBDriverReadPreference, getMode);
 
 			Native::registerNativeDataInfo<MongoDBDriverReadPreferenceData>(MongoDBDriverReadPreferenceData::s_className.get());
 
@@ -189,6 +191,10 @@ static class MongoDBExtension : public Extension {
 			/* MongoDb\Driver\WriteConcern */
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __construct, MongoDBDriverWriteConcern, __construct);
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __debugInfo, MongoDBDriverWriteConcern, __debugInfo);
+			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getFsync, MongoDBDriverWriteConcern, getFsync);
+			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getJournal, MongoDBDriverWriteConcern, getJournal);
+			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getW, MongoDBDriverWriteConcern, getW);
+			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getWtimeout, MongoDBDriverWriteConcern, getWtimeout);
 
 			Native::registerNativeDataInfo<MongoDBDriverWriteConcernData>(MongoDBDriverWriteConcernData::s_className.get());
 
