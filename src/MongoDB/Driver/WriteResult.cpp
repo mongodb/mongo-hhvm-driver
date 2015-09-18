@@ -121,10 +121,11 @@ const StaticString
 	s_errmsg("errmsg"),
 	s_message("message"),
 	s_code("code"),
+	s_index("index"),
 	s_info("info"),
 	s_writeConcernError("writeConcernError");
 
-Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception)
+Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, int success, const mongoc_write_concern_t *write_concern, bool unwrap_bw_exception)
 {
 	static Class* c_writeResult;
 
@@ -241,9 +242,7 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		obj->o_set(s_writeConcernError, Variant(wce_obj), s_MongoDriverWriteResult_className);
 	}
 
-	/* If the result is null (typically a server_id, but 0 in case there was an
-	 * error) */
-	if (server_id == 0) {
+	if (success == 0) {
 		if (
 			bson_empty0(&write_result->writeErrors) &&
 			bson_empty0(&write_result->writeConcernError)

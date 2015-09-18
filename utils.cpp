@@ -223,7 +223,7 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);
 
 	/* Prepare result */
-	HPHP::Object obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, success, write_concern, false);
+	HPHP::Object obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, client, bulk_data->m_bulk->hint, success, write_concern, false);
 
 	return obj;
 }
