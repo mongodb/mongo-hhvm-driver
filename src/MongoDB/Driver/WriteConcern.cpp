@@ -16,8 +16,11 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/runtime/base/type-string.h"
+#include "hphp/runtime/base/string-buffer.h"
 
 #include "../../../mongodb.h"
+#include "../../../utils.h"
 
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern.h"
 #define MONGOC_I_AM_A_DRIVER
@@ -55,6 +58,14 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 		} else {
 			mongoc_write_concern_set_wtag(data->m_write_concern, w_str.c_str());
 		}
+	} else {
+		StringBuffer buf;
+		buf.printf(
+			"Expected w to be integer or string, %s given",
+			getDataTypeString(w.getType()).data()
+		);
+		Variant type = buf.detach();
+		throw MongoDriver::Utils::throwInvalidArgumentException((char*) type.toString().c_str());
 	}
 
 	if (!w_timeout.isNull()) {
