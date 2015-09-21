@@ -431,9 +431,9 @@ final class ReadPreference {
 	<<__Native>>
 	private function _setReadPreferenceTags(array $tagSets): void;
 
-	public function __construct(int $readPreference, mixed $tagSets = null)
+	public function __construct(int $readPreference, array $tagSets = null)
 	{
-		if ($tagSets !== NULL && Utils::mustBeArrayOrObject('parameter 2', $tagSets)) {
+		if ($tagSets !== NULL && gettype($tagSets) != 'array') {
 			return;
 		}
 
