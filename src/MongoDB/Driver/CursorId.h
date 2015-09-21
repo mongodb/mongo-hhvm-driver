@@ -37,7 +37,6 @@ class MongoDBDriverCursorIdData
 		};
 };
 
-void HHVM_METHOD(MongoDBDriverCursorId, __construct, const String &id);
 String HHVM_METHOD(MongoDBDriverCursorId, __toString);
 Array HHVM_METHOD(MongoDBDriverCursorId, __debugInfo);
 

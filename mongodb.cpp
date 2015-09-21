@@ -113,7 +113,6 @@ static class MongoDBExtension : public Extension {
 			Native::registerNativeDataInfo<MongoDBDriverBulkWriteData>(MongoDBDriverBulkWriteData::s_className.get());
 
 			/* MongoDb\Driver\CursorId */
-			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __construct, MongoDBDriverCursorId, __construct);
 			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __debugInfo,  MongoDBDriverCursorId, __debugInfo);
 			HHVM_MALIAS(MongoDB\\Driver\\CursorId, __toString,  MongoDBDriverCursorId, __toString);
 

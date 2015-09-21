@@ -29,13 +29,6 @@ const StaticString MongoDBDriverCursorIdData::s_className("MongoDBDriverCursorId
 IMPLEMENT_GET_CLASS(MongoDBDriverCursorIdData);
 const StaticString s_MongoDBDriverCursorId_id("id");
 
-void HHVM_METHOD(MongoDBDriverCursorId, __construct, const String &id)
-{
-	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(this_);
-
-	data->id = id.toInt64();
-}
-
 String HHVM_METHOD(MongoDBDriverCursorId, __toString)
 {
 	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(this_);

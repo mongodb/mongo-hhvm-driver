@@ -257,8 +257,10 @@ class Utils {
 /* {{{ Cursor Classes */
 <<__NativeData("MongoDBDriverCursorId")>>
 final class CursorId {
-	<<__Native>>
-	public function __construct(string $id);
+	private function __construct(string $id)
+	{
+		throw new Exception\RunTimeException("Accessing private constructor");
+	}
 
 	<<__Native>>
 	public function __debugInfo() : array;
