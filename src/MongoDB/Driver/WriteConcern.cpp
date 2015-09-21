@@ -49,7 +49,20 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 	data->m_write_concern = mongoc_write_concern_new();
 
 	if (w.isInteger()) {
-		mongoc_write_concern_set_w(data->m_write_concern, w.toInt64());
+		int64_t w_int = w.toInt64();
+
+		if (w_int < -3) {
+			StringBuffer buf;
+
+			buf.printf(
+				"Expected w to be >= -3, %ld given",
+				w_int
+			);
+			Variant w_error = buf.detach();
+			throw MongoDriver::Utils::throwInvalidArgumentException((char*) w_error.toString().c_str());
+		}
+
+		mongoc_write_concern_set_w(data->m_write_concern, w_int);
 	} else if (w.isString()) {
 		String w_str = w.toString();
 
@@ -69,11 +82,20 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 	}
 
 	if (!w_timeout.isNull()) {
-		int64_t w_int = w_timeout.toInt64();
+		int64_t wtimeout_int = w_timeout.toInt64();
 
-		if (w_int > 0) {
-			mongoc_write_concern_set_wtimeout(data->m_write_concern, w_int);
+		if (wtimeout_int < 0) {
+			StringBuffer buf;
+
+			buf.printf(
+				"Expected wtimeout to be >= 0, %ld given",
+				wtimeout_int
+			);
+			Variant wtimeout_error = buf.detach();
+			throw MongoDriver::Utils::throwInvalidArgumentException((char*) wtimeout_error.toString().c_str());
 		}
+
+		mongoc_write_concern_set_wtimeout(data->m_write_concern, wtimeout_int);
 	}
 
 	if (!journal.isNull()) {
