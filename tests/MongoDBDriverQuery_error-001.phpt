@@ -15,7 +15,7 @@ foreach ($data as $item) {
 }
 ?>
 --EXPECT--
-MongoDB\Driver\Query::__construct() expects filter to be array or object, integer given
-MongoDB\Driver\Query::__construct() expects filter to be array or object, double given
-MongoDB\Driver\Query::__construct() expects filter to be array or object, boolean given
-MongoDB\Driver\Query::__construct() expects filter to be array or object, NULL given
+MongoDB\Driver\Query::__construct() expects parameter 1 to be array or object, integer given
+MongoDB\Driver\Query::__construct() expects parameter 1 to be array or object, double given
+MongoDB\Driver\Query::__construct() expects parameter 1 to be array or object, boolean given
+MongoDB\Driver\Query::__construct() expects parameter 1 to be array or object, NULL given

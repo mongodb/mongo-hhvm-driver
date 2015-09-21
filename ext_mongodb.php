@@ -359,7 +359,7 @@ final class Query {
 		$zquery = [];
 
 		/* phongo_query_init */
-		Utils::mustBeArrayOrObject('filter', $filter, "MongoDB\Driver\Query::__construct");
+		Utils::mustBeArrayOrObject('parameter 1', $filter, "MongoDB\Driver\Query::__construct");
 
 		if ($options) {
 			$this->query['batchSize'] = array_key_exists('batchSize', $options ) ? (int) $options['batchSize'] : 0;
