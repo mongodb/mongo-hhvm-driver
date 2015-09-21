@@ -14,8 +14,8 @@ foreach ($data as $item) {
 	}
 }
 ?>
---EXPECT--
+--EXPECTF--
 Expected projection to be array or object, integer given
 Expected projection to be array or object, double given
 Expected projection to be array or object, boolean given
-Expected projection to be array or object, NULL given
+Expected projection to be array or object, %r(null|NULL)%r given
