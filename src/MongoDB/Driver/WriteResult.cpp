@@ -171,14 +171,21 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		obj->o_set(s_writeConcern, Variant(), s_MongoDriverWriteConcern_className);
 	}
 
-	Variant v;
-	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+	if (!bson_empty0(&write_result->upserted)) {
+		Variant v;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
-	BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
-	convertor.convert(&v);
-	obj->o_set(s_upsertedIds, v.toArray(), s_MongoDriverWriteResult_className);
+		BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
+		convertor.convert(&v);
+		obj->o_set(s_upsertedIds, v.toArray(), s_MongoDriverWriteResult_className);
+	} else {
+		Array a = Array::Create();
+		obj->o_set(s_upsertedIds, a, s_MongoDriverWriteResult_className);
+	}
 
 	if (!bson_empty0(&write_result->writeErrors)) {
+		Variant v;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 		Array writeErrors = Array::Create();
 
 		BsonToVariantConverter convertor(bson_get_data(&write_result->writeErrors), write_result->writeErrors.len, options);
@@ -214,6 +221,8 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	}
 
 	if (!bson_empty0(&write_result->writeConcernError)) {
+		Variant v;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 		Array a_v;
 
 		BsonToVariantConverter convertor(bson_get_data(&write_result->writeConcernError), write_result->writeConcernError.len, options);
