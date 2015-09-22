@@ -33,7 +33,7 @@ try {
 
 ?>
 --EXPECTF--
-MongoDB\Driver\WriteConcern::__construct() expects at most 4 parameters, 5 given
+MongoDB\Driver\WriteConcern::__construct() expects at most 3 parameters, 5 given
 Expected w to be integer or string, double given
 Expected w to be >= -3, -42 given
 Expected wtimeout to be >= 0, -42 given

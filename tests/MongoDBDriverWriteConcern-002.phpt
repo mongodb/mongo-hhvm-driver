@@ -6,7 +6,7 @@ MongoDB\Driver\WriteConcern debug output should include all fields for w default
  * Although "w" will be omitted from the write concern sent to the server, we
  * should still yield other fields in the debug output, which may be sent.
  */
-$w = new MongoDB\Driver\WriteConcern(-2, 1000, true, true);
+$w = new MongoDB\Driver\WriteConcern(-2, 1000, true);
 
 var_dump($w);
 
@@ -19,8 +19,6 @@ object(MongoDB\Driver\WriteConcern)#%d (%d) {
   bool(false)
   ["wtimeout"]=>
   int(1000)
-  ["fsync"]=>
-  bool(true)
   ["journal"]=>
   bool(true)
 }

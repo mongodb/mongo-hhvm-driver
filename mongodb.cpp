@@ -190,7 +190,6 @@ static class MongoDBExtension : public Extension {
 			/* MongoDb\Driver\WriteConcern */
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __construct, MongoDBDriverWriteConcern, __construct);
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __debugInfo, MongoDBDriverWriteConcern, __debugInfo);
-			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getFsync, MongoDBDriverWriteConcern, getFsync);
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getJournal, MongoDBDriverWriteConcern, getJournal);
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getW, MongoDBDriverWriteConcern, getW);
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, getWtimeout, MongoDBDriverWriteConcern, getWtimeout);

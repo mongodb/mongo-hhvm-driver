@@ -527,10 +527,7 @@ final class Server {
 <<__NativeData("MongoDBDriverWriteConcern")>>
 final class WriteConcern {
 	<<__Native>>
-	public function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL, ?boolean $fsync = NULL);
-
-	<<__Native>>
-	public function getFsync() : mixed;
+	public function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL);
 
 	<<__Native>>
 	public function getJournal() : mixed;

@@ -60,7 +60,6 @@ const StaticString
 	s_MongoDBDriverManager_wmajority("wmajority"),
 	s_MongoDBDriverManager_wtimeout("wtimeout"),
 	s_MongoDBDriverManager_wtimeoutms("wtimeoutms"),
-	s_MongoDBDriverManager_fsync("fsync"),
 	s_MongoDBDriverManager_safe("safe"),
 	s_MongoDBDriverManager_journal("journal"),
 	s_MongoDBDriverManager_context("context"),

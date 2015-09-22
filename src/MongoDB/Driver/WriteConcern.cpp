@@ -37,13 +37,12 @@ const StaticString s_MongoDriverWriteConcern_majority("majority");
 const StaticString s_MongoDriverWriteConcern_w("w");
 const StaticString s_MongoDriverWriteConcern_wmajority("wmajority");
 const StaticString s_MongoDriverWriteConcern_wtimeout("wtimeout");
-const StaticString s_MongoDriverWriteConcern_fsync("fsync");
 const StaticString s_MongoDriverWriteConcern_journal("journal");
 Class* MongoDBDriverWriteConcernData::s_class = nullptr;
 const StaticString MongoDBDriverWriteConcernData::s_className("MongoDBDriverWriteConcern");
 IMPLEMENT_GET_CLASS(MongoDBDriverWriteConcernData);
 
-void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const Variant &w_timeout, const Variant &journal, const Variant &fsync)
+void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const Variant &w_timeout, const Variant &journal)
 {
 	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
 	data->m_write_concern = mongoc_write_concern_new();
@@ -101,10 +100,6 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 	if (!journal.isNull()) {
 		mongoc_write_concern_set_journal(data->m_write_concern, journal.toBoolean());
 	}
-
-	if (!fsync.isNull()) {
-		mongoc_write_concern_set_fsync(data->m_write_concern, fsync.toBoolean());
-	}
 }
 
 bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *retval)
@@ -125,12 +120,6 @@ bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *r
 	retval->set(s_MongoDriverWriteConcern_wmajority, mongoc_write_concern_get_wmajority(wc));
 	retval->set(s_MongoDriverWriteConcern_wtimeout, mongoc_write_concern_get_wtimeout(wc));
 
-	if (wc->fsync_ != MONGOC_WRITE_CONCERN_FSYNC_DEFAULT) {
-		retval->set(s_MongoDriverWriteConcern_fsync, mongoc_write_concern_get_fsync(wc));
-	} else {
-		retval->set(s_MongoDriverWriteConcern_fsync, Variant());
-	}
-
 	if (wc->journal != MONGOC_WRITE_CONCERN_JOURNAL_DEFAULT) {
 		retval->set(s_MongoDriverWriteConcern_journal, mongoc_write_concern_get_journal(wc));
 	} else {
@@ -138,18 +127,6 @@ bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *r
 	}
 
 	return true;
-}
-
-Variant HHVM_METHOD(MongoDBDriverWriteConcern, getFsync)
-{
-	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
-	mongoc_write_concern_t *wc = data->m_write_concern;
-
-	if (wc->fsync_ != MONGOC_WRITE_CONCERN_FSYNC_DEFAULT) {
-		return !!mongoc_write_concern_get_fsync(wc);
-	} else {
-		return Variant();
-	}
 }
 
 Variant HHVM_METHOD(MongoDBDriverWriteConcern, getJournal)
