@@ -146,25 +146,8 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className);
 
 	if (write_concern) {
-		auto writeConcern_class = Unit::lookupClass(s_MongoDriverWriteConcern_className.get());
-		auto writeConcern = Object{writeConcern_class};
-		MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(writeConcern);
-		data->m_write_concern = mongoc_write_concern_copy(write_concern);
-
-		Variant debugInfoResult;
-		{
-			Func *m = writeConcern_class->lookupMethod(s_MongoDriverWriteConcern_debugInfo.get());
-
-			TypedValue args[0];
-
-			g_context->invokeFuncFew(
-				debugInfoResult.asTypedValue(),
-				m,
-				writeConcern.get(),
-				nullptr,
-				0, args
-			);
-		}
+		Array debugInfoResult = Array::Create();
+		mongodb_driver_add_write_concern_debug((mongoc_write_concern_t*) write_concern, &debugInfoResult);
 
 		obj->o_set(s_writeConcern, debugInfoResult, s_MongoDriverWriteConcern_className);
 	} else {
