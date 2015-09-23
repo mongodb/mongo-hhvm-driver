@@ -37,12 +37,9 @@ void HHVM_METHOD(MongoDBBsonUTCDateTime, __construct, const Variant &millisecond
 
 Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 {
-	static HPHP::Class* c_dt;
 	int64_t milliseconds = this_->o_get(s_MongoBsonUTCDateTime_milliseconds, false, s_MongoBsonUTCDateTime_className).toInt64();
 
 	/* Prepare result */
-	c_dt = HPHP::Unit::lookupClass(HPHP::s_DateTime.get());
-	assert(c_dt);
 	HPHP::Object obj{DateTimeData::getClass()};
 
 	DateTimeData* data = Native::data<DateTimeData>(obj.get());
