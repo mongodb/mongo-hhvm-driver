@@ -1,5 +1,7 @@
 --TEST--
 BSON serialization: PHP persistable object write overwritten __pclass
+--SKIPIF--
+<?php if (!defined("HHVM_VERSION_ID")) exit("skip PHPC encodes __pclass first"); ?>
 --FILE--
 <?php
 class LiquidClass implements MongoDB\BSON\Persistable
