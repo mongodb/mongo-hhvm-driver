@@ -23,6 +23,15 @@ with the new drivers.
 Building
 --------
 
+Please ensure, that before you install the extension, the following tools are
+installed: autoconf, automake, and libtool.
+
+Compiling this extension requires the ``hphpize`` command, which is available by
+installing the ``hhvm-dev`` package from the
+`HHVM repositories <https://github.com/facebook/hhvm/wiki/Prebuilt-Packages-for-HHVM>`_
+or `building HHVM from source <https://github.com/facebook/hhvm/wiki/Building-and-Installing-HHVM>`_.
+
+
 From a package (.tgz)
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -34,7 +43,7 @@ commands::
 
 	mkdir hhvm-mongodb
 	cd hhvm-mongodb
-	tar -xvzf ../hhvm-mongodb-1.0alpha1
+	tar -xvzf ../hhvm-mongodb-1.0alpha1.tgz
 	cd hhvm-mongodb-1.0alpha1
 	cd libbson; ./autogen.sh; cd ..
 	cd libmongoc; ./autogen.sh; cd ..
@@ -45,11 +54,6 @@ commands::
 
 From source
 ~~~~~~~~~~~
-
-Compiling this extension requires the ``hphpize`` command, which is available by
-installing the ``hhvm-dev`` package from the
-`HHVM repositories <https://github.com/facebook/hhvm/wiki/Prebuilt-Packages-for-HHVM>`_
-or `building HHVM from source <https://github.com/facebook/hhvm/wiki/Building-and-Installing-HHVM>`_.
 
 After cloning the repository, the extension may be built like so::
 
@@ -76,13 +80,12 @@ Installing
 In your ``/etc/hhvm/php.ini``, add the following lines (adjusting paths if
 necessary)::
 
-	hhvm.dynamic_extension_path=/usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212
 	hhvm.dynamic_extensions[mongodb]=mongodb.so
 
 Running Tests
 -------------
 
-To run the rests::
+To run the rests, after adjusting the paths::
 
 	export TEST_PHP_EXECUTABLE=`which hhvm`
 	hhvm -vDynamicExtensions.0=/usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212/mongodb.so run-tests.php
