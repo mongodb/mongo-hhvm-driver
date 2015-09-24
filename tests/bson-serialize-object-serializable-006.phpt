@@ -1,5 +1,7 @@
 --TEST--
 BSON serialization: PHP serializable object: examples from spec
+--SKIPIF--
+<?php if (!defined("HHVM_VERSION_ID")) exit("skip PHPC encodes __pclass first"); ?>
 --FILE--
 <?php
 class MyClass
