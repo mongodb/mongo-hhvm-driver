@@ -121,7 +121,40 @@ following steps:
    - ``cd libbson; ./autogen.sh; cd ..``
    - ``cd libmongoc; ./autogen.sh; cd ..``
 
+ - Generate the Makefile: ``hphpize && cmake .``
+ - Build the driver: ``make``
+ - Install the driver: ``sudo make install``. This last step tells you were it
+   has installed the binary file ``mongodb.so``. In my case, it showed:
+   ``Installing: /usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212/mongodb.so``
+
+Now the driver is installed, you need to enable it in HHVM. In order to do
+this, you need to add the following lines to ``/etc/hhvm/php.ini``, swapping
+out my directory name for the that showed when running ``make install``::
+
+	hhvm.dynamic_extension_path=/usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212
+	hhvm.dynamic_extensions[mongodb]=mongodb.so
+
+After you have done that, you need to stop HHVM by pressing Ctrl-C in the
+shell running HHVM, and then start it again as above::
+
+	sudo -u www-data -s /usr/local/hhvm/3.9.1/bin/hhvm \
+		--mode server \
+		-vServer.Type=fastcgi \
+		-vServer.FileSocket=/var/run/hhvm/sock
+
 .. _`hhvm-mongodb-1.0alpha1.tgz`: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases/download/1.0alpha1/hhvm-mongodb-1.0alpha1.tgz
+
+In order to test that it works, we edit our ``index.php`` file, and replace
+its contents with::
+
+	<?php
+	var_dump(phpversion("mongodb"));
+	?>
+
+This should output something like::
+
+	string(9) "1.0alpha1"
+
 
 The driver implements the same API as its PHP variant, and
 documentation can therefore be found in the `PHP Documentation`_.
