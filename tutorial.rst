@@ -66,6 +66,41 @@ foreground in *server* mode as follows::
 Making NGINX talk to HHVM
 -------------------------
 
+Once HHVM runs, we need to tell NGINX how to talk to HHVM for ``.php``
+scripts. Although this is perhaps not the most clean way of doing this, you
+can add the following snippet to ``/etc/nginx/sites-enabled/default``, just
+after the ``location / {`` … ``}`` section::
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/hhvm/sock;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		include fastcgi_params;
+	}
+
+After adding the snippet, you should restart NGINX::
+
+	sudo service nginx status
+
+Just to see that it all works now, we will create a project directory and in
+there, we place a ``index.php`` file with a ``phpinfo()`` file:
+
+ - Create the project directory: ``sudo mkdir -p  /var/www/html/my-first-project``
+ - Change permissions to your user: ``sudo chown derick.www-data /var/www/html/my-first-project``
+ - Create the file ``/var/www/html/my-first-project/index.php``. From now on,
+   I will **not** include the full path ``/var/www/html/my-first-project/``
+   when I mention file names. Put the following content in this file::
+
+		<?php
+		phpinfo();
+		?>
+
+Now in your browser, request the page
+``http://gargleblaster/my-first-project/index.php`` (but adjust the
+hostname). This should then show a page starting with "HHVM Version 3.9.1"
+followed by several tables with information.
+
+
 MongoDB Driver for HHVM
 -----------------------
 
