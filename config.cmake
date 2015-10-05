@@ -76,3 +76,6 @@ HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_SASL")
 HHVM_ADD_INCLUDES(mongodb libbson/src)
 HHVM_ADD_INCLUDES(mongodb libbson/src/bson)
 HHVM_SYSTEMLIB(mongodb ext_mongodb.php)
+
+add_custom_target(configlib
+  COMMAND "scripts/configure-libs.sh")

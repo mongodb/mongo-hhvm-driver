@@ -45,10 +45,9 @@ commands::
 	cd hhvm-mongodb
 	tar -xvzf ../hhvm-mongodb-1.0alpha1.tgz
 	cd hhvm-mongodb-1.0alpha1
-	cd libbson; ./autogen.sh; cd ..
-	cd libmongoc; ./autogen.sh; cd ..
 	hphpize
 	cmake .
+	make configlib
 	make -j 16
 	make install
 
@@ -60,16 +59,10 @@ After cloning the repository, the extension may be built like so::
 	git submodule init
 	git submodule update
 
-	cd libbson
-	./autogen.sh
-	cd ..
-
-	cd libmongoc
-	./autogen.sh
-	cd ..
-
 	hphpize
 	cmake .
+
+	make configlib
 
 	make -j 5
 	make install
