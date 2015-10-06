@@ -90,15 +90,21 @@ bool hippo_writeresult_get_writeconcern_error(mongoc_write_result_t *writeresult
 {
 	const char *err = NULL;
 	uint32_t code = 0;
-			
-	if (!bson_empty0(&writeresult->writeConcernError)) {
-		bson_iter_t iter;
+	bson_iter_t container_iter, iter;
 
-		if (bson_iter_init_find(&iter, &writeresult->writeConcernError, "code") && BSON_ITER_HOLDS_INT32(&iter)) {
-			code = bson_iter_int32(&iter);
-		}
-		if (bson_iter_init_find(&iter, &writeresult->writeConcernError, "errmsg") && BSON_ITER_HOLDS_UTF8(&iter)) {
-			err = bson_iter_utf8(&iter, NULL);
+	if (
+		!bson_empty0(&writeresult->writeConcernErrors) &&
+		bson_iter_init(&container_iter, &writeresult->writeConcernErrors) &&
+		bson_iter_next(&container_iter) &&
+		BSON_ITER_HOLDS_DOCUMENT(&container_iter) &&
+		bson_iter_recurse(&container_iter, &iter)
+	) {
+		while (bson_iter_next(&iter)) {
+			if (BSON_ITER_IS_KEY(&iter, "errmsg")) {
+				err = bson_iter_utf8(&iter, NULL);
+			} else if (BSON_ITER_IS_KEY(&iter, "code")) {
+				code = bson_iter_int32(&iter);
+			}
 		}
 
 		*errorObject = MongoDriver::Utils::throwWriteConcernException((char*) err, (int64_t) code);
@@ -203,12 +209,12 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		obj->o_set(s_writeErrors, writeErrors, s_MongoDriverWriteResult_className);
 	}
 
-	if (!bson_empty0(&write_result->writeConcernError)) {
+	if (!bson_empty0(&write_result->writeConcernErrors)) {
 		Variant v;
 		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 		Array a_v;
 
-		BsonToVariantConverter convertor(bson_get_data(&write_result->writeConcernError), write_result->writeConcernError.len, options);
+		BsonToVariantConverter convertor(bson_get_data(&write_result->writeConcernErrors), write_result->writeConcernErrors.len, options);
 		convertor.convert(&v);
 
 		a_v = v.toArray();
@@ -237,7 +243,7 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 	if (success == 0) {
 		if (
 			bson_empty0(&write_result->writeErrors) &&
-			bson_empty0(&write_result->writeConcernError)
+			bson_empty0(&write_result->writeConcernErrors)
 		) {
 			throw MongoDriver::Utils::throwExceptionFromBsonError(&write_result->error);
 		} else {

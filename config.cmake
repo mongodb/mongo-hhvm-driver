@@ -30,7 +30,7 @@ HHVM_EXTENSION(mongodb
  libbson/src/bson/bson-memory.c libbson/src/bson/bson-oid.c
  libbson/src/bson/bson-reader.c libbson/src/bson/bson-string.c
  libbson/src/bson/bson-timegm.c libbson/src/bson/bson-utf8.c
- libbson/src/bson/bson-value.c libbson/src/bson/bson-version.c
+ libbson/src/bson/bson-value.c libbson/src/bson/bson-version-functions.c
  libbson/src/bson/bson-writer.c libbson/src/bson/bson.c
  libmongoc/src/mongoc/mongoc-async.c
  libmongoc/src/mongoc/mongoc-async-cmd.c
@@ -66,6 +66,7 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-topology-description.c
  libmongoc/src/mongoc/mongoc-topology-scanner.c
  libmongoc/src/mongoc/mongoc-uri.c libmongoc/src/mongoc/mongoc-util.c
+ libmongoc/src/mongoc/mongoc-version-functions.c
  libmongoc/src/mongoc/mongoc-write-command.c
  libmongoc/src/mongoc/mongoc-write-concern.c
 )
