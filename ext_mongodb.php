@@ -82,7 +82,7 @@ final class WriteResult {
 	private $nModified = 0;
 	private $upsertedIds = null;
 	private $writeErrors = [];
-	private $writeConcernError = [];
+	private $writeConcernError = NULL;
 	private $info = null;
 
 	private function __construct()
