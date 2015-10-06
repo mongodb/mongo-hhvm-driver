@@ -224,20 +224,24 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 		c_writeConcernError = Unit::lookupClass(s_MongoDriverWriteConcernError_className.get());
 		assert(c_writeConcernError);
 		Object wce_obj = Object{c_writeConcernError};
-		
-		if (a_v.exists(s_errmsg)) {
-			wce_obj->o_set(s_message, a_v[s_errmsg], s_MongoDriverWriteConcernError_className);
-		}
-		if (a_v.exists(s_code)) {
-			wce_obj->o_set(s_code, a_v[s_code], s_MongoDriverWriteConcernError_className);
-		}
-		if (a_v.exists(s_info)) {
-			wce_obj->o_set(s_info, a_v[s_info], s_MongoDriverWriteConcernError_className);
-		} else {
-			wce_obj->o_set(s_info, Variant(), s_MongoDriverWriteConcernError_className);
-		}
 
-		obj->o_set(s_writeConcernError, Variant(wce_obj), s_MongoDriverWriteResult_className);
+		if (a_v.exists(0) && a_v[0].isArray()) {
+			Array first_item = a_v[0].toArray();
+
+			if (first_item.exists(s_errmsg)) {
+				wce_obj->o_set(s_message, first_item[s_errmsg], s_MongoDriverWriteConcernError_className);
+			}
+			if (first_item.exists(s_code)) {
+				wce_obj->o_set(s_code, first_item[s_code], s_MongoDriverWriteConcernError_className);
+			}
+			if (first_item.exists(s_info)) {
+				wce_obj->o_set(s_info, first_item[s_info], s_MongoDriverWriteConcernError_className);
+			} else {
+				wce_obj->o_set(s_info, Variant(), s_MongoDriverWriteConcernError_className);
+			}
+
+			obj->o_set(s_writeConcernError, Variant(wce_obj), s_MongoDriverWriteResult_className);
+		}
 	}
 
 	if (success == 0) {
