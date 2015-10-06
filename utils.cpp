@@ -248,7 +248,9 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, read_preference);
 
 	/* Handle server hint */
-	cursor->hint = server_id;
+	if (server_id > 0) {
+		cursor->hint = server_id;
+	}
 
 	if (!mongoc_cursor_next(cursor, &doc)) {
 		bson_error_t error;
@@ -377,7 +379,9 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	mongoc_collection_destroy(collection);
 
 	/* Handle server hint */
-	cursor->hint = server_id;
+	if (server_id > 0) {
+		cursor->hint = server_id;
+	}
 
 	/* Check for errors */
 	if (!mongoc_cursor_next(cursor, &doc)) {
