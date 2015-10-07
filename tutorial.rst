@@ -41,7 +41,7 @@ development. You can find them at the `HHVM Wiki`_.
 .. _`HHVM Wiki`: https://github.com/facebook/hhvm/wiki/Prebuilt-Packages-on-Debian-7
 
 You need to install the ``hhvm`` **and** ``hhvm-dev`` packages. The latter is
-needed so that we can compile the HHVM extension later on.
+needed so that we can compile the MongoDB HHVM extension later on.
 
 Because I installed from source, I had to do some extra work. I had to create
 ``/var/run/hhvm``:
@@ -67,7 +67,7 @@ Making NGINX talk to HHVM
 -------------------------
 
 Once HHVM runs, we need to tell NGINX how to talk to HHVM for ``.php``
-scripts. Although this is perhaps not the most clean way of doing this, you
+files. Although this is perhaps not the most clean way of doing this, you
 can add the following snippet to ``/etc/nginx/sites-enabled/default``, just
 after the ``location / {`` … ``}`` section::
 
@@ -160,3 +160,38 @@ The driver implements the same API as its PHP variant, and
 documentation can therefore be found in the `PHP Documentation`_.
 
 .. _`PHP Documentation`: http://docs.php.net/manual/en/set.mongodb.php
+
+PHP Library (PHPLIB)
+--------------------
+
+The last thing we still need to install to get started on the application
+itself, is the PHP library.
+
+The library needs to be installed with composer. In your project directory
+(``/var/www/html/my-first-project``) type:
+
+ - ``curl -sS https://getcomposer.org/installer -o installer.php``
+ - ``hhvm installer.php``
+ - ``rm installer.php``
+
+This downloads and installs composer. Wherever it says "Use it: php
+composer.phar", it of course means ``hhvm composer.phar``.
+
+With composer installed, we can now install the library::
+
+	hhvm composer.phar require mongodb/mongodb
+
+It outputs something akin to::
+
+	Using version ^0.2.0 for mongodb/mongodb
+	./composer.json has been created
+	Loading composer repositories with package information
+	Updating dependencies (including require-dev)
+	  - Installing mongodb/mongodb (0.2.0)
+		Downloading: 100%         
+
+	Writing lock file
+	Generating autoload files
+
+And it has created several files (``composer.json``, ``composer.lock``) as
+well as the ``vendor`` directory that contains the library.
