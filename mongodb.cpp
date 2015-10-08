@@ -16,9 +16,6 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
-#if 0
-#include "hphp/runtime/base/array-init.h"
-#endif
 
 #include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
