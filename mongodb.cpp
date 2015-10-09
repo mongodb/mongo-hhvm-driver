@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/util/logger.h"
 
 #include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
@@ -40,13 +41,43 @@
 extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
+#include "libmongoc/src/mongoc/mongoc-log-private.h"
 }
 
 namespace HPHP {
 
+struct MongoDBGlobals {
+	int log_method; /* 0 for off, 1 for on */
+};
+
+IMPLEMENT_THREAD_LOCAL(MongoDBGlobals, s_mongodb_globals);
+
 void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, const char *message, void *user_data)
 {
-	std::cerr << "log: " << log_domain << "; msg: " << message << "\n";
+	if (s_mongodb_globals->log_method == 0) {
+		return;
+	}
+
+	switch (log_level) {
+		case MONGOC_LOG_LEVEL_ERROR:
+		case MONGOC_LOG_LEVEL_CRITICAL:
+			Logger::Error("[HIPPO] %s %s", log_domain, message);
+			break;
+
+		case MONGOC_LOG_LEVEL_WARNING:
+			Logger::Warning("[HIPPO] %s %s", log_domain, message);
+			break;
+
+		case MONGOC_LOG_LEVEL_MESSAGE:
+		case MONGOC_LOG_LEVEL_INFO:
+			Logger::Info("[HIPPO] %s %s", log_domain, message);
+			break;
+
+		case MONGOC_LOG_LEVEL_DEBUG:
+		case MONGOC_LOG_LEVEL_TRACE:
+			Logger::Verbose("[HIPPO] %s %s", log_domain, message);
+			break;
+	}
 }
 
 static class MongoDBExtension : public Extension {
@@ -204,7 +235,42 @@ static class MongoDBExtension : public Extension {
 			loadSystemlib("mongodb");
 			mongoc_init();
 			mongoc_log_set_handler(hippo_log_handler, NULL);
+			mongoc_log_trace_enable();
 		}
+
+		void threadInit() override {
+			IniSetting::Bind(
+				this, IniSetting::PHP_INI_SYSTEM,
+				"mongodb.debug",
+				"",
+				IniSetting::SetAndGet<std::string>(
+					MongoDBDebugIniUpdate, MongoDBDebugIniGet
+				)
+			);
+		}
+
+private:
+	static bool MongoDBDebugIniUpdate(const std::string& value)
+	{
+		if (value.empty()) {
+			return false;
+		}
+		if (value.compare("on") == 0) {
+			s_mongodb_globals->log_method = 0;
+		} else {
+			s_mongodb_globals->log_method = 1;
+		}
+		return true;
+	}
+
+	static std::string MongoDBDebugIniGet()
+	{
+		if (s_mongodb_globals->log_method == 1) {
+			return "on";
+		} else {
+			return "off";
+		}
+	}
 } s_mongodb_extension;
 
 HHVM_GET_MODULE(mongodb)
