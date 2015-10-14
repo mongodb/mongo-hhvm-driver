@@ -85,11 +85,11 @@ After adding the snippet, you should restart NGINX::
 Just to see that it all works now, we will create a project directory and in
 there, we place a ``index.php`` file with a ``phpinfo()`` file:
 
- - Create the project directory: ``sudo mkdir -p  /var/www/html/my-first-project``
- - Change permissions to your user: ``sudo chown derick.www-data /var/www/html/my-first-project``
- - Create the file ``/var/www/html/my-first-project/index.php``. From now on,
-   I will **not** include the full path ``/var/www/html/my-first-project/``
-   when I mention file names. Put the following content in this file::
+- Create the project directory: ``sudo mkdir -p  /var/www/html/my-first-project``
+- Change permissions to your user: ``sudo chown derick.www-data /var/www/html/my-first-project``
+- Create the file ``/var/www/html/my-first-project/index.php``. From now on,
+  I will **not** include the full path ``/var/www/html/my-first-project/``
+  when I mention file names. Put the following content in this file::
 
 		<?php
 		phpinfo();
@@ -108,24 +108,24 @@ The MongoDB driver is the part that links up the PHP in HHVM with the database
 server. To install and register the driver with HHVM, you need to take the
 following steps:
 
- - Download the latest driver from
-   https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases. At
-   the moment, there is only `hhvm-mongodb-1.0alpha1.tgz`_ so we will be using
-   this one in the examples.
- - Unpack the archive: ``tar -xvzf hhvm-mongodb-1.0alpha1.tgz``
- - ``cd`` into the newly created directory: ``cd hhvm-mongodb-1.0alpha1``
- - Generate the configure files for the bundled libraries. For this to work,
-   you need to have the ``automake``, ``autoconf`` and ``libtool`` packages
-   installed (through ``apt-get``).
- 
-   - ``cd libbson; ./autogen.sh; cd ..``
-   - ``cd libmongoc; ./autogen.sh; cd ..``
+- Download the latest driver from
+  https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases. At
+  the moment, there is only `hhvm-mongodb-1.0alpha1.tgz`_ so we will be using
+  this one in the examples.
+- Unpack the archive: ``tar -xvzf hhvm-mongodb-1.0alpha1.tgz``
+- ``cd`` into the newly created directory: ``cd hhvm-mongodb-1.0alpha1``
+- Generate the configure files for the bundled libraries. For this to work,
+  you need to have the ``automake``, ``autoconf`` and ``libtool`` packages
+  installed (through ``apt-get``).
 
- - Generate the Makefile: ``hphpize && cmake .``
- - Build the driver: ``make``
- - Install the driver: ``sudo make install``. This last step tells you were it
-   has installed the binary file ``mongodb.so``. In my case, it showed:
-   ``Installing: /usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212/mongodb.so``
+  - ``cd libbson; ./autogen.sh; cd ..``
+  - ``cd libmongoc; ./autogen.sh; cd ..``
+
+- Generate the Makefile: ``hphpize && cmake .``
+- Build the driver: ``make``
+- Install the driver: ``sudo make install``. This last step tells you were it
+  has installed the binary file ``mongodb.so``. In my case, it showed:
+  ``Installing: /usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212/mongodb.so``
 
 Now the driver is installed, you need to enable it in HHVM. In order to do
 this, you need to add the following lines to ``/etc/hhvm/php.ini``, swapping
@@ -170,9 +170,9 @@ itself, is the PHP library.
 The library needs to be installed with composer. In your project directory
 (``/var/www/html/my-first-project``) type:
 
- - ``curl -sS https://getcomposer.org/installer -o installer.php``
- - ``hhvm installer.php``
- - ``rm installer.php``
+- ``curl -sS https://getcomposer.org/installer -o installer.php``
+- ``hhvm installer.php``
+- ``rm installer.php``
 
 This downloads and installs composer. Wherever it says "Use it: php
 composer.phar", it of course means ``hhvm composer.phar``.
