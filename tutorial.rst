@@ -257,4 +257,6 @@ serialisation and deserialisation between PHP variables and the BSON stored in
 MongoDB in the `persistence`_ specification. 
 
 .. _documentation: http://mongodb-labs.github.io/mongo-php-library-prototype/api
+.. _CRUD: https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
+.. _specification: https://github.com/mongodb/specifications/blob/master/source/crud/crud.rst
 .. _persistence: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/blob/master/serialization.rst
