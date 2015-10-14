@@ -127,7 +127,7 @@ following steps:
   has installed the binary file ``mongodb.so``. In my case, it showed:
   ``Installing: /usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212/mongodb.so``
 
-Now the driver is installed, you need to enable it in HHVM. In order to do
+Now that the driver is installed, you need to enable it in HHVM. In order to do
 this, you need to add the following lines to ``/etc/hhvm/php.ini``, swapping
 out my directory name for the that showed when running ``make install``::
 
@@ -167,17 +167,17 @@ PHP Library (PHPLIB)
 The last thing we still need to install to get started on the application
 itself, is the PHP library.
 
-The library needs to be installed with composer. In your project directory
+The library needs to be installed with Composer. In your project directory
 (``/var/www/html/my-first-project``) type:
 
 - ``curl -sS https://getcomposer.org/installer -o installer.php``
 - ``hhvm installer.php``
 - ``rm installer.php``
 
-This downloads and installs composer. Wherever it says "Use it: php
+This downloads and installs Composer. Wherever it says "Use it: php
 composer.phar", it of course means ``hhvm composer.phar``.
 
-With composer installed, we can now install the library::
+With Composer installed, we can now install the library::
 
 	hhvm composer.phar require mongodb/mongodb
 
@@ -218,7 +218,7 @@ As an example, this is how you insert a document into the *beers* collection
 of the *demo* database::
 
 	<?php
-	require 'vendor/autoload.php'; // include composer goodies
+	require 'vendor/autoload.php'; // include Composer goodies
 
 	$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 	$collection = new MongoDB\Collection($manager, "demo.beers");
@@ -237,7 +237,7 @@ inserted. For that, you use the ``find`` method which returns a cursor that
 you can iterate over::
 
 	<?php
-	require 'vendor/autoload.php'; // include composer goodies
+	require 'vendor/autoload.php'; // include Composer goodies
 
 	$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 	$collection = new MongoDB\Collection($manager, "demo.beers");
