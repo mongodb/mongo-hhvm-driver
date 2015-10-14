@@ -209,9 +209,9 @@ With this done, you can now use any of the functionality as described in the
 documentation_.
 
 If you are familiar with the old driver, it should look too much out of place.
-The only big difference is that the Database class is only used for Database
-specific operations, and no longer to "obtain" a Collection handler. The CRUD_
-operations on the Collection class are also renamed for clarity, and to be in
+The only big difference is that the Database_ class is only used for Database
+specific operations. The CRUD_
+operations on the Collection_ class are also renamed for clarity, and to be in
 accordance with a new language-agnostic specification_.
 
 As an example, this is how you insert a document into the *beers* collection
@@ -257,6 +257,8 @@ serialisation and deserialisation between PHP variables and the BSON stored in
 MongoDB in the `persistence`_ specification. 
 
 .. _documentation: http://mongodb-labs.github.io/mongo-php-library-prototype/api
+.. _Database: http://mongodb-labs.github.io/mongo-php-library-prototype/api/class-MongoDB.Database.html
 .. _CRUD: https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
+.. _Collection: http://mongodb-labs.github.io/mongo-php-library-prototype/api/class-MongoDB.Collection.html
 .. _specification: https://github.com/mongodb/specifications/blob/master/source/crud/crud.rst
 .. _persistence: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/blob/master/serialization.rst
