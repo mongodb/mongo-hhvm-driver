@@ -195,3 +195,66 @@ It outputs something akin to::
 
 And it has created several files (``composer.json``, ``composer.lock``) as
 well as the ``vendor`` directory that contains the library.
+
+Using the Library
+-----------------
+
+Composer manages your dependencies, and will provide you with a loader that
+you include with the following at the start of your script::
+
+	<?php
+	require 'vendor/autoload.php';
+
+With this done, you can now use any of the functionality as described in the
+documentation_.
+
+If you are familiar with the old driver, it should look too much out of place.
+The only big difference is that the Database class is only used for Database
+specific operations, and no longer to "obtain" a Collection handler. The CRUD_
+operations on the Collection class are also renamed for clarity, and to be in
+accordance with a new language-agnostic specification_.
+
+As an example, this is how you insert a document into the *beers* collection
+of the *demo* database::
+
+	<?php
+	require 'vendor/autoload.php'; // include composer goodies
+
+	$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+	$collection = new MongoDB\Collection($manager, "demo.beers");
+
+	$result = $collection->insertOne( [ 'name' => 'Hinterland', 'brewery' => 'BrewDog' ] );
+
+	echo "Inserted with Object ID '{$result->getInsertedId()}'";
+	?>
+
+Instead of the original document being modified to add the newly generated
+``_id`` field, this is now part of the result that comes back from the
+``insertOne`` method.
+
+After insertion, you can of course also query the data that you have just
+inserted. For that, you use the ``find`` method which returns a cursor that
+you can iterate over::
+
+	<?php
+	require 'vendor/autoload.php'; // include composer goodies
+
+	$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+	$collection = new MongoDB\Collection($manager, "demo.beers");
+
+	$result = $collection->find( [ 'name' => 'Hinterland', 'brewery' => 'BrewDog' ] );
+
+	foreach ($result as $entry)
+	{
+		echo $entry->_id, ': ', $entry->name, "\n";
+	}
+	?>
+
+You might have noticed that instead of accessing the ``_id`` and ``name``
+fields is no longer done through an array access operator. Instead, they are
+now properties of a ``stdClass`` object. You can find more information on how
+serialisation and deserialisation between PHP variables and the BSON stored in
+MongoDB in the `persistence`_ specification. 
+
+.. _documentation: http://mongodb-labs.github.io/mongo-php-library-prototype/api
+.. _persistence: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/blob/master/serialization.rst
