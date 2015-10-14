@@ -80,7 +80,7 @@ after the ``location / {`` … ``}`` section::
 
 After adding the snippet, you should restart NGINX::
 
-	sudo service nginx status
+	sudo service nginx restart
 
 Just to see that it all works now, we will create a project directory and in
 there, we place a ``index.php`` file with a ``phpinfo()`` file:
