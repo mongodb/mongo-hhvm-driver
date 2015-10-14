@@ -110,10 +110,10 @@ following steps:
 
 - Download the latest driver from
   https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases. At
-  the moment, there is only `hhvm-mongodb-1.0alpha1.tgz`_ so we will be using
+  the moment, there is only `hhvm-mongodb-1.0beta1.tgz`_ so we will be using
   this one in the examples.
-- Unpack the archive: ``tar -xvzf hhvm-mongodb-1.0alpha1.tgz``
-- ``cd`` into the newly created directory: ``cd hhvm-mongodb-1.0alpha1``
+- Unpack the archive: ``tar -xvzf hhvm-mongodb-1.0beta1.tgz``
+- ``cd`` into the newly created directory: ``cd hhvm-mongodb-1.0beta1``
 - Generate the configure files for the bundled libraries. For this to work,
   you need to have the ``automake``, ``autoconf`` and ``libtool`` packages
   installed (through ``apt-get``).
@@ -142,7 +142,7 @@ shell running HHVM, and then start it again as above::
 		-vServer.Type=fastcgi \
 		-vServer.FileSocket=/var/run/hhvm/sock
 
-.. _`hhvm-mongodb-1.0alpha1.tgz`: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases/download/1.0alpha1/hhvm-mongodb-1.0alpha1.tgz
+.. _`hhvm-mongodb-1.0beta1.tgz`: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases/download/1.0beta1/hhvm-mongodb-1.0beta1.tgz
 
 In order to test that it works, we edit our ``index.php`` file, and replace
 its contents with::
@@ -153,7 +153,7 @@ its contents with::
 
 This should output something like::
 
-	string(9) "1.0alpha1"
+	string(9) "1.0beta1"
 
 
 The driver implements the same API as its PHP variant, and
