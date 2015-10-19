@@ -101,14 +101,6 @@ final class WriteResult {
 	public function getDeletedCount()  { return $this->nRemoved; }
 	public function getUpsertedCount() { return $this->nUpserted; }
 
-	public function getInfo()
-	{
-		if ($this->info && gettype($this->info) == 'array') {
-			return $this->info;
-		}
-		return [];
-	}
-
 	<<__Native>>
 	public function getServer() : Server;
 
