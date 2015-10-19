@@ -5,10 +5,10 @@ MongoDB\Driver\BulkWrite
 $bw = new MongoDB\Driver\BulkWrite;
 var_dump( $bw->__debugInfo()['ordered'] );
 
-$bw = new MongoDB\Driver\BulkWrite( false );
+$bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => false ] );
 var_dump( $bw->__debugInfo()['ordered'] );
 
-$bw = new MongoDB\Driver\BulkWrite( true );
+$bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => true ] );
 var_dump( $bw->__debugInfo()['ordered'] );
 ?>
 --EXPECT--

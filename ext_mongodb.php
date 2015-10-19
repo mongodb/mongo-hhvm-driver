@@ -185,7 +185,7 @@ class Manager {
 	public function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	public function executeInsert(string $namespace, mixed $document, ?WriteConcern $writeConcern = null): WriteResult;
+	public function executeInsert(string $namespace, mixed $document, ?array $insertOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
 	public function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
@@ -396,7 +396,7 @@ final class Query {
 <<__NativeData("MongoDBDriverBulkWrite")>>
 final class BulkWrite implements \Countable {
 	<<__Native>>
-	public function __construct(?boolean $ordered = true);
+	public function __construct(?array $bulkWriteOptions = array());
 
 	<<__Native>>
 	public function insert(mixed $document) : mixed;

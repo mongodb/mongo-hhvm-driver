@@ -535,7 +535,7 @@ Object HHVM_METHOD(MongoDBDriverManager, executeDelete, const String &ns, const 
 	return obj;
 }
 
-Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Variant &writeConcern)
+Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const Variant &document, const Variant &insertOptions, const Variant &writeConcern)
 {
 	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
@@ -547,6 +547,8 @@ Object HHVM_METHOD(MongoDBDriverManager, executeInsert, const String &ns, const 
 	int server_id;
 	const mongoc_write_concern_t *write_concern = NULL;
 
+	/* When HHVM-116 is implemented, insertOptions will be parsed for the
+	 * bypassDocumentValidation option; however, there's nothing to do now. */
 	VariantToBsonConverter converter(document, HIPPO_BSON_ADD_ID);
 	bson = bson_new();
 	converter.convert(bson);

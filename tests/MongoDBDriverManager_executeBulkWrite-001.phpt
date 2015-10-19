@@ -7,7 +7,7 @@ include dirname(__FILE__) . '/utils.inc';
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 cleanup( $m );
 
-$bw = new MongoDB\Driver\BulkWrite( false );
+$bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => false ] );
 $_id = $bw->insert( [ 'test' => 'foo', 'i' => 1 ] );
 $_id = $bw->insert( [ 'test' => 'foo', 'i' => 2 ] );
 $_id = $bw->insert( [ 'test' => 'foo', 'i' => 3 ] );

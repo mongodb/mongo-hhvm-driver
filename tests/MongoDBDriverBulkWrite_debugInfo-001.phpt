@@ -12,10 +12,10 @@ foreach ( [ 'database', 'collection', 'ordered', 'executed', 'server_id', 'write
 	echo $field, ": ", array_key_exists( $field, $di ) ? 'available' : 'unavailable', "\n";
 }
 
-$bw = new MongoDB\Driver\BulkWrite( true );
+$bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => true ] );
 var_dump( $bw->__debugInfo()['ordered'] );
 
-$bw = new MongoDB\Driver\BulkWrite( false );
+$bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => false ] );
 var_dump( $bw->__debugInfo()['ordered'] );
 ?>
 --EXPECT--

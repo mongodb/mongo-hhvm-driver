@@ -36,12 +36,19 @@ namespace HPHP {
 Class* MongoDBDriverBulkWriteData::s_class = nullptr;
 const StaticString MongoDBDriverBulkWriteData::s_className("MongoDBDriverBulkWrite");
 IMPLEMENT_GET_CLASS(MongoDBDriverBulkWriteData);
+const StaticString s_MongoDBDriverBulkWrite_ordered("ordered");
 
-void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &ordered)
+void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOptions)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
-	bool b_ordered = ordered.toInt64();
+	auto options = bulkWriteOptions.isNull() ? null_array : bulkWriteOptions.toArray();
+	bool b_ordered = true;
 
+	if (!options.isNull()) {
+		if (options.exists(s_MongoDBDriverBulkWrite_ordered)) {
+			b_ordered = options[s_MongoDBDriverBulkWrite_ordered].toInt64();
+		}
+	}
 	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
 }
 

@@ -37,6 +37,10 @@ class MongoDBDriverBulkWriteData
 			mongoc_bulk_operation_destroy(m_bulk);
 		}
 
+		MongoDBDriverBulkWriteData() {
+			m_bulk = NULL;
+		}
+
 		~MongoDBDriverBulkWriteData() {
 			sweep();
 		};
