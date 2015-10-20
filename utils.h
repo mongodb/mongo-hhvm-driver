@@ -33,7 +33,6 @@ extern const HPHP::StaticString s_MongoDriverExceptionAuthenticationException_cl
 extern const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionConnectionException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_className;
-extern const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionRuntimeException_className;
 extern const HPHP::StaticString s_MongoDriverExceptionUnexpectedValueException_className;

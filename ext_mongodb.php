@@ -546,7 +546,6 @@ class ConnectionException extends RuntimeException {}
 class AuthenticationException extends ConnectionException {}
 class BulkWriteException extends WriteException {}
 class ConnectionTimeoutException extends ConnectionException {}
-class DuplicateKeyException extends WriteException {}
 class ExecutionTimeoutException extends RuntimeException {}
 class InvalidArgumentException extends \InvalidArgumentException implements Exception {}
 class LogicException extends \LogicException implements Exception {}

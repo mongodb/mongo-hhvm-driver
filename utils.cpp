@@ -69,7 +69,6 @@ const HPHP::StaticString s_MongoDriverExceptionAuthenticationException_className
 const HPHP::StaticString s_MongoDriverExceptionBulkWriteException_className("MongoDB\\Driver\\Exception\\BulkWriteException");
 const HPHP::StaticString s_MongoDriverExceptionConnectionException_className("MongoDB\\Driver\\Exception\\ConnectionException");
 const HPHP::StaticString s_MongoDriverExceptionConnectionTimeoutException_className("MongoDB\\Driver\\Exception\\ConnectionTimeoutException");
-const HPHP::StaticString s_MongoDriverExceptionDuplicateKeyException_className("MongoDB\\Driver\\Exception\\DuplicateKeyException");
 const HPHP::StaticString s_MongoDriverExceptionExecutionTimeoutException_className("MongoDB\\Driver\\Exception\\ExecutionTimeoutException");
 const HPHP::StaticString s_MongoDriverExceptionInvalidArgumentException_className("MongoDB\\Driver\\Exception\\InvalidArgumentException");
 const HPHP::StaticString s_MongoDriverExceptionLogicException_className("MongoDB\\Driver\\Exception\\LogicException");
@@ -136,8 +135,6 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 		case MONGOC_ERROR_STREAM_SOCKET:
 		case MONGOC_ERROR_SERVER_SELECTION_FAILURE:
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionConnectionTimeoutException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
-		case 11000: /* DuplicateKey */
-			return Utils::CreateAndConstruct(s_MongoDriverExceptionDuplicateKeyException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 		case MONGOC_ERROR_CLIENT_AUTHENTICATE:
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionAuthenticationException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 
