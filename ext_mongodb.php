@@ -544,7 +544,6 @@ interface Exception {}
 class ConnectionException extends RuntimeException {}
 
 class AuthenticationException extends ConnectionException {}
-class BulkWriteException extends WriteException {}
 class ConnectionTimeoutException extends ConnectionException {}
 class ExecutionTimeoutException extends RuntimeException {}
 class InvalidArgumentException extends \InvalidArgumentException implements Exception {}
@@ -553,7 +552,9 @@ class RuntimeException extends \RunTimeException implements Exception {}
 class SSLConnectionException extends ConnectionException {}
 class UnexpectedValueException extends \UnexpectedValueException implements Exception {}
 class WriteConcernException extends WriteException {}
-class WriteException extends RunTimeException
+class WriteErrorException extends WriteException {}
+class BulkWriteException extends WriteErrorException {}
+abstract class WriteException extends RunTimeException
 {
 	protected $writeResult = null;
 

@@ -79,7 +79,7 @@ bool hippo_writeresult_get_write_errors(mongoc_write_result_t *writeresult, Obje
 			}
 		}
 
-		*errorObject = MongoDriver::Utils::throwWriteException((char*) err, (int64_t) code);
+		*errorObject = MongoDriver::Utils::throwWriteErrorException((char*) err, (int64_t) code);
 		return true;
 	}
 
