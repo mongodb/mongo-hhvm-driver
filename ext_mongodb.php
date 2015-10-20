@@ -545,13 +545,13 @@ class ConnectionException extends RuntimeException {}
 
 class AuthenticationException extends ConnectionException {}
 class BulkWriteException extends WriteException {}
-final class ConnectionTimeoutException extends ConnectionException {}
-final class DuplicateKeyException extends WriteException {}
-final class ExecutionTimeoutException extends RuntimeException {}
+class ConnectionTimeoutException extends ConnectionException {}
+class DuplicateKeyException extends WriteException {}
+class ExecutionTimeoutException extends RuntimeException {}
 class InvalidArgumentException extends \InvalidArgumentException implements Exception {}
 class LogicException extends \LogicException implements Exception {}
 class RuntimeException extends \RunTimeException implements Exception {}
-final class SSLConnectionException extends ConnectionException {}
+class SSLConnectionException extends ConnectionException {}
 class UnexpectedValueException extends \UnexpectedValueException implements Exception {}
 class WriteConcernException extends WriteException {}
 class WriteException extends RunTimeException
@@ -594,6 +594,21 @@ function toPHP(string $data, ?array $typemap = array()) : mixed;
 <<__Native>>
 function toJson(string $data) : mixed;
 
+trait DenySerialization
+{
+	public function serialize() : string
+	{
+		$name = get_class( $this );
+		throw new \Exception("Serialization of '{$name}' is not allowed");
+	}
+
+	public function unserialize(mixed $data) : void
+	{
+		$name = get_class( $this );
+		throw new \Exception("Unserialization of '{$name}' is not allowed");
+	}
+}
+
 interface Type
 {
 }
@@ -612,8 +627,10 @@ interface Persistable extends Serializable, Unserializable
 {
 }
 
-class Binary implements Type
+final class Binary implements Type, \Serializable
 {
+	use DenySerialization;
+
 	public function __construct(private string $data, private int $type)
 	{
 	}
@@ -637,8 +654,10 @@ class Binary implements Type
 	function __debugInfo() : array;
 }
 
-class Javascript implements Type
+final class Javascript implements Type, \Serializable
 {
+	use DenySerialization;
+
 	public function __construct(private string $code, private ?mixed $scope = NULL)
 	{
 	}
@@ -652,17 +671,20 @@ class Javascript implements Type
 	}
 }
 
-class MaxKey implements Type
+final class MaxKey implements Type, \Serializable
 {
+	use DenySerialization;
 }
 
-class MinKey implements Type
+final class MinKey implements Type, \Serializable
 {
+	use DenySerialization;
 }
 
-<<__NativeData("MongoDBBsonObjectID")>>
-class ObjectID implements Type
+final class ObjectID implements Type, \Serializable
 {
+	use DenySerialization;
+
 	<<__Native>>
 	public function __construct(string $objectId = null);
 
@@ -673,8 +695,10 @@ class ObjectID implements Type
 	public function __debugInfo() : array;
 }
 
-class Regex implements Type
+final class Regex implements Type, \Serializable
 {
+	use DenySerialization;
+
 	public function __construct(private string $pattern, private string $flags)
 	{
 	}
@@ -703,8 +727,10 @@ class Regex implements Type
 	}
 }
 
-class Timestamp implements Type
+final class Timestamp implements Type, \Serializable
 {
+	use DenySerialization;
+
 	public function __construct(private int $increment, private int $timestamp)
 	{
 	}
@@ -723,8 +749,10 @@ class Timestamp implements Type
 	}
 }
 
-class UTCDateTime implements Type
+final class UTCDateTime implements Type, \Serializable
 {
+	use DenySerialization;
+
 	private int $milliseconds;
 
 	<<__Native>>
