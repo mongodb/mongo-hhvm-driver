@@ -7,7 +7,10 @@ include dirname(__FILE__ ) . '/utils.inc';
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 cleanup( $m );
 
-$m->executeInsert( 'demo.test', [ 'd' => 1, 'empty_array' => [], 'empty_class' => new stdclass ] );
+$bw = new MongoDB\Driver\BulkWrite();
+$bw->insert( [ 'd' => 1, 'empty_array' => [], 'empty_class' => new stdclass ] );
+
+$m->executeBulkWrite( 'demo.test', $bw );
 
 var_dump( $m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>

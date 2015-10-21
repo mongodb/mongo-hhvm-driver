@@ -185,15 +185,6 @@ class Manager {
 	public function executeBulkWrite(string $namespace, BulkWrite $bulk, WriteConcern $writeConcern = null): WriteResult;
 
 	<<__Native>>
-	public function executeInsert(string $namespace, mixed $document, ?array $insertOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
-
-	<<__Native>>
-	public function executeUpdate(string $namespace, mixed $query, mixed $newObj, ?array $updateOptions = array(), ?WriteConcern $writeConcern = null): WriteResult;
-
-	<<__Native>>
-	public function executeDelete(string $namespace, mixed $query, ?array $deleteOptions = array(), WriteConcern $writeConcern = null): WriteResult;
-
-	<<__Native>>
 	public function getServers(): array;
 
 	<<__Native>>
@@ -551,9 +542,7 @@ class LogicException extends \LogicException implements Exception {}
 class RuntimeException extends \RunTimeException implements Exception {}
 class SSLConnectionException extends ConnectionException {}
 class UnexpectedValueException extends \UnexpectedValueException implements Exception {}
-class WriteConcernException extends WriteException {}
-class WriteErrorException extends WriteException {}
-class BulkWriteException extends WriteErrorException {}
+class BulkWriteException extends WriteException {}
 abstract class WriteException extends RunTimeException
 {
 	protected $writeResult = null;

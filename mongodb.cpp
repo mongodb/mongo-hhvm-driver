@@ -119,10 +119,7 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, __wakeup, MongoDBDriverManager, __wakeup);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeBulkWrite, MongoDBDriverManager, executeBulkWrite);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeCommand, MongoDBDriverManager, executeCommand);
-			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeDelete, MongoDBDriverManager, executeDelete);
-			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeInsert, MongoDBDriverManager, executeInsert);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeQuery, MongoDBDriverManager, executeQuery);
-			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeUpdate, MongoDBDriverManager, executeUpdate);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, getReadPreference, MongoDBDriverManager, getReadPreference);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, getServers, MongoDBDriverManager, getServers);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, getWriteConcern, MongoDBDriverManager, getWriteConcern);

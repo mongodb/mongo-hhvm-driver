@@ -13,9 +13,12 @@ $map1->foo = 42;
 $map2 = new stdClass;
 $map2->bar = $map1;
 
-$m->executeInsert( 'demo.test', [ 'd' => 1, 'empty_class' => new stdclass ] );
-$m->executeInsert( 'demo.test', [ 'd' => 2, 'empty_class' => $map1 ] );
-$m->executeInsert( 'demo.test', [ 'd' => 3, 'empty_class' => $map2 ] );
+$bw = new MongoDB\Driver\BulkWrite();
+$bw->insert( [ 'd' => 1, 'empty_class' => new stdclass ] );
+$bw->insert( [ 'd' => 2, 'empty_class' => $map1 ] );
+$bw->insert( [ 'd' => 3, 'empty_class' => $map2 ] );
+
+$m->executeBulkWrite( 'demo.test', $bw );
 
 var_dump($m->executeQuery( 'demo.test', new MongoDB\Driver\Query( [] ) )->toArray() );
 ?>
