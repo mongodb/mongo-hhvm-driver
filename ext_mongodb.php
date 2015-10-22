@@ -21,6 +21,11 @@ final class WriteConcernError {
 		return $this->message;
 	}
 
+	public function getInfo() : ?array
+	{
+		return $this->info;
+	}
+
 	public function __debugInfo() : array
 	{
 		return [
