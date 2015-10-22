@@ -6,19 +6,15 @@ $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 $c = new MongoDB\Driver\Command( [ 'drop' => 'test'] );
 try {
-	$cursor = $m->executeCommand( 'demo', $c );
-
-	foreach( $cursor->toArray() as $result )
-	{
-		var_dump($result);
+	$m->executeCommand( 'demo', $c );
+}
+catch ( MongoDB\Driver\Exception\RuntimeException $e )
+{
+	// Ignore "ns not found" errors
+	if ( $e->getCode() == 59 ) {
+		throw $e;
 	}
 }
-catch ( InvalidArgumentException $e )
-{
-	echo $e->getMessage(), "\n";
-}
-
-echo "================\n";
 
 $map = new StdClass;
 $map->bar = 52;
@@ -29,7 +25,9 @@ $doc = [
 	'document' => $map,
 ];
 
-$r = $m->executeInsert( 'demo.test', $doc );
+$bw = new MongoDB\Driver\BulkWrite;
+$bw->insert( $doc );
+$r = $m->executeBulkWrite( 'demo.test', $bw );
 
 $q = new MongoDB\Driver\Query( [] );
 
@@ -75,16 +73,6 @@ foreach ( $typemaps as $typemap )
 }
 ?>
 --EXPECTF--
-object(stdClass)#%d (3) {
-  ["ns"]=>
-  string(9) "demo.test"
-  ["nIndexesWas"]=>
-  int(1)
-  ["ok"]=>
-  float(1)
-}
-================
-
 object(stdClass)#%d (3) {
   ["_id"]=>
   object(MongoDB\BSON\ObjectID)#%d (1) {
