@@ -109,7 +109,7 @@ server. To install and register the driver with HHVM, you need to take the
 following steps:
 
 - Download the latest driver from
-  https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases. At
+  https://github.com/mongodb/mongo-hhvm-driver/releases. At
   the moment, there is only `hhvm-mongodb-1.0beta1.tgz`_ so we will be using
   this one in the examples.
 - Unpack the archive: ``tar -xvzf hhvm-mongodb-1.0beta1.tgz``
@@ -142,7 +142,7 @@ shell running HHVM, and then start it again as above::
 		-vServer.Type=fastcgi \
 		-vServer.FileSocket=/var/run/hhvm/sock
 
-.. _`hhvm-mongodb-1.0beta1.tgz`: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/releases/download/1.0beta1/hhvm-mongodb-1.0beta1.tgz
+.. _`hhvm-mongodb-1.0beta1.tgz`: https://github.com/mongodb/mongo-hhvm-driver/releases/download/1.0beta1/hhvm-mongodb-1.0beta1.tgz
 
 In order to test that it works, we edit our ``index.php`` file, and replace
 its contents with::
@@ -256,9 +256,9 @@ now properties of a ``stdClass`` object. You can find more information on how
 serialisation and deserialisation between PHP variables and the BSON stored in
 MongoDB in the `persistence`_ specification. 
 
-.. _documentation: http://mongodb-labs.github.io/mongo-php-library-prototype/api
-.. _Database: http://mongodb-labs.github.io/mongo-php-library-prototype/api/class-MongoDB.Database.html
+.. _documentation: http://mongodb.github.io/mongo-php-library/api
+.. _Database: http://mongodb.github.io/mongo-php-library/api/class-MongoDB.Database.html
 .. _CRUD: https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
-.. _Collection: http://mongodb-labs.github.io/mongo-php-library-prototype/api/class-MongoDB.Collection.html
+.. _Collection: http://mongodb.github.io/mongo-php-library/api/class-MongoDB.Collection.html
 .. _specification: https://github.com/mongodb/specifications/blob/master/source/crud/crud.rst
-.. _persistence: https://github.com/mongodb-labs/mongo-hhvm-driver-prototype/blob/master/serialization.rst
+.. _persistence: https://github.com/mongodb/mongo-hhvm-driver/blob/master/serialization.rst

@@ -5,7 +5,7 @@ version=$1
 rm -rf /tmp/hhvm-build
 mkdir -p /tmp/hhvm-build
 cd /tmp/hhvm-build
-git clone git@github.com:mongodb-labs/mongo-hhvm-driver-prototype.git hhvm-mongodb-${version}
+git clone git@github.com:mongodb/mongo-hhvm-driver.git hhvm-mongodb-${version}
 cd hhvm-mongodb-${version}
 git checkout "$version"
 git submodule init

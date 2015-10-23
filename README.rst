@@ -18,7 +18,7 @@ find it hard for other libraries like `Doctrine MongoDB's ODM`_ will not work
 with the new drivers.
 
 .. _`Doctrine MongoDB's ODM`: http://doctrine-mongodb-odm.readthedocs.org/en/latest/
-.. _`MongoDB Library`: http://mongodb-labs.github.io/mongo-php-library-prototype/
+.. _`MongoDB Library`: http://mongodb.github.io/mongo-php-library/
 
 Building
 --------
