@@ -1,8 +1,23 @@
 ChangeLog
 =========
 
-1.0beta1
+1.0.0RC1
 --------
+
+** Improvement
+    * [HHVM-117] - BulkWrite and executeInsert() should support an options array
+
+** Task
+    * [HHVM-124] - Upgrade bundled libbson and libmongoc to 1.2.0
+    * [HHVM-125] - Remove WriteResult::getInfo() method
+    * [HHVM-126] - Classes should be final unless inheritance is necessary
+    * [HHVM-127] - Remove DuplicateKeyException
+    * [HHVM-128] - Create common parent for write concern and write errors
+    * [HHVM-129] - Remove single write methods, WriteErrorException, and WriteConcernException
+    * [HHVM-131] - Add tutorial on how to get started with the driver and PHPLIB
+
+1.0.0beta1
+----------
 
 ** Task
     * [HHVM-58] - Implement logging through HHVM's logging mechanism
