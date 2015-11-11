@@ -20,6 +20,7 @@
 #include "functions.h"
 
 #include "../../../bson.h"
+#include "../../../utils.h"
 
 extern "C" {
 #include "../../../libbson/src/bson/bson.h"
@@ -61,6 +62,7 @@ Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
 
 		return s;
 	} else {
+		throw MongoDriver::Utils::throwUnexpectedValueException(error.message ? error.message : "Error parsing JSON");
 		return Variant();
 	}
 }
@@ -85,6 +87,7 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 	const bson_t  *b;
 	bson_reader_t *reader;
 	String         s;
+	bool           eof = false;
 
 	reader = bson_reader_new_from_data((const unsigned char *)data.c_str(), data.length());
 	b = bson_reader_read(reader, NULL);
@@ -103,8 +106,14 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 
 		bson_free(str);
 	} else {
+		throw MongoDriver::Utils::throwUnexpectedValueException("Could not read document from BSON reader");
 		return Variant();
 	}
+
+	if (bson_reader_read(reader, &eof) || !eof) {
+		throw MongoDriver::Utils::throwUnexpectedValueException("Reading document did not exhaust input buffer");
+	}
+
 	bson_reader_destroy(reader);
 
 	return Variant(s);
