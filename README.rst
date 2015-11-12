@@ -1,11 +1,9 @@
 MongoDB
 =======
 
-This is the low-level HHVM driver for MongoDB. It implements the same
-interface as the PHP driver for MongoDB that you will find at
-https://pecl.php.net/package/mongodb. The documentation for both of them is
-therefore (mostly) the same, and can be found at
-http://docs.php.net/manual/en/set.mongodb.php
+This is the low-level HHVM driver for MongoDB. The API is the same as the PHP
+driver for MongoDB. The documentation for both of them is the same, and can be
+found at http://docs.php.net/manual/en/set.mongodb.php
 
 The driver is written to be a bare bone layer to talk to MongoDB, and
 therefore misses many convenience features. Instead, these convenience methods
@@ -13,9 +11,9 @@ have been split out into a layer written in PHP, the `MongoDB Library`_.
 Using this library should be your preferred way of interacting with MongoDB.
 
 Please note that the new HHVM and PHP drivers implement a **different API**
-from the legacy driver at http://pecl.php.net/package/mongo, and hence, you
-will find it hard for other libraries like `Doctrine MongoDB's ODM`_ will not
-work with the new drivers.
+from the legacy driver at http://pecl.php.net/package/mongo; therefore
+existing libraries that use the legacy driver (e.g. `Doctrine MongoDB's ODM`_)
+will not work with the new drivers.
 
 .. _`Doctrine MongoDB's ODM`: http://doctrine-mongodb-odm.readthedocs.org/en/latest/
 .. _`MongoDB Library`: http://mongodb.github.io/mongo-php-library/
