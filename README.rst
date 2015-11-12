@@ -12,16 +12,27 @@ therefore misses many convenience features. Instead, these convenience methods
 have been split out into a layer written in PHP, the `MongoDB Library`_.
 Using this library should be your preferred way of interacting with MongoDB.
 
-Please note that the new HHVM and PHP drivers implement a different API from
-the legacy driver at http://pecl.php.net/package/mongo, and hence, you will
-find it hard for other libraries like `Doctrine MongoDB's ODM`_ will not work
-with the new drivers.
+Please note that the new HHVM and PHP drivers implement a **different API**
+from the legacy driver at http://pecl.php.net/package/mongo, and hence, you
+will find it hard for other libraries like `Doctrine MongoDB's ODM`_ will not
+work with the new drivers.
 
 .. _`Doctrine MongoDB's ODM`: http://doctrine-mongodb-odm.readthedocs.org/en/latest/
 .. _`MongoDB Library`: http://mongodb.github.io/mongo-php-library/
 
-Building
---------
+In the long run, we hope that userland packages will be built atop this driver
+to implement various APIs (e.g. a BC layer for the existing driver, new fluent
+interfaces), management utilities (for creating admin utilities and cluster
+management applications), and other interesting libraries.
+
+Documentation
+-------------
+
+- http://docs.php.net/set.mongodb
+- http://mongodb-labs.github.io/mongo-php-driver-prototype
+
+Installation
+------------
 
 Please ensure, that before you install the extension, the following tools are
 installed: autoconf, automake, and libtool.
@@ -31,6 +42,10 @@ installing the ``hhvm-dev`` package from the
 `HHVM repositories <https://github.com/facebook/hhvm/wiki/Prebuilt-Packages-for-HHVM>`_
 or `building HHVM from source <https://github.com/facebook/hhvm/wiki/Building-and-Installing-HHVM>`_.
 
+Besides the extension, we recommend using it in combination with our `userland
+library <https://github.com/mongodb-labs/mongo-php-library-prototype>`_ which
+is distributed as `mongodb/mongodb
+<https://packagist.org/packages/mongodb/mongodb>`_ for Composer.
 
 From a package (.tgz)
 ~~~~~~~~~~~~~~~~~~~~~
@@ -51,22 +66,6 @@ commands::
 	make -j 16
 	make install
 
-From source
-~~~~~~~~~~~
-
-After cloning the repository, the extension may be built like so::
-
-	git submodule init
-	git submodule update
-
-	hphpize
-	cmake .
-
-	make configlib
-
-	make -j 5
-	make install
-
 Installing
 ----------
 
@@ -75,10 +74,13 @@ necessary)::
 
 	hhvm.dynamic_extensions[mongodb]=mongodb.so
 
-Running Tests
--------------
+Contributing
+------------
 
-To run the rests, after adjusting the paths::
+See `CONTRIBUTING.rst <CONTRIBUTING.rst>`_.
 
-	export TEST_PHP_EXECUTABLE=`which hhvm`
-	hhvm -vDynamicExtensions.0=/usr/local/hhvm/3.9.1/lib/hhvm/extensions/20150212/mongodb.so run-tests.php
+Related Projects
+----------------
+
+- `HHVM Implementation of this driver <https://github.com/mongodb-labs/mongo-hhvm-driver-prototype>`_
+- `Official high-level library <https://github.com/mongodb-labs/mongo-php-library-prototype>`_
