@@ -193,7 +193,7 @@ Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 		retval.set(s_collection, Variant());
 	}
 
-	retval.set(s_ordered, data->m_bulk->ordered);
+	retval.set(s_ordered, data->m_bulk->flags.ordered);
 	retval.set(s_executed, data->m_bulk->executed);
 	retval.set(s_server_id, (int64_t) data->m_bulk->hint);
 

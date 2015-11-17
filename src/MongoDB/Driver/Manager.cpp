@@ -556,11 +556,15 @@ Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPrefere
 {
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
 	MongoDBDriverReadPreferenceData *rp_data = Native::data<MongoDBDriverReadPreferenceData>(readPreference.get());
-	uint32_t server_id;
+	bson_error_t error;
+	mongoc_server_description_t *selected_server = NULL;
 
-	server_id = mongoc_cluster_preselect(&data->m_client->cluster, MONGOC_OPCODE_QUERY, rp_data->m_read_preference, NULL);
-
-	return hippo_mongo_driver_server_create_from_id(data->m_client, server_id);
+	selected_server = mongoc_topology_select(data->m_client->topology, MONGOC_SS_READ, rp_data->m_read_preference, MONGOC_SS_DEFAULT_LOCAL_THRESHOLD_MS, &error);
+	if (selected_server) {
+		return hippo_mongo_driver_server_create_from_id(data->m_client, selected_server->id);
+	} else {
+		throw MongoDriver::Utils::throwRunTimeException(error.message);
+	}
 }
 
 }

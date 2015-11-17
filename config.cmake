@@ -43,6 +43,7 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-cursor-array.c
  libmongoc/src/mongoc/mongoc-cursor-cursorid.c
  libmongoc/src/mongoc/mongoc-cursor.c libmongoc/src/mongoc/mongoc-database.c
+ libmongoc/src/mongoc/mongoc-find-and-modify.c
  libmongoc/src/mongoc/mongoc-gridfs-file-list.c
  libmongoc/src/mongoc/mongoc-gridfs-file-page.c
  libmongoc/src/mongoc/mongoc-gridfs-file.c libmongoc/src/mongoc/mongoc-gridfs.c
@@ -50,11 +51,14 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-index.c libmongoc/src/mongoc/mongoc-init.c
  libmongoc/src/mongoc/mongoc-list.c libmongoc/src/mongoc/mongoc-log.c
  libmongoc/src/mongoc/mongoc-matcher-op.c libmongoc/src/mongoc/mongoc-matcher.c
+ libmongoc/src/mongoc/mongoc-memcmp.c
  libmongoc/src/mongoc/mongoc-opcode.c
  libmongoc/src/mongoc/mongoc-queue.c libmongoc/src/mongoc/mongoc-rand.c
+ libmongoc/src/mongoc/mongoc-read-concern.c
  libmongoc/src/mongoc/mongoc-read-prefs.c libmongoc/src/mongoc/mongoc-rpc.c
  libmongoc/src/mongoc/mongoc-sasl.c libmongoc/src/mongoc/mongoc-scram.c
  libmongoc/src/mongoc/mongoc-server-description.c
+ libmongoc/src/mongoc/mongoc-server-stream.c
  libmongoc/src/mongoc/mongoc-set.c
  libmongoc/src/mongoc/mongoc-socket.c libmongoc/src/mongoc/mongoc-ssl.c
  libmongoc/src/mongoc/mongoc-stream-buffered.c
