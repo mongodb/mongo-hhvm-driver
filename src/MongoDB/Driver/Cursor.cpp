@@ -79,10 +79,8 @@ Array HHVM_METHOD(MongoDBDriverCursor, __debugInfo)
 		cretval.add(s_MongoDBDriverCursor_is_command, !!(data->cursor->is_command));
 		cretval.add(s_MongoDBDriverCursor_sent, !!data->cursor->sent);
 		cretval.add(s_MongoDBDriverCursor_done, !!data->cursor->done);
-		cretval.add(s_MongoDBDriverCursor_failed, !!data->cursor->failed);
 		cretval.add(s_MongoDBDriverCursor_end_of_event, !!data->cursor->end_of_event);
 		cretval.add(s_MongoDBDriverCursor_in_exhaust, !!data->cursor->in_exhaust);
-		cretval.add(s_MongoDBDriverCursor_redir_primary, !!data->cursor->redir_primary);
 		cretval.add(s_MongoDBDriverCursor_has_fields, !!data->cursor->has_fields);
 
 		{

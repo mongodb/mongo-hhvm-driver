@@ -53,16 +53,17 @@ Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_
 {
 	static Class* c_server;
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
 	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
 	Object tmp = Object{c_server};
 
-	sd = mongoc_topology_description_server_by_id(&client->topology->description, server_id);
+	sd = mongoc_topology_description_server_by_id(&client->topology->description, server_id, &error);
 
 	if (!sd) {
 		throw MongoDriver::Utils::CreateAndConstruct(
 			MongoDriver::s_MongoDriverExceptionRuntimeException_className,
-			HPHP::Variant("Failed to get server description, server likely gone"),
+			"Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(),
 			HPHP::Variant((uint64_t) 0)
 		);
 	}
@@ -131,35 +132,38 @@ Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
 	Array retval = Array::Create();
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		mongodb_driver_add_server_debug(sd, &retval);
 		return retval;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 String HHVM_METHOD(MongoDBDriverServer, getHost)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return String(sd->host.host);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		Variant v;
 		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
@@ -169,39 +173,42 @@ Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 		return v.toArray();
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 int64_t HHVM_METHOD(MongoDBDriverServer, getLatency)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return (int64_t) (sd->round_trip_time);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 int64_t HHVM_METHOD(MongoDBDriverServer, getPort)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return (int64_t) (sd->host.port);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 Array HHVM_METHOD(MongoDBDriverServer, getTags)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		Variant v;
 		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
@@ -211,83 +218,89 @@ Array HHVM_METHOD(MongoDBDriverServer, getTags)
 		return v.toArray();
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 int64_t HHVM_METHOD(MongoDBDriverServer, getType)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return (int64_t) (sd->type);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isPrimary)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return (bool) (sd->type == MONGOC_SERVER_RS_PRIMARY);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isSecondary)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return (bool) (sd->type == MONGOC_SERVER_RS_SECONDARY);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isArbiter)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		return (bool) (sd->type == MONGOC_SERVER_RS_ARBITER);
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isHidden)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		bson_iter_t iter;
 
 		return !!(bson_iter_init_find_case(&iter, &sd->last_is_master, "hidden") && bson_iter_as_bool(&iter));
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isPassive)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
+	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id))) {
+	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		bson_iter_t iter;
 
 		return !!(bson_iter_init_find_case(&iter, &sd->last_is_master, "passive") && bson_iter_as_bool(&iter));
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, HPHP::Variant("Failed to get server description, server likely gone"), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
 }
 
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference)

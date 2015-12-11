@@ -253,12 +253,14 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	 * checking above. */
 	if (bson_iter_init_find(&iter, doc, "cursor") && BSON_ITER_HOLDS_DOCUMENT(&iter) && bson_iter_recurse(&iter, &child)) {
 		mongoc_cursor_cursorid_t *cid;
+		bson_t empty = BSON_INITIALIZER;
 
-		_mongoc_cursor_cursorid_init(cursor);
+		_mongoc_cursor_cursorid_init(cursor, &empty);
 		cursor->limit = 0;
 
 		cid = (mongoc_cursor_cursorid_t*) cursor->iface_data;
-		cid->has_cursor = true;
+		cid->in_batch = true;
+		bson_destroy(&empty);
 
 		while (bson_iter_next(&child)) {
 			if (BSON_ITER_IS_KEY(&child, "id")) {
@@ -269,8 +271,8 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 				ns = bson_iter_utf8(&child, &cursor->nslen);
 				bson_strncpy(cursor->ns, ns, sizeof cursor->ns);
 			} else if (BSON_ITER_IS_KEY(&child, "firstBatch")) {
-				if (BSON_ITER_HOLDS_ARRAY(&child) && bson_iter_recurse(&child, &cid->first_batch_iter)) {
-					cid->in_first_batch = true;
+				if (BSON_ITER_HOLDS_ARRAY(&child) && bson_iter_recurse(&child, &cid->batch_iter)) {
+					cid->in_batch = true;
 				}
 			}
 		}
