@@ -37,6 +37,7 @@ Class* MongoDBDriverBulkWriteData::s_class = nullptr;
 const StaticString MongoDBDriverBulkWriteData::s_className("MongoDBDriverBulkWrite");
 IMPLEMENT_GET_CLASS(MongoDBDriverBulkWriteData);
 const StaticString s_MongoDBDriverBulkWrite_ordered("ordered");
+const StaticString s_MongoDBDriverBulkWrite_bypassDocumentValidation("bypassDocumentValidation");
 
 void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOptions)
 {
@@ -49,7 +50,17 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOp
 			b_ordered = options[s_MongoDBDriverBulkWrite_ordered].toInt64();
 		}
 	}
+
 	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
+
+	if (!options.isNull()) {
+		if (options.exists(s_MongoDBDriverBulkWrite_bypassDocumentValidation)) {
+			mongoc_bulk_operation_set_bypass_document_validation(
+				data->m_bulk,
+				options[s_MongoDBDriverBulkWrite_bypassDocumentValidation].toBoolean()
+			);
+		}
+	}
 }
 
 Variant HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
