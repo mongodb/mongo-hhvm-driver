@@ -23,6 +23,7 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
+extern "C" {
 #include "../../../libmongoc/src/mongoc/mongoc-client.h"
 #define MONGOC_I_AM_A_DRIVER
 #include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
@@ -30,7 +31,9 @@
 #include "../../../libmongoc/src/mongoc/mongoc-cluster-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-uri-private.h"
+#include "../../../libmongoc/src/mongoc/mongoc-topology-private.h"
 #undef MONGOC_I_AM_A_DRIVER
+}
 
 #include "BulkWrite.h"
 #include "Command.h"

@@ -74,7 +74,7 @@ const StaticString
 	s_info("info"),
 	s_writeConcernError("writeConcernError");
 
-Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_client_t *client, int server_id, int success, const mongoc_write_concern_t *write_concern)
+Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t *error, mongoc_client_t *client, int server_id, int success, const mongoc_write_concern_t *write_concern)
 {
 	static Class* c_writeResult;
 
@@ -192,7 +192,7 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, mongoc_clien
 			bson_empty0(&write_result->writeErrors) &&
 			bson_empty0(&write_result->writeConcernErrors)
 		) {
-			throw MongoDriver::Utils::throwExceptionFromBsonError(&write_result->error);
+			throw MongoDriver::Utils::throwExceptionFromBsonError(error);
 		} else {
 			auto bw_exception = MongoDriver::Utils::throwBulkWriteException("BulkWrite error");
 			bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
