@@ -40,6 +40,7 @@ extern "C" {
 #include "Cursor.h"
 #include "Manager.h"
 #include "Query.h"
+#include "ReadConcern.h"
 #include "ReadPreference.h"
 #include "Server.h"
 #include "WriteConcern.h"
@@ -499,6 +500,20 @@ Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, con
 		bulk,
 		write_concern
 	);
+}
+
+Object HHVM_METHOD(MongoDBDriverManager, getReadConcern)
+{
+	MongoDBDriverManagerData *data = Native::data<MongoDBDriverManagerData>(this_);
+
+	Class *c_rc = Unit::lookupClass(s_MongoDriverReadConcern_className.get());
+	assert(c_rc);
+	Object rc_obj = Object{c_rc};
+	MongoDBDriverReadConcernData* rc_data = Native::data<HPHP::MongoDBDriverReadConcernData>(rc_obj.get());
+
+	rc_data->m_read_concern = mongoc_read_concern_copy(mongoc_client_get_read_concern(data->m_client));
+
+	return rc_obj;
 }
 
 Object HHVM_METHOD(MongoDBDriverManager, getReadPreference)

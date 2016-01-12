@@ -193,6 +193,9 @@ class Manager {
 	public function getServers(): array;
 
 	<<__Native>>
+	public function getReadConcern() : MongoDB\Driver\ReadConcern;
+
+	<<__Native>>
 	public function getReadPreference() : MongoDB\Driver\ReadPreference;
 
 	<<__Native>>
@@ -354,23 +357,34 @@ final class Query {
 			$this->query['flags'] = array_key_exists('flags', $options ) ? (int) $options['flags'] : 0;
 			$this->query['limit'] = array_key_exists('limit', $options ) ? (int) $options['limit'] : 0;
 			$this->query['skip'] = array_key_exists('skip', $options ) ? (int) $options['skip'] : 0;
-		}
 
-		if (array_key_exists('modifiers', $options)) {
-			Utils::mustBeArrayOrObject('modifiers', $options['modifiers']);
-			foreach ($options['modifiers'] as $key => $value) {
-				$this->query['query'][$key] = $value;
+			if (array_key_exists('readConcern', $options)) {
+				if (!($options['readConcern'] instanceof \MongoDB\Driver\readConcern)) {
+					throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+						'Expected "readConcern" option to be MongoDB\Driver\ReadConcern, ' .
+						gettype($options['readConcern']) . ' given'
+					);
+				} else {
+					$this->query['readConcern'] = $options['readConcern']->getLevel();
+				}
 			}
-		}
 
-		if (array_key_exists('projection', $options)) {
-			Utils::mustBeArrayOrObject('projection', $options['projection']);
-			$this->query['fields'] = (array) $options['projection'];
-		}
+			if (array_key_exists('modifiers', $options)) {
+				Utils::mustBeArrayOrObject('modifiers', $options['modifiers']);
+				foreach ($options['modifiers'] as $key => $value) {
+					$this->query['query'][$key] = $value;
+				}
+			}
 
-		if (array_key_exists('sort', $options)) {
-			Utils::mustBeArrayOrObject('sort', $options['sort']);
-			$this->query['query']['$orderby'] = (object) $options['sort'];
+			if (array_key_exists('projection', $options)) {
+				Utils::mustBeArrayOrObject('projection', $options['projection']);
+				$this->query['fields'] = (array) $options['projection'];
+			}
+
+			if (array_key_exists('sort', $options)) {
+				Utils::mustBeArrayOrObject('sort', $options['sort']);
+				$this->query['query']['$orderby'] = (object) $options['sort'];
+			}
 		}
 
 		$this->query['query']['$query'] = (object) $filter;
@@ -410,6 +424,18 @@ final class BulkWrite implements \Countable {
 	public function __debugInfo() : array;
 }
 
+
+<<__NativeData("MongoDBDriverReadConcern")>>
+final class ReadConcern {
+	<<__Native>>
+	public function __construct(?string $level = NULL) : void;
+
+	<<__Native>>
+	public function getLevel() : mixed;
+
+	<<__Native>>
+	public function __debugInfo() : array;
+}
 
 <<__NativeData("MongoDBDriverReadPreference")>>
 final class ReadPreference {
