@@ -25,6 +25,7 @@
 #include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/Query.h"
+#include "src/MongoDB/Driver/ReadConcern.h"
 #include "src/MongoDB/Driver/ReadPreference.h"
 #include "src/MongoDB/Driver/WriteResult.h"
 
@@ -310,7 +311,8 @@ const HPHP::StaticString
 	s_limit("limit"),
 	s_batchSize("batchSize"),
 	s_flags("flags"),
-	s_fields("fields");
+	s_fields("fields"),
+	s_readConcern("readConcern");
 
 HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, HPHP::Variant readPreference)
 {
@@ -351,6 +353,15 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 			HPHP::VariantToBsonConverter converter(aquery[s_fields], HIPPO_BSON_NO_FLAGS);
 			bson_fields = bson_new();
 			converter.convert(bson_fields);
+		}
+
+		if (aquery.exists(s_readConcern)) {
+			mongoc_read_concern_t *rc;
+
+			rc = mongoc_read_concern_new();
+			mongoc_read_concern_set_level(rc, aquery[s_readConcern].toString().c_str());
+
+			mongoc_client_set_read_concern(client, rc);
 		}
 	}
 

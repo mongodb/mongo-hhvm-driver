@@ -23,6 +23,7 @@
 #include "src/MongoDB/Driver/CursorId.h"
 #include "src/MongoDB/Driver/Manager.h"
 #include "src/MongoDB/Driver/Query.h"
+#include "src/MongoDB/Driver/ReadConcern.h"
 #include "src/MongoDB/Driver/ReadPreference.h"
 #include "src/MongoDB/Driver/Server.h"
 #include "src/MongoDB/Driver/WriteConcern.h"
@@ -120,6 +121,7 @@ static class MongoDBExtension : public Extension {
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeBulkWrite, MongoDBDriverManager, executeBulkWrite);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeCommand, MongoDBDriverManager, executeCommand);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, executeQuery, MongoDBDriverManager, executeQuery);
+			HHVM_MALIAS(MongoDB\\Driver\\Manager, getReadConcern, MongoDBDriverManager, getReadConcern);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, getReadPreference, MongoDBDriverManager, getReadPreference);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, getServers, MongoDBDriverManager, getServers);
 			HHVM_MALIAS(MongoDB\\Driver\\Manager, getWriteConcern, MongoDBDriverManager, getWriteConcern);
@@ -167,6 +169,16 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_AWAIT_DATA"), (int64_t) MONGOC_QUERY_AWAIT_DATA);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_EXHAUST"), (int64_t) MONGOC_QUERY_EXHAUST);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverQuery_className.get(), makeStaticString("FLAG_PARTIAL"), (int64_t) MONGOC_QUERY_PARTIAL);
+
+			/* MongoDb\Driver\ReadConcern */
+			HHVM_MALIAS(MongoDB\\Driver\\ReadConcern, __construct, MongoDBDriverReadConcern, __construct);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadConcern, __debugInfo, MongoDBDriverReadConcern, __debugInfo);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadConcern, getLevel, MongoDBDriverReadConcern, getLevel);
+
+			Native::registerNativeDataInfo<MongoDBDriverReadConcernData>(MongoDBDriverReadConcernData::s_className.get());
+
+			Native::registerClassConstant<KindOfString>(s_MongoDriverReadConcern_className.get(), makeStaticString("LOCAL"), s_MongoDriverReadConcern_local.get());
+			Native::registerClassConstant<KindOfString>(s_MongoDriverReadConcern_className.get(), makeStaticString("MAJORITY"), s_MongoDriverReadConcern_majority.get());
 
 			/* MongoDb\Driver\ReadPreference */
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreference, MongoDBDriverReadPreference, _setReadPreference);
