@@ -62,6 +62,7 @@ void HHVM_METHOD(MongoDBDriverManager, __wakeup);
 Object HHVM_METHOD(MongoDBDriverManager, executeBulkWrite, const String &ns, const Object &bulk, const Variant &writeConcern);
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference);
 Object HHVM_METHOD(MongoDBDriverManager, executeQuery, const String &ns, const Object &query, const Variant &readPreference);
+Object HHVM_METHOD(MongoDBDriverManager, getReadConcern);
 Object HHVM_METHOD(MongoDBDriverManager, getReadPreference);
 Array HHVM_METHOD(MongoDBDriverManager, getServers);
 Object HHVM_METHOD(MongoDBDriverManager, getWriteConcern);
