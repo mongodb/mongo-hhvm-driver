@@ -75,6 +75,11 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-write-command.c
  libmongoc/src/mongoc/mongoc-write-concern.c
 )
+FIND_PACKAGE(OpenSSL)
+HHVM_LINK_LIBRARIES(mongodb ${OPENSSL_LIBRARIES})
+find_library(SASL_LIBRARIES NAMES sasl2)
+HHVM_LINK_LIBRARIES(mongodb ${SASL_LIBRARIES})
+
 HHVM_DEFINE(mongodb "-DBSON_COMPILATION=1")
 HHVM_DEFINE(mongodb "-DMONGOC_COMPILATION=1")
 HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_SSL")
