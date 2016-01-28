@@ -111,14 +111,18 @@ void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Varia
 			convertString(bson, key, v.toString());
 			break;
 		case KindOfArray:
+		case KindOfPersistentArray:
 		case KindOfObject:
 			convertDocument(bson, key, v);
+			break;
+		case KindOfRef:
+			convertElement(bson, key, *v.getRefData());
 			break;
 		case KindOfResource:
 			throw MongoDriver::Utils::throwUnexpectedValueException("Got unsupported type 'resource'");
 			return;
-		default:
-			break;
+		case KindOfClass:
+			not_reached();
 	}
 }
 
