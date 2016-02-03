@@ -3,7 +3,7 @@ MongoDB
 
 This is the low-level HHVM driver for MongoDB. The API is the same as the PHP
 driver for MongoDB. The documentation for both of them is the same, and can be
-found at http://docs.php.net/manual/en/set.mongodb.php
+found at http://www.php.net/manual/en/set.mongodb.php
 
 The driver is written to be a bare bone layer to talk to MongoDB, and
 therefore misses many convenience features. Instead, these convenience methods
@@ -26,8 +26,8 @@ management applications), and other interesting libraries.
 Documentation
 -------------
 
-- http://docs.php.net/set.mongodb
-- http://mongodb-labs.github.io/mongo-php-driver-prototype
+- http://php.net/mongodb
+- http://mongodb.github.io/mongo-php-driver/
 
 Installation
 ------------
@@ -41,7 +41,7 @@ installing the ``hhvm-dev`` package from the
 or `building HHVM from source <https://github.com/facebook/hhvm/wiki/Building-and-Installing-HHVM>`_.
 
 Besides the extension, we recommend using it in combination with our `userland
-library <https://github.com/mongodb-labs/mongo-php-library-prototype>`_ which
+library <https://github.com/mongodb/mongo-php-library>`_ which
 is distributed as `mongodb/mongodb
 <https://packagist.org/packages/mongodb/mongodb>`_ for Composer.
 
@@ -80,5 +80,5 @@ See `CONTRIBUTING.rst <CONTRIBUTING.rst>`_.
 Related Projects
 ----------------
 
-- `HHVM Implementation of this driver <https://github.com/mongodb-labs/mongo-hhvm-driver-prototype>`_
-- `Official high-level library <https://github.com/mongodb-labs/mongo-php-library-prototype>`_
+- `HHVM Implementation of this driver <https://github.com/mongodb/mongo-hhvm-driver>`_
+- `Official high-level library <https://github.com/mongodb/mongo-php-library>`_
