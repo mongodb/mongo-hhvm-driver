@@ -80,5 +80,5 @@ See `CONTRIBUTING.rst <CONTRIBUTING.rst>`_.
 Related Projects
 ----------------
 
-- `HHVM Implementation of this driver <https://github.com/mongodb/mongo-hhvm-driver>`_
+- `PHP Implementation of this driver <https://github.com/mongodb/mongo-php-driver>`_
 - `Official high-level library <https://github.com/mongodb/mongo-php-library>`_
