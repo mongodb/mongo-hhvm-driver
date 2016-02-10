@@ -521,7 +521,6 @@ bool hippo_bson_visit_array(const bson_iter_t *iter __attribute__((unused)), con
 	BsonToVariantConverter converter(bson_get_data(v_array), v_array->len, state->options);
 	converter.convert(&array_v);
 
-std::cerr << key << "\n";
 	state->zchild.add(String::FromCStr(key), array_v);
 
 	return false;
