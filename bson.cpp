@@ -21,6 +21,7 @@
 
 #include "bson.h"
 #include "utils.h"
+#include "mongodb.h"
 #include <iostream>
 
 #include "src/MongoDB/BSON/Binary.h"
@@ -111,7 +112,9 @@ void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Varia
 			convertString(bson, key, v.toString());
 			break;
 		case KindOfArray:
+#if HIPPO_HHVM_VERSION >= 31100
 		case KindOfPersistentArray:
+#endif
 		case KindOfObject:
 			convertDocument(bson, key, v);
 			break;
