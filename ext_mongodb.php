@@ -400,6 +400,7 @@ final class Query {
 			'skip' => $this->query['skip'],
 			'limit' => $this->query['limit'],
 			'batch_size' => $this->query['batchSize'],
+			'readConcern' => array_key_exists('readConcern', $this->query) ? [ 'level' => $this->query['readConcern'] ] : NULL,
 		];
 	}
 }
