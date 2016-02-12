@@ -309,14 +309,6 @@ static mongoc_uri_t *hippo_mongo_driver_manager_make_uri(const char *dsn, const 
 			mongoc_uri_set_option_as_int32(uri, s_key, (int32_t) value.toInt64());
 		} else if (mongoc_uri_option_is_utf8(s_key) && value.isString()) {
 			mongoc_uri_set_option_as_utf8(uri, s_key, value.toString().c_str());
-		} else if (value.isArray()) {
-			for (ArrayIter h_iter(value.toArray()); h_iter; ++h_iter) {
-				const Variant& h_value = h_iter.second();
-
-				if (h_value.isString()) {
-					mongoc_uri_parse_host(uri, h_value.toString().c_str());
-				}
-			}
 		} else if (value.isString()) {
 			if (!strcasecmp(s_key, "username")) {
 				mongoc_uri_set_username(uri, value.toString().c_str());
