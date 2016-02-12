@@ -28,7 +28,6 @@ namespace HPHP {
 #define HIPPO_BSON_NO_FLAGS    0x00
 #define HIPPO_BSON_ADD_ID      0x01
 #define HIPPO_BSON_RETURN_ID   0x02
-#define HIPPO_BSON_NO_ROOT_ODS 0x04
 
 /* This is not a bitfield */
 #define HIPPO_TYPEMAP_DEFAULT    0x03
