@@ -58,6 +58,8 @@ const StaticString
 	s_MongoDBDriverManager_readpreferencetags("readpreferencetags"),
 	s_MongoDBDriverManager_readPreference("readPreference"),
 	s_MongoDBDriverManager_readPreferenceTags("readPreferenceTags"),
+	s_MongoDBDriverManager_readconcernlevel("readconcernlevel"),
+	s_MongoDBDriverManager_readConcernLevel("readConcernLevel"),
 	s_MongoDBDriverManager_mode("mode"),
 	s_MongoDBDriverManager_tags("tags"),
 	s_MongoDBDriverManager_w("w"),
@@ -74,6 +76,47 @@ const StaticString
 	s_MongoDBDriverManager_context_ssl_cafile("cafile"),
 	s_MongoDBDriverManager_context_ssl_capath("capath");
 
+static bool hippo_mongo_driver_manager_apply_rc(mongoc_client_t *client, const Array options)
+{
+	mongoc_read_concern_t *new_rc;
+	const mongoc_read_concern_t *old_rc;
+	const char *rc_str = NULL;
+
+	if (!(old_rc = mongoc_client_get_read_concern(client))) {
+		throw MongoDriver::Utils::throwRunTimeException("Client does not have a read concern");
+
+		return false;
+	}
+
+	if (options.size() == 0) {
+		return true;
+	}
+
+	if (
+		!options.exists(s_MongoDBDriverManager_readConcernLevel) &&
+		!options.exists(s_MongoDBDriverManager_readconcernlevel)
+	) {
+		return true;
+	}
+
+	new_rc = mongoc_read_concern_copy(old_rc);
+
+	if (options.exists(s_MongoDBDriverManager_readconcernlevel) && options[s_MongoDBDriverManager_readconcernlevel].isString()) {
+		rc_str = options[s_MongoDBDriverManager_readconcernlevel].toString().c_str();
+	}
+	if (options.exists(s_MongoDBDriverManager_readConcernLevel) && options[s_MongoDBDriverManager_readConcernLevel].isString()) {
+		rc_str = options[s_MongoDBDriverManager_readConcernLevel].toString().c_str();
+	}
+
+	if (rc_str) {
+		mongoc_read_concern_set_level(new_rc, rc_str);
+	}
+
+	mongoc_client_set_read_concern(client, new_rc);
+	mongoc_read_concern_destroy(new_rc);
+
+	return true;
+}
 static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const Array options)
 {
 	mongoc_read_prefs_t *new_rp;
@@ -407,6 +450,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 
 	hippo_mongo_driver_manager_apply_ssl_opts(data->m_client, driverOptions);
 
+	hippo_mongo_driver_manager_apply_rc(data->m_client, options);
 	hippo_mongo_driver_manager_apply_rp(data->m_client, options);
 	hippo_mongo_driver_manager_apply_wc(data->m_client, options);
 }
