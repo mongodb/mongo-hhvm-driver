@@ -79,6 +79,7 @@ final class WriteError {
 	}
 }
 
+<<__NativeData("MongoDBDriverWriteResult")>>
 final class WriteResult {
 	private $nUpserted = 0;
 	private $nMatched = 0;
@@ -701,6 +702,7 @@ final class MinKey implements Type, \Serializable
 	use DenySerialization;
 }
 
+<<__NativeData("MongoDBBsonObjectID")>>
 final class ObjectID implements Type, \Serializable
 {
 	use DenySerialization;
