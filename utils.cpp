@@ -199,6 +199,8 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	/* Deal with write concerns */
 	if (write_concern) {
 		mongoc_bulk_operation_set_write_concern(bulk_data->m_bulk, write_concern);
+	} else {
+		write_concern = mongoc_client_get_write_concern(client);
 	}
 
 	/* Handle server hint */
