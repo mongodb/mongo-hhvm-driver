@@ -102,7 +102,11 @@ void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Varia
 		case KindOfDouble:
 			convertDouble(bson, key, v.toDouble());
 			break;
+#if HIPPO_HHVM_VERSION >= 31200
+		case KindOfPersistentString:
+#else
 		case KindOfStaticString:
+#endif
 		case KindOfString:
 			convertString(bson, key, v.toString());
 			break;
