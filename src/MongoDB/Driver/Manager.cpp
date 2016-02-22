@@ -618,7 +618,7 @@ Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPrefere
 		mongoc_server_description_destroy(selected_server);
 		return tmp;
 	} else {
-		throw MongoDriver::Utils::throwRunTimeException(error.message);
+		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
 	}
 }
 
