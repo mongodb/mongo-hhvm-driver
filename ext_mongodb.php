@@ -366,7 +366,9 @@ final class Query {
 						gettype($options['readConcern']) . ' given'
 					);
 				} else {
-					$this->query['readConcern'] = $options['readConcern']->getLevel();
+					if ($options['readConcern']->getLevel() != NULL) {
+						$this->query['readConcern'] = $options['readConcern']->getLevel();
+					}
 				}
 			}
 
