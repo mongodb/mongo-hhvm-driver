@@ -828,7 +828,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 			/* Lookup class and instantiate object, but if we can't find the class,
 			 * make it a stdClass */
-			c_class = Unit::lookupClass(class_name.get());
+			c_class = Unit::getClass(class_name.get(), true);
 			if (c_class && isNormalClass(c_class) && c_class->classof(c_persistable_interface)) {
 				/* Instantiate */
 				obj = Object{c_class};
@@ -838,7 +838,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 		}
 
 		if (useTypeMap) {
-			c_class = Unit::lookupClass(named_class.get());
+			c_class = Unit::getClass(named_class.get(), true);
 			if (c_class && isNormalClass(c_class) && c_class->classof(c_unserializable_interface)) {
 				/* Instantiate */
 				obj = Object{c_class};
@@ -880,7 +880,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 		/* Lookup class and instantiate object, but if we can't find the class,
 		 * make it a stdClass */
-		c_class = Unit::lookupClass(class_name.get());
+		c_class = Unit::getClass(class_name.get(), true);
 		if (!c_class) {
 			*v = Variant(Variant(m_state.zchild).toObject());
 			return true;
@@ -948,7 +948,7 @@ static void validateClass(String class_name)
 	static Class* c_class;
 	static Class* c_unserializable_interface = Unit::lookupClass(s_MongoDriverBsonUnserializable_className.get());
 
-	c_class = Unit::lookupClass(class_name.get());
+	c_class = Unit::getClass(class_name.get(), true);
 
 	if (!c_class) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not exist");
