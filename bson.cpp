@@ -687,7 +687,6 @@ bool hippo_bson_visit_int64(const bson_iter_t *iter __attribute__((unused)), con
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
 
-std::cerr << key << " " << v_int64 << "\n";
 	state->zchild.add(String::FromCStr(key), Variant(v_int64));
 	return false;
 }
