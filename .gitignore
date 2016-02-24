@@ -13,3 +13,6 @@ tests/*.log
 tests/*.out
 tests/*.php
 tests/*.sh
+benchmarks/vendor
+benchmarks/data/*.json
+benchmarks/data/GRIDFS_LARGE
