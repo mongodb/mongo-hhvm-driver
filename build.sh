@@ -13,5 +13,5 @@ else
     $HPHP_HOME/hphp/tools/hphpize/hphpize
 fi
 
-cmake . && make
+cmake . && make configlib && make
 
