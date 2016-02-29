@@ -758,6 +758,14 @@ final class Timestamp implements Type, \Serializable
 
 	public function __construct(private int $increment, private int $timestamp)
 	{
+		if ( $increment < 0 || $increment > 4294967295 )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected increment to be an unsigned 32-bit integer, {$increment} given" );
+		}
+		if ( $timestamp < 0 || $timestamp > 4294967295 )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected timestamp to be an unsigned 32-bit integer, {$timestamp} given" );
+		}
 	}
 
 	public function __toString() : string
