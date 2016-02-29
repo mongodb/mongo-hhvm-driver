@@ -657,6 +657,10 @@ final class Binary implements Type, \Serializable
 
 	public function __construct(private string $data, private int $type)
 	{
+		if ( $type < 0 || $type > 255 )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected type to be an unsigned 8-bit integer, {$type} given" );
+		}
 	}
 
 	public function getType()
