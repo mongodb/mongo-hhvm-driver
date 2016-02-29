@@ -77,6 +77,7 @@ const StaticString
 Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t *error, mongoc_client_t *client, int server_id, int success, const mongoc_write_concern_t *write_concern)
 {
 	static Class* c_writeResult;
+	std::string message;
 
 	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
 	assert(c_writeResult);
@@ -93,6 +94,10 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 	obj->o_set(s_nInserted, Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className);
 	obj->o_set(s_nModified, Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className);
 	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className);
+
+	if (!success) {
+		message = "BulkWrite error";
+	}
 
 	if (write_concern) {
 		Array debugInfoResult = Array::Create();
@@ -135,6 +140,8 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 
 			if (a_we.exists(s_errmsg)) {
 				we_obj->o_set(s_message, a_we[s_errmsg], s_MongoDriverWriteError_className);
+				message += " :: ";
+				message.append(a_we[s_errmsg].toString().c_str());
 			}
 			if (a_we.exists(s_code)) {
 				we_obj->o_set(s_code, a_we[s_code], s_MongoDriverWriteError_className);
@@ -173,6 +180,8 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 
 			if (first_item.exists(s_errmsg)) {
 				wce_obj->o_set(s_message, first_item[s_errmsg], s_MongoDriverWriteConcernError_className);
+				message += " :: ";
+				message.append(first_item[s_errmsg].toString().c_str());
 			}
 			if (first_item.exists(s_code)) {
 				wce_obj->o_set(s_code, first_item[s_code], s_MongoDriverWriteConcernError_className);
@@ -194,7 +203,7 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 		) {
 			throw MongoDriver::Utils::throwExceptionFromBsonError(error);
 		} else {
-			auto bw_exception = MongoDriver::Utils::throwBulkWriteException("BulkWrite error");
+			auto bw_exception = MongoDriver::Utils::throwBulkWriteException(message);
 			bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
 
 			throw bw_exception;
