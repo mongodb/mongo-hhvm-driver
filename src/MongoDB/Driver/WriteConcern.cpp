@@ -94,6 +94,18 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 			throw MongoDriver::Utils::throwInvalidArgumentException((char*) wtimeout_error.toString().c_str());
 		}
 
+		if (wtimeout_int > INT32_MAX) {
+			StringBuffer buf;
+
+			buf.printf(
+				"Expected wtimeout to be <= %d, %ld given",
+				INT32_MAX,
+				wtimeout_int
+			);
+			Variant wtimeout_error = buf.detach();
+			throw MongoDriver::Utils::throwInvalidArgumentException((char*) wtimeout_error.toString().c_str());
+		}
+
 		mongoc_write_concern_set_wtimeout(data->m_write_concern, wtimeout_int);
 	}
 
