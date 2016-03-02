@@ -34,27 +34,29 @@ require 'lib/InsertOneSmallDoc.php';
 require 'lib/InsertOneLargeDoc.php';
 
 $taskClasses = [
-//	'\MongoDB\Benchmark\Raw\FlatBSONEncoding',
-//	'\MongoDB\Benchmark\Raw\DeepBSONEncoding',
-//	'\MongoDB\Benchmark\Raw\FullBSONEncoding',
-//	'\MongoDB\Benchmark\Raw\FlatBSONDecoding',
-//	'\MongoDB\Benchmark\Raw\DeepBSONDecoding',
-//	'\MongoDB\Benchmark\Raw\FullBSONDecoding',
-//	'\MongoDB\Benchmark\Raw\RunCommand',
+	'\MongoDB\Benchmark\Raw\FlatBSONEncoding',
+/*
+	'\MongoDB\Benchmark\Raw\DeepBSONEncoding',
+	'\MongoDB\Benchmark\Raw\FullBSONEncoding',
+	'\MongoDB\Benchmark\Raw\FlatBSONDecoding',
+	'\MongoDB\Benchmark\Raw\DeepBSONDecoding',
+	'\MongoDB\Benchmark\Raw\FullBSONDecoding',
+	'\MongoDB\Benchmark\Raw\RunCommand',
 	'\MongoDB\Benchmark\Raw\FindOneByID',
 	'\MongoDB\Benchmark\Raw\InsertOneSmallDoc',
 	'\MongoDB\Benchmark\Raw\InsertOneLargeDoc',
-//
-//	'\MongoDB\Benchmark\Lib\FlatBSONEncoding',
-//	'\MongoDB\Benchmark\Lib\DeepBSONEncoding',
-//	'\MongoDB\Benchmark\Lib\FullBSONEncoding',
-//	'\MongoDB\Benchmark\Lib\FlatBSONDecoding',
-//	'\MongoDB\Benchmark\Lib\DeepBSONDecoding',
-//	'\MongoDB\Benchmark\Lib\FullBSONDecoding',
-//	'\MongoDB\Benchmark\Lib\RunCommand',
+
+	'\MongoDB\Benchmark\Lib\FlatBSONEncoding',
+	'\MongoDB\Benchmark\Lib\DeepBSONEncoding',
+	'\MongoDB\Benchmark\Lib\FullBSONEncoding',
+	'\MongoDB\Benchmark\Lib\FlatBSONDecoding',
+	'\MongoDB\Benchmark\Lib\DeepBSONDecoding',
+	'\MongoDB\Benchmark\Lib\FullBSONDecoding',
+	'\MongoDB\Benchmark\Lib\RunCommand',
 	'\MongoDB\Benchmark\Lib\FindOneByID',
 	'\MongoDB\Benchmark\Lib\InsertOneSmallDoc',
 	'\MongoDB\Benchmark\Lib\InsertOneLargeDoc',
+*/
 ];
 
 for ($j = 0; $j < 1; $j++)
