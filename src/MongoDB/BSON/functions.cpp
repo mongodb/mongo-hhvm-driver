@@ -99,6 +99,11 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 
 		str = bson_as_json(b, &str_len);
 
+		if (!str) {
+			bson_reader_destroy(reader);
+			throw MongoDriver::Utils::throwUnexpectedValueException("Could not convert BSON document to a JSON string");
+		}
+
 		s = String(str_len, ReserveString);
 		data_s = (unsigned char*) s.bufferSlice().data();
 		memcpy(data_s, str, str_len);
@@ -106,11 +111,12 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 
 		bson_free(str);
 	} else {
+		bson_reader_destroy(reader);
 		throw MongoDriver::Utils::throwUnexpectedValueException("Could not read document from BSON reader");
-		return Variant();
 	}
 
 	if (bson_reader_read(reader, &eof) || !eof) {
+		bson_reader_destroy(reader);
 		throw MongoDriver::Utils::throwUnexpectedValueException("Reading document did not exhaust input buffer");
 	}
 
