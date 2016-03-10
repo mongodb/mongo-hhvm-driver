@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/runtime/ext/string/ext_string.h"
 
 #include "../../../mongodb.h"
 #include "../../../utils.h"
@@ -35,8 +36,8 @@ void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 	const String& str_objectId = objectId.isNull() ? null_string : objectId.toString();
 
 	if (!objectId.isNull()) {
-		if (bson_oid_is_valid(str_objectId.c_str(), str_objectId.length())) {
-			bson_oid_init_from_string(&data->m_oid, str_objectId.c_str());
+		if (bson_oid_is_valid((HHVM_FN(strtolower)(str_objectId)).c_str(), str_objectId.length())) {
+			bson_oid_init_from_string(&data->m_oid, (HHVM_FN(strtolower)(str_objectId)).c_str());
 		} else {
 			throw MongoDriver::Utils::throwInvalidArgumentException("Invalid BSON ID provided");
 		}
