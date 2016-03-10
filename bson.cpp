@@ -274,7 +274,7 @@ const StaticString s_MongoDriverBsonODM_fieldName("__pclass");
 /* {{{ MongoDriver\BSON\Binary */
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
 {
-	String data = v.o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className);
+	String data = v.o_get(s_MongoBsonBinary_data, false, s_MongoBsonBinary_className).toString();
 	int64_t type = v.o_get(s_MongoBsonBinary_type, false, s_MongoBsonBinary_className).toInt64();
 
 	bson_append_binary(bson, key, -1, (bson_subtype_t) type, (const unsigned char*) data.c_str(), data.length());
@@ -285,7 +285,7 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, Object v)
 {
 	bson_t *scope_bson;
-	String code = v.o_get(s_MongoBsonJavascript_code, false, s_MongoBsonJavascript_className);
+	String code = v.o_get(s_MongoBsonJavascript_code, false, s_MongoBsonJavascript_className).toString();
 	auto scope = v.o_get(s_MongoBsonJavascript_scope, false, s_MongoBsonJavascript_className);
 
 	if (scope.isObject() || scope.isArray()) {
@@ -332,8 +332,8 @@ void VariantToBsonConverter::_convertObjectID(bson_t *bson, const char *key, Obj
 
 void VariantToBsonConverter::_convertRegex(bson_t *bson, const char *key, Object v)
 {
-	String regex = v.o_get(s_MongoBsonRegex_pattern, false, s_MongoBsonRegex_className);
-	String flags = v.o_get(s_MongoBsonRegex_flags, false, s_MongoBsonRegex_className);
+	String regex = v.o_get(s_MongoBsonRegex_pattern, false, s_MongoBsonRegex_className).toString();
+	String flags = v.o_get(s_MongoBsonRegex_flags, false, s_MongoBsonRegex_className).toString();
 
 	bson_append_regex(bson, key, -1, regex.c_str(), flags.c_str());
 }
@@ -828,7 +828,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 		if (havePclass) {
 			String class_name = m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
 				s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
-			);
+			).toString();
 
 			/* Lookup class and instantiate object, but if we can't find the class,
 			 * make it a stdClass */
@@ -879,7 +879,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 		String class_name = m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
 			s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
-		);
+		).toString();
 		TypedValue args[1] = { *(Variant(m_state.zchild)).asCell() };
 
 		/* Lookup class and instantiate object, but if we can't find the class,
