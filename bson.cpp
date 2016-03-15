@@ -475,7 +475,7 @@ BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int da
 /* {{{ Visitors */
 void hippo_bson_visit_corrupt(const bson_iter_t *iter __attribute__((unused)), void *data)
 {
-	std::cout << "converting corrupt\n";
+	Logger::Verbose("[HIPPO] Corrupt BSON data detected!");
 }
 
 bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), const char *key, double v_double, void *data)
@@ -791,7 +791,11 @@ bool BsonToVariantConverter::convert(Variant *v)
 	m_state.zchild = Array::Create();
 	m_state.options = m_options;
 
-	bson_iter_visit_all(&iter, &hippo_bson_visitors, &m_state);
+	if (bson_iter_visit_all(&iter, &hippo_bson_visitors, &m_state) || iter.err_off) {
+		bson_reader_destroy(m_reader);
+
+		throw MongoDriver::Utils::throwUnexpectedValueException("Could not convert BSON document to a PHP variable");
+	}
 
 	/* Set "root" to false */
 	havePclass = false;
