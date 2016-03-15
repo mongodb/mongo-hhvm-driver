@@ -1,6 +1,17 @@
 ChangeLog
 =========
 
+1.1.1
+-----
+
+** Bug
+    * [HHVM-183] - toJSON() should throw on invalid BSON
+    * [HHVM-185] - Throw exception for failed root or nested BSON iteration
+    * [HHVM-188] - ObjectID only supports lower case hexadecimal letters
+
+** Task
+    * [HHVM-194] - Upgrade bundled libbson and libmongoc to 1.3.4
+
 1.1.0
 -----
 
