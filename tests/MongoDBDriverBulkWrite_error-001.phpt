@@ -26,4 +26,4 @@ try {
 }
 ?>
 --EXPECTF--
-BulkWriteException: BulkWrite error :: E11000 duplicate key error index: demo.test.$_id_ dup key: { : 1 }
+BulkWriteException: E11000 duplicate key error index: demo.test.$_id_ dup key: { : 1 }

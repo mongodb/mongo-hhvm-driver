@@ -187,6 +187,7 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	char *database;
 	char *collection;
 	int success;
+	bson_t reply = BSON_INITIALIZER;
 
 	/* Prepare */
 	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
@@ -211,10 +212,11 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	}
 
 	/* Run operation */
-	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, NULL, &error);
+	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, &reply, &error);
 
 	/* Prepare result */
-	HPHP::Object obj = HPHP::hippo_write_result_init(&bulk_data->m_bulk->result, &error, client, bulk_data->m_bulk->hint, success, write_concern);
+	HPHP::Object obj = HPHP::hippo_write_result_init(&reply, &error, client, bulk_data->m_bulk->hint, success, write_concern);
+	bson_destroy(&reply);
 
 	return obj;
 }

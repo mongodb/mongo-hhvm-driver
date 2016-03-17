@@ -63,8 +63,8 @@ const StaticString
 	s_nRemoved("nRemoved"),
 	s_nInserted("nInserted"),
 	s_nModified("nModified"),
-	s_omit_nModified("omit_nModified"),
 	s_writeConcern("writeConcern"),
+	s_upserted("upserted"),
 	s_upsertedIds("upsertedIds"),
 	s_writeErrors("writeErrors"),
 	s_errmsg("errmsg"),
@@ -72,12 +72,12 @@ const StaticString
 	s_code("code"),
 	s_index("index"),
 	s_info("info"),
-	s_writeConcernError("writeConcernError");
+	s_writeConcernError("writeConcernError"),
+	s_writeConcernErrors("writeConcernErrors");
 
-Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t *error, mongoc_client_t *client, int server_id, int success, const mongoc_write_concern_t *write_concern)
+Object hippo_write_result_init(bson_t *reply, bson_error_t *error, mongoc_client_t *client, int server_id, int success, const mongoc_write_concern_t *write_concern)
 {
 	static Class* c_writeResult;
-	std::string message;
 
 	c_writeResult = Unit::lookupClass(s_MongoDriverWriteResult_className.get());
 	assert(c_writeResult);
@@ -88,16 +88,20 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 	wr_data->m_server_id = server_id;
 	wr_data->m_write_concern = mongoc_write_concern_copy(write_concern);
 
-	obj->o_set(s_nUpserted, Variant((int64_t) write_result->nUpserted), s_MongoDriverWriteResult_className);
-	obj->o_set(s_nMatched, Variant((int64_t) write_result->nMatched), s_MongoDriverWriteResult_className);
-	obj->o_set(s_nRemoved, Variant((int64_t) write_result->nRemoved), s_MongoDriverWriteResult_className);
-	obj->o_set(s_nInserted, Variant((int64_t) write_result->nInserted), s_MongoDriverWriteResult_className);
-	obj->o_set(s_nModified, Variant((int64_t) write_result->nModified), s_MongoDriverWriteResult_className);
-	obj->o_set(s_omit_nModified, Variant((int64_t) write_result->omit_nModified), s_MongoDriverWriteResult_className);
+	/* Convert the whole BSON reply into a Variant */
+	Variant v;
+	Array a;
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
-	if (!success) {
-		message = "BulkWrite error";
-	}
+	BsonToVariantConverter convertor(bson_get_data(reply), reply->len, options);
+	convertor.convert(&v);
+	a = v.toArray();
+
+	obj->o_set(s_nUpserted, Variant(a[s_nUpserted]), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nMatched, Variant(a[s_nMatched]), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nRemoved, Variant(a[s_nRemoved]), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nInserted, Variant(a[s_nInserted]), s_MongoDriverWriteResult_className);
+	obj->o_set(s_nModified, Variant(a[s_nModified]), s_MongoDriverWriteResult_className);
 
 	if (write_concern) {
 		Array debugInfoResult = Array::Create();
@@ -108,27 +112,17 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 		obj->o_set(s_writeConcern, Variant(), s_MongoDriverWriteConcern_className);
 	}
 
-	if (!bson_empty0(&write_result->upserted)) {
-		Variant v;
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-
-		BsonToVariantConverter convertor(bson_get_data(&write_result->upserted), write_result->upserted.len, options);
-		convertor.convert(&v);
-		obj->o_set(s_upsertedIds, v.toArray(), s_MongoDriverWriteResult_className);
+	if (a.exists(s_upserted)) {
+		obj->o_set(s_upsertedIds, a[s_upserted], s_MongoDriverWriteResult_className);
 	} else {
 		Array a = Array::Create();
 		obj->o_set(s_upsertedIds, a, s_MongoDriverWriteResult_className);
 	}
 
-	if (!bson_empty0(&write_result->writeErrors)) {
-		Variant v;
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+	if (a.exists(s_writeErrors)) {
 		Array writeErrors = Array::Create();
 
-		BsonToVariantConverter convertor(bson_get_data(&write_result->writeErrors), write_result->writeErrors.len, options);
-		convertor.convert(&v);
-
-		for (ArrayIter iter(v.toArray()); iter; ++iter) {
+		for (ArrayIter iter(a[s_writeErrors].toArray()); iter; ++iter) {
 			const Variant& value = iter.second();
 			static Class* c_writeError;
 
@@ -140,8 +134,6 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 
 			if (a_we.exists(s_errmsg)) {
 				we_obj->o_set(s_message, a_we[s_errmsg], s_MongoDriverWriteError_className);
-				message += " :: ";
-				message.append(a_we[s_errmsg].toString().c_str());
 			}
 			if (a_we.exists(s_code)) {
 				we_obj->o_set(s_code, a_we[s_code], s_MongoDriverWriteError_className);
@@ -159,15 +151,10 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 		obj->o_set(s_writeErrors, writeErrors, s_MongoDriverWriteResult_className);
 	}
 
-	if (!bson_empty0(&write_result->writeConcernErrors)) {
-		Variant v;
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+	if (a.exists(s_writeConcernErrors)) {
 		Array a_v;
 
-		BsonToVariantConverter convertor(bson_get_data(&write_result->writeConcernErrors), write_result->writeConcernErrors.len, options);
-		convertor.convert(&v);
-
-		a_v = v.toArray();
+		a_v = a[s_writeConcernErrors].toArray();
 	
 		static Class* c_writeConcernError;
 
@@ -180,8 +167,6 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 
 			if (first_item.exists(s_errmsg)) {
 				wce_obj->o_set(s_message, first_item[s_errmsg], s_MongoDriverWriteConcernError_className);
-				message += " :: ";
-				message.append(first_item[s_errmsg].toString().c_str());
 			}
 			if (first_item.exists(s_code)) {
 				wce_obj->o_set(s_code, first_item[s_code], s_MongoDriverWriteConcernError_className);
@@ -197,16 +182,13 @@ Object hippo_write_result_init(mongoc_write_result_t *write_result, bson_error_t
 	}
 
 	if (success == 0) {
-		if (
-			bson_empty0(&write_result->writeErrors) &&
-			bson_empty0(&write_result->writeConcernErrors)
-		) {
-			throw MongoDriver::Utils::throwExceptionFromBsonError(error);
-		} else {
-			auto bw_exception = MongoDriver::Utils::throwBulkWriteException(message);
+		if (error->domain == MONGOC_ERROR_COMMAND || error->domain == MONGOC_ERROR_WRITE_CONCERN) {
+			auto bw_exception = MongoDriver::Utils::throwBulkWriteException(error->message);
 			bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
 
 			throw bw_exception;
+		} else {
+			throw MongoDriver::Utils::throwExceptionFromBsonError(error);
 		}
 	}
 
