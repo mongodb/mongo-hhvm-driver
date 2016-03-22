@@ -148,12 +148,14 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 		case MONGOC_ERROR_BSON_INVALID:
 		case MONGOC_ERROR_MATCHER_INVALID:
 		case MONGOC_ERROR_NAMESPACE_INVALID:
-		case MONGOC_ERROR_COMMAND_INVALID_ARG:
 		case MONGOC_ERROR_COLLECTION_INSERT_FAILED:
 		case MONGOC_ERROR_GRIDFS_INVALID_FILENAME:
 		case MONGOC_ERROR_QUERY_COMMAND_NOT_FOUND:
 		case MONGOC_ERROR_QUERY_NOT_TAILABLE:
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionRuntimeException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
+
+		case MONGOC_ERROR_COMMAND_INVALID_ARG:
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionInvalidArgumentException_className, HPHP::Variant("Cannot execute an empty BulkWrite"), HPHP::Variant((uint64_t) 0));
 	}
 	switch (error->domain) {
 		case MONGOC_ERROR_CLIENT:
