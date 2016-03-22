@@ -182,7 +182,7 @@ Object hippo_write_result_init(bson_t *reply, bson_error_t *error, mongoc_client
 	}
 
 	if (success == 0) {
-		if (error->domain == MONGOC_ERROR_COMMAND || error->domain == MONGOC_ERROR_WRITE_CONCERN) {
+		if ((error->domain == MONGOC_ERROR_COMMAND && error->code != MONGOC_ERROR_COMMAND_INVALID_ARG) || error->domain == MONGOC_ERROR_WRITE_CONCERN) {
 			auto bw_exception = MongoDriver::Utils::throwBulkWriteException(error->message);
 			bw_exception->o_set(s_MongoDriverExceptionBulkWriteException_writeResult, obj, MongoDriver::s_MongoDriverExceptionBulkWriteException_className);
 
