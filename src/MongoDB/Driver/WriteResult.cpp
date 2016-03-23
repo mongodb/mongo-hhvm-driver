@@ -54,7 +54,7 @@ bool HHVM_METHOD(MongoDBDriverWriteResult, isAcknowledged)
 {
 	MongoDBDriverWriteResultData* data = Native::data<MongoDBDriverWriteResultData>(this_);
 
-	return !!_mongoc_write_concern_needs_gle(data->m_write_concern);
+	return mongoc_write_concern_is_acknowledged(data->m_write_concern);
 }
 
 const StaticString
