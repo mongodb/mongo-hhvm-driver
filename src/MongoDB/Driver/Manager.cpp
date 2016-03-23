@@ -308,7 +308,7 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 	/* This may be redundant in light of the last check (unacknowledged w with
 	 * journal), but we'll check anyway in case additional validation is
 	 * implemented. */
-	if (!_mongoc_write_concern_is_valid(new_wc)) {
+	if (!mongoc_write_concern_is_valid(new_wc)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Write concern is not valid");
 		mongoc_write_concern_destroy(new_wc);
 
