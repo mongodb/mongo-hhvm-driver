@@ -17,8 +17,6 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 
-#include "../../../libmongoc/src/mongoc/mongoc-read-prefs-private.h"
-
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 
@@ -67,11 +65,12 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 	Array retval = Array::Create();
 	Variant v_tags;
+	const bson_t *tags = mongoc_read_prefs_get_tags(data->m_read_preference);
 
-	retval.set(s_mode, data->m_read_preference->mode);
+	retval.set(s_mode, mongoc_read_prefs_get_mode(data->m_read_preference));
 
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-	BsonToVariantConverter convertor(bson_get_data(&data->m_read_preference->tags), data->m_read_preference->tags.len, options);
+	BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
 	convertor.convert(&v_tags);
 	retval.set(s_tags, v_tags.toArray());
 
@@ -82,16 +81,17 @@ int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMode)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 
-	return data->m_read_preference->mode;
+	return mongoc_read_prefs_get_mode(data->m_read_preference);
 }
 
 Array HHVM_METHOD(MongoDBDriverReadPreference, getTagSets)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 	Variant v_tags;
+	const bson_t *tags = mongoc_read_prefs_get_tags(data->m_read_preference);
 	
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-	BsonToVariantConverter convertor(bson_get_data(&data->m_read_preference->tags), data->m_read_preference->tags.len, options);
+	BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
 	convertor.convert(&v_tags);
 
 	return v_tags.toArray();
