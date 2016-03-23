@@ -151,17 +151,31 @@ final class WriteResult {
 
 		$ret['nInserted'] = $this->nInserted;
 		$ret['nMatched'] = $this->nMatched;
-		if ($this->omit_nModified) {
-			$ret['nModified'] = null;
-		} else {
-			$ret['nModified'] = $this->nModified;
-		}
+		$ret['nModified'] = $this->nModified;
 		$ret['nRemoved'] = $this->nRemoved;
 		$ret['nUpserted'] = $this->nUpserted;
 
 		$ret['upsertedIds'] = (array) $this->upsertedIds;
-		$ret['writeErrors'] = $this->writeErrors;
-		$ret['writeConcernError'] = $this->writeConcernError;
+		$ret['writeErrors'] = array_map(
+			function($value) {
+				$a = [
+					'index' => $value->getIndex(),
+					'code' => $value->getCode(),
+					'errmsg' => $value->getMessage(),
+				];
+
+				return $a;
+			},
+			$this->writeErrors
+		);
+		if (is_object($this->writeConcernError) && $this->writeConcernError instanceof \MongoDB\Driver\WriteConcernError) {
+			$ret['writeConcernError'] = [
+				'code' => $this->writeConcernError->getCode(),
+				'errmsg' => $this->writeConcernError->getMessage(),
+			];
+		} else {
+			$ret['writeConcernError'] = NULL;
+		}
 
 		if ($this->writeConcern) {
 			$ret['writeConcern'] = $this->writeConcern;
