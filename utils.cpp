@@ -215,7 +215,7 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, &reply, &error);
 
 	/* Prepare result */
-	HPHP::Object obj = HPHP::hippo_write_result_init(&reply, &error, client, bulk_data->m_bulk->hint, success, write_concern);
+	HPHP::Object obj = HPHP::hippo_write_result_init(&reply, &error, client, mongoc_bulk_operation_get_hint(bulk_data->m_bulk), success, write_concern);
 	bson_destroy(&reply);
 
 	return obj;
@@ -242,7 +242,7 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 
 	/* Handle server hint */
 	if (server_id > 0) {
-		cursor->hint = server_id;
+		cursor->server_id = server_id;
 	}
 
 	if (!mongoc_cursor_next(cursor, &doc)) {
@@ -385,7 +385,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 
 	/* Handle server hint */
 	if (server_id > 0) {
-		cursor->hint = server_id;
+		cursor->server_id = server_id;
 	}
 
 	/* Check for errors */

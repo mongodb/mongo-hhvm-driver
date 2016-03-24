@@ -33,6 +33,7 @@ HHVM_EXTENSION(mongodb
  libbson/src/bson/bson-timegm.c libbson/src/bson/bson-utf8.c
  libbson/src/bson/bson-value.c libbson/src/bson/bson-version-functions.c
  libbson/src/bson/bson-writer.c libbson/src/bson/bson.c
+ libmongoc/src/mongoc/mongoc-apm.c
  libmongoc/src/mongoc/mongoc-async.c
  libmongoc/src/mongoc/mongoc-async-cmd.c
  libmongoc/src/mongoc/mongoc-array.c libmongoc/src/mongoc/mongoc-b64.c
@@ -41,8 +42,12 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-client-pool.c libmongoc/src/mongoc/mongoc-client.c
  libmongoc/src/mongoc/mongoc-cluster.c libmongoc/src/mongoc/mongoc-collection.c
  libmongoc/src/mongoc/mongoc-counters.c
+ libmongoc/src/mongoc/mongoc-crypto.c
+ libmongoc/src/mongoc/mongoc-crypto-common-crypto.c
+ libmongoc/src/mongoc/mongoc-crypto-openssl.c
  libmongoc/src/mongoc/mongoc-cursor-array.c
  libmongoc/src/mongoc/mongoc-cursor-cursorid.c
+ libmongoc/src/mongoc/mongoc-cursor-transform.c
  libmongoc/src/mongoc/mongoc-cursor.c libmongoc/src/mongoc/mongoc-database.c
  libmongoc/src/mongoc/mongoc-find-and-modify.c
  libmongoc/src/mongoc/mongoc-gridfs-file-list.c
@@ -54,10 +59,14 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-matcher-op.c libmongoc/src/mongoc/mongoc-matcher.c
  libmongoc/src/mongoc/mongoc-memcmp.c
  libmongoc/src/mongoc/mongoc-opcode.c
- libmongoc/src/mongoc/mongoc-queue.c libmongoc/src/mongoc/mongoc-rand.c
+ libmongoc/src/mongoc/mongoc-openssl.c
+ libmongoc/src/mongoc/mongoc-queue.c
+ libmongoc/src/mongoc/mongoc-rand-common-crypto.c
+ libmongoc/src/mongoc/mongoc-rand-openssl.c
  libmongoc/src/mongoc/mongoc-read-concern.c
  libmongoc/src/mongoc/mongoc-read-prefs.c libmongoc/src/mongoc/mongoc-rpc.c
  libmongoc/src/mongoc/mongoc-sasl.c libmongoc/src/mongoc/mongoc-scram.c
+ libmongoc/src/mongoc/mongoc-secure-transport.c
  libmongoc/src/mongoc/mongoc-server-description.c
  libmongoc/src/mongoc/mongoc-server-stream.c
  libmongoc/src/mongoc/mongoc-set.c
@@ -66,7 +75,11 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-stream-file.c
  libmongoc/src/mongoc/mongoc-stream-gridfs.c
  libmongoc/src/mongoc/mongoc-stream-socket.c
- libmongoc/src/mongoc/mongoc-stream-tls.c libmongoc/src/mongoc/mongoc-stream.c
+ libmongoc/src/mongoc/mongoc-stream-tls.c
+ libmongoc/src/mongoc/mongoc-stream-tls-openssl.c
+ libmongoc/src/mongoc/mongoc-stream-tls-openssl-bio.c
+ libmongoc/src/mongoc/mongoc-stream-tls-secure-transport.c
+ libmongoc/src/mongoc/mongoc-stream.c
  libmongoc/src/mongoc/mongoc-topology.c
  libmongoc/src/mongoc/mongoc-topology-description.c
  libmongoc/src/mongoc/mongoc-topology-scanner.c
@@ -82,6 +95,7 @@ HHVM_LINK_LIBRARIES(mongodb ${SASL_LIBRARIES})
 
 HHVM_DEFINE(mongodb "-DBSON_COMPILATION=1")
 HHVM_DEFINE(mongodb "-DMONGOC_COMPILATION=1")
+HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_CRYPTO")
 HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_SSL")
 HHVM_DEFINE(mongodb "-DMONGOC_ENABLE_SASL")
 HHVM_DEFINE(mongodb "-DMONGOC_TRACE=1")

@@ -308,7 +308,7 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 	/* This may be redundant in light of the last check (unacknowledged w with
 	 * journal), but we'll check anyway in case additional validation is
 	 * implemented. */
-	if (!_mongoc_write_concern_is_valid(new_wc)) {
+	if (!mongoc_write_concern_is_valid(new_wc)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Write concern is not valid");
 		mongoc_write_concern_destroy(new_wc);
 
@@ -612,7 +612,7 @@ Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPrefere
 	mongoc_server_description_t *selected_server = NULL;
 	Object tmp;
 
-	selected_server = mongoc_topology_select(data->m_client->topology, MONGOC_SS_READ, rp_data->m_read_preference, MONGOC_SS_DEFAULT_LOCAL_THRESHOLD_MS, &error);
+	selected_server = mongoc_topology_select(data->m_client->topology, MONGOC_SS_READ, rp_data->m_read_preference, &error);
 	if (selected_server) {
 		tmp = hippo_mongo_driver_server_create_from_id(data->m_client, selected_server->id);
 		mongoc_server_description_destroy(selected_server);

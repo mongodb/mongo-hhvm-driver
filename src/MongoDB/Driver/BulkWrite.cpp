@@ -206,7 +206,7 @@ Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 
 	retval.set(s_ordered, data->m_bulk->flags.ordered);
 	retval.set(s_executed, data->m_bulk->executed);
-	retval.set(s_server_id, (int64_t) data->m_bulk->hint);
+	retval.set(s_server_id, (int64_t) mongoc_bulk_operation_get_hint(data->m_bulk));
 
 	if (data->m_bulk->write_concern) {
 		Array wc_retval = Array::Create();
