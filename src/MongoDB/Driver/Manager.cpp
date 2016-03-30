@@ -465,13 +465,23 @@ const StaticString
 
 Array HHVM_METHOD(MongoDBDriverManager, __debugInfo)
 {
-	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
+	MongoDBDriverManagerData     *data = Native::data<MongoDBDriverManagerData>(this_);
+	size_t                        i;
+	mongoc_server_description_t **sds;
+	size_t                        n;
 	Array retval = Array::Create();
 	Array servers = Array::Create();
 
 	retval.add(s_MongoDBDriverManager_uri, (char*) mongoc_uri_get_string(data->m_client->uri));
 
-	mongoc_set_for_each(data->m_client->topology->description.servers, mongodb_driver_add_server_debug_wrapper, &servers);
+	sds = mongoc_client_get_server_descriptions(data->m_client, &n);
+	for (i = 0; i < n; i++) {
+		if (sds[i]->type == MONGOC_SERVER_UNKNOWN) {
+			continue;
+		}
+
+		mongodb_driver_add_server_debug_wrapper(sds[i], &servers);
+	}
 
 	retval.add(s_MongoDBDriverManager_cluster, servers);
 
@@ -566,23 +576,22 @@ Object HHVM_METHOD(MongoDBDriverManager, getReadPreference)
 
 Array HHVM_METHOD(MongoDBDriverManager, getServers)
 {
-	MongoDBDriverManagerData *data = Native::data<MongoDBDriverManagerData>(this_);
-	size_t                    i;
-	mongoc_set_t             *set;
+	MongoDBDriverManagerData     *data = Native::data<MongoDBDriverManagerData>(this_);
+	size_t                        i;
+	mongoc_server_description_t **sds;
+	size_t                        n;
 
 	Array retval = Array::Create();
 
-	set = data->m_client->topology->description.servers;
-	for (i = 0; i < set->items_len; i++) {
-		mongoc_server_description_t *sd = (mongoc_server_description_t*) set->items[i].item;
-
-		if (sd->type == MONGOC_SERVER_UNKNOWN) {
+	sds = mongoc_client_get_server_descriptions(data->m_client, &n);
+	for (i = 0; i < n; i++) {
+		if (sds[i]->type == MONGOC_SERVER_UNKNOWN) {
 			continue;
 		}
 
 		retval.add(
 			(int64_t) i,
-			hippo_mongo_driver_server_create_from_id(data->m_client, sd->id)
+			hippo_mongo_driver_server_create_from_id(data->m_client, sds[i]->id)
 		);
 
 	}

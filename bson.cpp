@@ -18,6 +18,7 @@
 #include "hphp/runtime/base/array-iterator.h"
 #include "hphp/runtime/base/execution-context.h"
 #include "hphp/runtime/base/type-string.h"
+#include "hphp/util/logger.h"
 
 #include "bson.h"
 #include "utils.h"
