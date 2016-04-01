@@ -17,10 +17,6 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 
-#define MONGOC_I_AM_A_DRIVER
-#include "../../../libmongoc/src/mongoc/mongoc-cursor-private.h"
-#undef MONGOC_I_AM_A_DRIVER
-
 #include "../../../bson.h"
 #include "../../../utils.h"
 #include "../../../mongodb.h"
@@ -74,6 +70,7 @@ Array HHVM_METHOD(MongoDBDriverCursor, __debugInfo)
 
 	if (data->cursor) {
 		Array cretval = Array::Create();
+		const bson_t *tags = mongoc_read_prefs_get_tags(data->cursor->read_prefs);
 
 		cretval.add(s_MongoDBDriverCursor_stamp, (int64_t) data->cursor->stamp);
 		cretval.add(s_MongoDBDriverCursor_is_command, !!(data->cursor->is_command));
@@ -99,14 +96,14 @@ Array HHVM_METHOD(MongoDBDriverCursor, __debugInfo)
 			convertor.convert(&v_fields);
 			cretval.add(s_MongoDBDriverCursor_fields, v_fields);
 		}
-		if (data->cursor->read_prefs->tags.len) {
+		if (tags->len) {
 			Array rp_retval = Array::Create();
 			Variant v_read_preference;
 
-			rp_retval.add(s_MongoDBDriverCursor_read_preference_mode, (int64_t) data->cursor->read_prefs->mode);
+			rp_retval.add(s_MongoDBDriverCursor_read_preference_mode, (int64_t) mongoc_read_prefs_get_mode(data->cursor->read_prefs));
 
 			hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-			BsonToVariantConverter convertor(bson_get_data(&data->cursor->read_prefs->tags), data->cursor->read_prefs->tags.len, options);
+			BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
 			convertor.convert(&v_read_preference);
 			rp_retval.add(s_MongoDBDriverCursor_read_preference_tags, v_read_preference);
 
