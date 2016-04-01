@@ -21,11 +21,6 @@
 #include "../../../utils.h"
 #include "../../../mongodb.h"
 
-/* We need to access the internal bulk structure to access the bulk op count */
-#define MONGOC_I_AM_A_DRIVER
-#include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
-#undef MONGOC_I_AM_A_DRIVER
-
 #include "../BSON/ObjectID.h"
 #include "WriteConcern.h"
 
@@ -208,9 +203,9 @@ Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 	retval.set(s_executed, data->m_bulk->executed);
 	retval.set(s_server_id, (int64_t) mongoc_bulk_operation_get_hint(data->m_bulk));
 
-	if (data->m_bulk->write_concern) {
+	if (mongoc_bulk_operation_get_write_concern(data->m_bulk)) {
 		Array wc_retval = Array::Create();
-		mongodb_driver_add_write_concern_debug(data->m_bulk->write_concern, &wc_retval);
+		mongodb_driver_add_write_concern_debug(mongoc_bulk_operation_get_write_concern(data->m_bulk), &wc_retval);
 		retval.set(s_write_concern, wc_retval);
 	} else {
 		retval.set(s_write_concern, Variant());

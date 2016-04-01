@@ -111,7 +111,7 @@ void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const
 	}
 }
 
-bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *retval)
+bool mongodb_driver_add_write_concern_debug(const mongoc_write_concern_t *wc, Array *retval)
 {
 	const char *wtag = mongoc_write_concern_get_wtag(wc);
 	const int32_t w = mongoc_write_concern_get_w(wc);
