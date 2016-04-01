@@ -31,7 +31,6 @@ extern "C" {
 #include "../../../libmongoc/src/mongoc/mongoc-cluster-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-uri-private.h"
-#include "../../../libmongoc/src/mongoc/mongoc-topology-private.h"
 #undef MONGOC_I_AM_A_DRIVER
 }
 
@@ -621,7 +620,7 @@ Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPrefere
 	mongoc_server_description_t *selected_server = NULL;
 	Object tmp;
 
-	selected_server = mongoc_topology_select(data->m_client->topology, MONGOC_SS_READ, rp_data->m_read_preference, &error);
+	selected_server = mongoc_client_select_server(data->m_client, false, rp_data->m_read_preference, &error);
 	if (selected_server) {
 		tmp = hippo_mongo_driver_server_create_from_id(data->m_client, selected_server->id);
 		mongoc_server_description_destroy(selected_server);
