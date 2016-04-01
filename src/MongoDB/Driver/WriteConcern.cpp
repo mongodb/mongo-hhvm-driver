@@ -23,9 +23,6 @@
 #include "../../../utils.h"
 
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern.h"
-#define MONGOC_I_AM_A_DRIVER
-#include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
-#undef MONGOC_I_AM_A_DRIVER
 
 #include "WriteConcern.h"
 
@@ -132,7 +129,7 @@ bool mongodb_driver_add_write_concern_debug(mongoc_write_concern_t *wc, Array *r
 	retval->set(s_MongoDriverWriteConcern_wmajority, mongoc_write_concern_get_wmajority(wc));
 	retval->set(s_MongoDriverWriteConcern_wtimeout, mongoc_write_concern_get_wtimeout(wc));
 
-	if (wc->journal != MONGOC_WRITE_CONCERN_JOURNAL_DEFAULT) {
+	if (mongoc_write_concern_journal_is_set(wc)) {
 		retval->set(s_MongoDriverWriteConcern_journal, mongoc_write_concern_get_journal(wc));
 	} else {
 		retval->set(s_MongoDriverWriteConcern_journal, Variant());
@@ -146,7 +143,7 @@ Variant HHVM_METHOD(MongoDBDriverWriteConcern, getJournal)
 	MongoDBDriverWriteConcernData* data = Native::data<MongoDBDriverWriteConcernData>(this_);
 	mongoc_write_concern_t *wc = data->m_write_concern;
 
-	if (wc->journal != MONGOC_WRITE_CONCERN_JOURNAL_DEFAULT) {
+	if (mongoc_write_concern_journal_is_set(wc)) {
 		return !!mongoc_write_concern_get_journal(wc);
 	} else {
 		return Variant();
