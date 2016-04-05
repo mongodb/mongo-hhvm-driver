@@ -477,6 +477,8 @@ BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int da
 void hippo_bson_visit_corrupt(const bson_iter_t *iter __attribute__((unused)), void *data)
 {
 	Logger::Verbose("[HIPPO] Corrupt BSON data detected!");
+
+	throw MongoDriver::Utils::throwUnexpectedValueException("Detected corrupt BSON data.");
 }
 
 bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), const char *key, double v_double, void *data)
@@ -720,6 +722,15 @@ bool hippo_bson_visit_minkey(const bson_iter_t *iter __attribute__((unused)), co
 	return false;
 }
 
+void hippo_bson_visit_unsupported_type(const bson_iter_t *iter __attribute__((unused)), const char *key, uint32_t v_type_code, void *data)
+{
+	char *message;
+
+	message = (char*) malloc( 29 + 2 + 15 + strlen(key) + 35 + 1);
+	sprintf(message, "Detected unknown BSON type 0x%02hhx for fieldname \"%s\". Are you using the latest driver?", v_type_code, key);
+
+	throw MongoDriver::Utils::throwUnexpectedValueException(message);
+}
 
 static const bson_visitor_t hippo_bson_visitors = {
 	NULL /* hippo_phongo_bson_visit_before*/,
@@ -745,6 +756,8 @@ static const bson_visitor_t hippo_bson_visitors = {
 	hippo_bson_visit_int64,
 	hippo_bson_visit_maxkey,
 	hippo_bson_visit_minkey,
+	hippo_bson_visit_unsupported_type,
+	NULL, /* hippo_bson_visit_decimal128 */
 	{ NULL }
 };
 /* }}} */

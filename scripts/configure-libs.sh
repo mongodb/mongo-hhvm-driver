@@ -4,7 +4,7 @@ cd libbson
 if [ -f Makefile ]; then
 	make distclean
 fi
-./autogen.sh
+./autogen.sh --enable-decimal-bid=no
 cd -
 
 cd libmongoc
