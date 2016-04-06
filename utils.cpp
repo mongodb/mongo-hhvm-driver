@@ -301,6 +301,7 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
 
 	cursor_data->cursor = cursor;
+	cursor_data->client = client;
 	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
@@ -407,6 +408,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
 
 	cursor_data->cursor = cursor;
+	cursor_data->client = client;
 	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
 	cursor_data->is_command_cursor = false;
 	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;

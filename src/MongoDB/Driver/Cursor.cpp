@@ -314,7 +314,7 @@ Object HHVM_METHOD(MongoDBDriverCursor, getServer)
 {
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
-	return hippo_mongo_driver_server_create_from_id(data->cursor->client, data->m_server_id);
+	return hippo_mongo_driver_server_create_from_id(data->client, data->m_server_id);
 }
 
 
