@@ -25,6 +25,7 @@ HHVM_EXTENSION(mongodb
  libbson/src/yajl/yajl_version.c
  libbson/src/bson/bcon.c libbson/src/bson/bson-atomic.c
  libbson/src/bson/bson-clock.c libbson/src/bson/bson-context.c
+ libbson/src/bson/bson-decimal128.c
  libbson/src/bson/bson-error.c libbson/src/bson/bson-iso8601.c
  libbson/src/bson/bson-iter.c libbson/src/bson/bson-json.c
  libbson/src/bson/bson-keys.c libbson/src/bson/bson-md5.c
