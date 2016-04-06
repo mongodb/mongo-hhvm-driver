@@ -30,7 +30,6 @@ extern "C" {
 #include "../../../libmongoc/src/mongoc/mongoc-client-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-cluster-private.h"
 #include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
-#include "../../../libmongoc/src/mongoc/mongoc-uri-private.h"
 #undef MONGOC_I_AM_A_DRIVER
 }
 
@@ -75,14 +74,14 @@ const StaticString
 	s_MongoDBDriverManager_context_ssl_cafile("cafile"),
 	s_MongoDBDriverManager_context_ssl_capath("capath");
 
-static bool hippo_mongo_driver_manager_apply_rc(mongoc_client_t *client, const Array options)
+static bool hippo_mongo_driver_manager_apply_rc(mongoc_uri_t *uri, const Array options)
 {
 	mongoc_read_concern_t *new_rc;
 	const mongoc_read_concern_t *old_rc;
 	const char *rc_str = NULL;
 
-	if (!(old_rc = mongoc_client_get_read_concern(client))) {
-		throw MongoDriver::Utils::throwRunTimeException("Client does not have a read concern");
+	if (!(old_rc = mongoc_uri_get_read_concern(uri))) {
+		throw MongoDriver::Utils::throwRunTimeException("mongoc_uri_t does not have a read concern");
 
 		return false;
 	}
@@ -111,20 +110,21 @@ static bool hippo_mongo_driver_manager_apply_rc(mongoc_client_t *client, const A
 		mongoc_read_concern_set_level(new_rc, rc_str);
 	}
 
-	mongoc_client_set_read_concern(client, new_rc);
+	mongoc_uri_set_read_concern(uri, new_rc);
 	mongoc_read_concern_destroy(new_rc);
 
 	return true;
 }
-static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const Array options)
+
+static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array options)
 {
 	mongoc_read_prefs_t *new_rp;
 	const mongoc_read_prefs_t *old_rp;
 	const char *rp_str = NULL;
 	bson_t *b_tags;
 
-	if (!(old_rp = mongoc_client_get_read_prefs(client))) {
-		throw MongoDriver::Utils::throwRunTimeException("Client does not have a read preference");
+	if (!(old_rp = mongoc_uri_get_read_prefs_t(uri))) {
+		throw MongoDriver::Utils::throwRunTimeException("mongoc_uri_t does not have a read preference");
 
 		return false;
 	}
@@ -206,20 +206,20 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_client_t *client, const A
 		return false;
 	}
 
-	mongoc_client_set_read_prefs(client, new_rp);
+	mongoc_uri_set_read_prefs_t(uri, new_rp);
 	mongoc_read_prefs_destroy(new_rp);
 
 	return true;
 }
 
-static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const Array options)
+static bool hippo_mongo_driver_manager_apply_wc(mongoc_uri_t *uri, const Array options)
 {
 	int32_t wtimeoutms;
 	mongoc_write_concern_t *new_wc;
 	const mongoc_write_concern_t *old_wc;
 
-	if (!(old_wc = mongoc_client_get_write_concern(client))) {
-		throw MongoDriver::Utils::throwRunTimeException("Client does not have a write concern");
+	if (!(old_wc = mongoc_uri_get_write_concern(uri))) {
+		throw MongoDriver::Utils::throwRunTimeException("mongoc_uri_t does not have a write concern");
 
 		return false;
 	}
@@ -314,7 +314,7 @@ static bool hippo_mongo_driver_manager_apply_wc(mongoc_client_t *client, const A
 		return false;
 	}
 
-	mongoc_client_set_write_concern(client, new_wc);
+	mongoc_uri_set_write_concern(uri, new_wc);
 	mongoc_write_concern_destroy(new_wc);
 
 	return true;
@@ -439,6 +439,11 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	mongoc_client_t *client;
 
 	uri = hippo_mongo_driver_manager_make_uri(dsn.c_str(), options);
+
+	hippo_mongo_driver_manager_apply_rc(uri, options);
+	hippo_mongo_driver_manager_apply_rp(uri, options);
+	hippo_mongo_driver_manager_apply_wc(uri, options);
+
 	client = mongoc_client_new_from_uri(uri);
 
 	if (!client) {
@@ -448,10 +453,6 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	data->m_client = client;
 
 	hippo_mongo_driver_manager_apply_ssl_opts(data->m_client, driverOptions);
-
-	hippo_mongo_driver_manager_apply_rc(data->m_client, options);
-	hippo_mongo_driver_manager_apply_rp(data->m_client, options);
-	hippo_mongo_driver_manager_apply_wc(data->m_client, options);
 }
 
 const StaticString
