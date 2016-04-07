@@ -83,7 +83,7 @@ void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, con
 
 static class MongoDBExtension : public Extension {
 	public:
-		MongoDBExtension() : Extension("mongodb", "1.1.2-dev") {}
+		MongoDBExtension() : Extension("mongodb", "1.1.2") {}
 
 		virtual void moduleInit() {
 			/* MongoDB\BSON functions */

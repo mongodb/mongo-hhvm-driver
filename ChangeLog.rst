@@ -1,6 +1,18 @@
 ChangeLog
 =========
 
+1.1.2
+-----
+
+** Bug
+    * [HHVM-209] - Driver fails to build due to "Logger" with HHVM 3.9-3.11
+
+** Task
+    * [HHVM-161] - WriteResult should encapsulate BSON instead of mongoc_write_result_t
+    * [HHVM-191] - Use bson_error_t message for BulkWriteException message
+    * [HHVM-193] - executeBulkWrite() should throw InvalidArgumentException for empty BulkWrite
+
+
 1.1.1
 -----
 
