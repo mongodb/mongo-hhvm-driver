@@ -482,6 +482,7 @@ Array HHVM_METHOD(MongoDBDriverManager, __debugInfo)
 
 		mongodb_driver_add_server_debug_wrapper(sds[i], &servers);
 	}
+	mongoc_server_descriptions_destroy_all(sds, n);
 
 	retval.add(s_MongoDBDriverManager_cluster, servers);
 
@@ -595,6 +596,7 @@ Array HHVM_METHOD(MongoDBDriverManager, getServers)
 		);
 
 	}
+	mongoc_server_descriptions_destroy_all(sds, n);
 
 	return retval;
 }
