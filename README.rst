@@ -49,7 +49,7 @@ From a package (.tgz)
 ~~~~~~~~~~~~~~~~~~~~~
 
 Releases of this driver can be found on
-https://s3.amazonaws.com/drivers.mongodb.org/hhvm/index.html
+https://github.com/mongodb/mongo-hhvm-driver/releases
 
 Please download the latest .tgz file into a directory, and run the following
 commands::
