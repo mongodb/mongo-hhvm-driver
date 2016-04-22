@@ -799,6 +799,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 
 	if (!bson_iter_init(&iter, b)) {
 		bson_reader_destroy(m_reader);
+		throw MongoDriver::Utils::throwUnexpectedValueException("Could not initialize BSON iterator");
 		return false;
 	}
 
@@ -808,7 +809,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 	if (bson_iter_visit_all(&iter, &hippo_bson_visitors, &m_state) || iter.err_off) {
 		bson_reader_destroy(m_reader);
 
-		throw MongoDriver::Utils::throwUnexpectedValueException("Could not convert BSON document to a PHP variable");
+		throw MongoDriver::Utils::throwUnexpectedValueException("Detected corrupt BSON data.");
 	}
 
 	/* Set "root" to false */
