@@ -61,7 +61,22 @@ commands::
 	hphpize
 	cmake .
 	make configlib
-	make -j 16
+	make -j [number_of_processor_cores] # eg. make -j 4
+	make install
+	
+Building from source
+~~~~~~~~~~~~~~~~~~~~
+
+Run the following 
+commands::
+
+	git clone https://github.com/mongodb/mongo-hhvm-driver --branch master
+	cd mongo-hhvm-driver/
+	git submodule update --init
+	hphpize
+	cmake .
+	make configlib
+	make -j [number_of_processor_cores] # eg. make -j 4
 	make install
 
 Installing
