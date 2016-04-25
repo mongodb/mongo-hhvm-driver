@@ -478,7 +478,7 @@ void hippo_bson_visit_corrupt(const bson_iter_t *iter __attribute__((unused)), v
 {
 	Logger::Verbose("[HIPPO] Corrupt BSON data detected!");
 
-	throw MongoDriver::Utils::throwUnexpectedValueException("Detected corrupt BSON data.");
+	throw MongoDriver::Utils::throwUnexpectedValueException("Detected corrupt BSON data");
 }
 
 bool hippo_bson_visit_double(const bson_iter_t *iter __attribute__((unused)), const char *key, double v_double, void *data)
