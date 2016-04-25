@@ -44,7 +44,7 @@ array(2) {
         ["maxWriteBatchSize"]=>
         int(%d)
         ["localTime"]=>
-        object(MongoDB\BSON\UTCDateTime)#4 (1) {
+        object(MongoDB\BSON\UTCDateTime)#%d (1) {
           ["milliseconds"]=>
           int(%d)
         }
