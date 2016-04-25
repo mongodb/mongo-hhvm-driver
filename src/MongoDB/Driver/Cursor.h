@@ -37,13 +37,8 @@ class MongoDBDriverCursorData
 		mongoc_cursor_t *cursor;
 		mongoc_client_t *client;
 		int              m_server_id;
-		bool             is_command_cursor;
-		bson_t          *first_batch;
 		int64_t          current;
 		int              next_after_rewind = 0;
-
-		/* Iterators */
-		bson_iter_t      first_batch_iter;
 
 		/* Conversion & Flags */
 		int zchild_active;
@@ -77,6 +72,8 @@ bool HHVM_METHOD(MongoDBDriverCursor, valid);
 bool HHVM_METHOD(MongoDBDriverCursor, isDead);
 
 Array HHVM_METHOD(MongoDBDriverCursor, toArray);
+
+Object hippo_cursor_init(mongoc_cursor_t *cursor, mongoc_client_t *client);
 
 }
 #endif

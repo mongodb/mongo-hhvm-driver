@@ -221,13 +221,28 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	return obj;
 }
 
+/* Advance the cursor and return whether there is an error. On error, the
+ * cursor will be destroyed and an exception will be thrown. */
+static void hippo_advance_cursor_and_check_for_error(mongoc_cursor_t *cursor)
+{
+	const bson_t *doc;
+
+	/* Check for errors */
+	if (!mongoc_cursor_next(cursor, &doc)) {
+		bson_error_t error;
+
+		/* Could simply be no docs, which is not an error */
+		if (mongoc_cursor_error(cursor, &error)) {
+			mongoc_cursor_destroy(cursor);
+			throw Utils::throwExceptionFromBsonError(&error);
+		}
+	}
+}
+
 HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, HPHP::Variant readPreference)
 {
-	static HPHP::Class* c_result;
 	mongoc_cursor_t *cursor;
-	const bson_t *doc;
 	bson_iter_t iter;
-	bson_iter_t child;
 	mongoc_read_prefs_t *read_preference = NULL;
 
 	if (!readPreference.isNull()) {
@@ -245,66 +260,26 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 		cursor->server_id = server_id;
 	}
 
-	if (!mongoc_cursor_next(cursor, &doc)) {
-		bson_error_t error;
+	/* This throws an exception upon error */
+	hippo_advance_cursor_and_check_for_error(cursor);
 
-		if (mongoc_cursor_error(cursor, &error)) {
-			mongoc_cursor_destroy(cursor);
-			throw Utils::throwExceptionFromBsonError(&error);
-		}
-	}
+	if (bson_iter_init_find(&iter, mongoc_cursor_current(cursor), "cursor") && BSON_ITER_HOLDS_DOCUMENT(&iter)) {
+		mongoc_cursor_t *cmd_cursor;
 
-	/* This code is copied from phongo, which has it adapated from
-	 * _mongoc_cursor_cursorid_prime(), but we avoid * advancing the cursor,
-	 * since we are already positioned at the first result * after the error
-	 * checking above. */
-	if (bson_iter_init_find(&iter, doc, "cursor") && BSON_ITER_HOLDS_DOCUMENT(&iter) && bson_iter_recurse(&iter, &child)) {
-		mongoc_cursor_cursorid_t *cid;
-		bson_t empty = BSON_INITIALIZER;
+		/* According to mongoc_cursor_new_from_command_reply(), the reply bson_t
+		 * is ultimately destroyed on both success and failure. Use bson_copy()
+		 * to create a writable copy of the const bson_t we fetched above. */
+		cmd_cursor = mongoc_cursor_new_from_command_reply(client, bson_copy(mongoc_cursor_current(cursor)), mongoc_cursor_get_hint(cursor));
+		mongoc_cursor_destroy(cursor);
 
-		_mongoc_cursor_cursorid_init(cursor, &empty);
-		cursor->limit = 0;
+		/* This throws an exception upon error */
+		hippo_advance_cursor_and_check_for_error(cmd_cursor);
 
-		cid = (mongoc_cursor_cursorid_t*) cursor->iface_data;
-		cid->in_batch = true;
-		bson_destroy(&empty);
-
-		while (bson_iter_next(&child)) {
-			if (BSON_ITER_IS_KEY(&child, "id")) {
-				cursor->rpc.reply.cursor_id = bson_iter_as_int64(&child);
-			} else if (BSON_ITER_IS_KEY(&child, "ns")) {
-				const char *ns;
-
-				ns = bson_iter_utf8(&child, &cursor->nslen);
-				bson_strncpy(cursor->ns, ns, sizeof cursor->ns);
-			} else if (BSON_ITER_IS_KEY(&child, "firstBatch")) {
-				if (BSON_ITER_HOLDS_ARRAY(&child) && bson_iter_recurse(&child, &cid->batch_iter)) {
-					cid->in_batch = true;
-				}
-			}
-		}
-
-		cursor->is_command = false;
-
-		/* The cursor's current element is the command's response document.
-		 * Advance once so that the cursor is positioned at the first document
-		 * within the command cursor's result set.
-		 */
-		mongoc_cursor_next(cursor, &doc);
+		return HPHP::hippo_cursor_init(cmd_cursor, client);
 	}
 
 	/* Prepare result */
-	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
-	assert(c_result);
-	HPHP::Object obj = HPHP::Object{c_result};
-
-	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
-
-	cursor_data->cursor = cursor;
-	cursor_data->client = client;
-	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
-	cursor_data->is_command_cursor = false;
-	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
+	HPHP::Object obj = HPHP::hippo_cursor_init(cursor, client);
 
 	/* Destroy */
 	bson_destroy(command);
@@ -323,9 +298,7 @@ const HPHP::StaticString
 
 HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, HPHP::Variant readPreference)
 {
-	static HPHP::Class* c_result;
 	bson_t *bson_query = NULL, *bson_fields = NULL;
-	const bson_t *doc;
 	mongoc_collection_t *collection;
 	mongoc_cursor_t *cursor;
 
@@ -389,32 +362,11 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 		cursor->server_id = server_id;
 	}
 
-	/* Check for errors */
-	if (!mongoc_cursor_next(cursor, &doc)) {
-		bson_error_t error;
-
-		/* Could simply be no docs, which is not an error */
-		if (mongoc_cursor_error(cursor, &error)) {
-			mongoc_cursor_destroy(cursor);
-			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
-		}
-	}
+	/* This throws an exception upon error */
+	hippo_advance_cursor_and_check_for_error(cursor);
 
 	/* Prepare result */
-	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
-	assert(c_result);
-	HPHP::Object obj = HPHP::Object{c_result};
-
-	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
-
-	cursor_data->cursor = cursor;
-	cursor_data->client = client;
-	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
-	cursor_data->is_command_cursor = false;
-	cursor_data->first_batch = doc ? bson_copy(doc) : NULL;
-	cursor_data->next_after_rewind = 0;
-
-	return obj;
+	return HPHP::hippo_cursor_init(cursor, client);
 }
 
 
