@@ -55,6 +55,27 @@ const StaticString s_MongoDBDriverCursor_current_doc("current_doc");
 const StaticString s_MongoDBDriverCursor_server_id("server_id");
 IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
 
+static bool hippo_cursor_load_current(MongoDBDriverCursorData* data);
+
+Object hippo_cursor_init(mongoc_cursor_t *cursor, mongoc_client_t *client)
+{
+	static HPHP::Class* c_result;
+
+	c_result = HPHP::Unit::lookupClass(HPHP::s_MongoDriverCursor_className.get());
+	assert(c_result);
+	HPHP::Object obj = HPHP::Object{c_result};
+
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(obj.get());
+
+	cursor_data->cursor = cursor;
+	cursor_data->client = client;
+	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
+	cursor_data->next_after_rewind = 0;
+
+	hippo_cursor_load_current(cursor_data);
+
+	return obj;
+}
 
 static void invalidate_current(MongoDBDriverCursorData *data)
 {
@@ -175,11 +196,14 @@ int64_t HHVM_METHOD(MongoDBDriverCursor, key)
 	return data->current;
 }
 
-static bool hippo_cursor_load_next(MongoDBDriverCursorData* data)
+bool hippo_cursor_load_current(MongoDBDriverCursorData* data)
 {
 	const bson_t *doc;
 
-	if (mongoc_cursor_next(data->cursor, &doc)) {
+	invalidate_current(data);
+
+	doc = mongoc_cursor_current(data->cursor);
+	if (doc) {
 		Variant v;
 
 		BsonToVariantConverter convertor(bson_get_data(doc), doc->len, data->bson_options);
@@ -192,6 +216,16 @@ static bool hippo_cursor_load_next(MongoDBDriverCursorData* data)
 	return false;
 }
 
+static bool hippo_cursor_load_next(MongoDBDriverCursorData* data)
+{
+	const bson_t *doc;
+
+	if (mongoc_cursor_next(data->cursor, &doc)) {
+		return hippo_cursor_load_current(data);
+	}
+	return false;
+}
+
 static bool hippo_cursor_next(MongoDBDriverCursorData* data)
 {
 	invalidate_current(data);
@@ -199,17 +233,6 @@ static bool hippo_cursor_next(MongoDBDriverCursorData* data)
 	data->next_after_rewind++;
 
 	data->current++;
-	if (data->is_command_cursor && bson_iter_next(&data->first_batch_iter)) {
-		if (BSON_ITER_HOLDS_DOCUMENT(&data->first_batch_iter)) {
-			const uint8_t *document = NULL;
-			uint32_t document_len = 0;
-
-			bson_iter_document(&data->first_batch_iter, &document_len, &document);
-
-			data->zchild_active = true;
-			return true;
-		}
-	}
 	if (hippo_cursor_load_next(data)) {
 		return true;
 	} else {
@@ -236,38 +259,7 @@ static void hippo_cursor_rewind(MongoDBDriverCursorData* data)
 		}
 	}
 
-	invalidate_current(data);
 	data->current = 0;
-	data->zchild_active = false;
-
-	if (data->first_batch) {
-		if (data->is_command_cursor) {
-			if (!bson_iter_init(&data->first_batch_iter, data->first_batch)) {
-				return;
-			}
-			if (bson_iter_next(&data->first_batch_iter)) {
-				if (BSON_ITER_HOLDS_DOCUMENT(&data->first_batch_iter)) {
-					const uint8_t *document = NULL;
-					uint32_t document_len = 0;
-					Variant v;
-
-					bson_iter_document(&data->first_batch_iter, &document_len, &document);
-
-					BsonToVariantConverter convertor(document, document_len, data->bson_options);
-					convertor.convert(&v);
-					data->zchild_active = true;
-					data->zchild = v;
-				}
-			}
-		} else {
-			Variant v;
-
-			BsonToVariantConverter convertor(bson_get_data(data->first_batch), data->first_batch->len, data->bson_options);
-			convertor.convert(&v);
-			data->zchild_active = true;
-			data->zchild = v;
-		}
-	}
 }
 
 void HHVM_METHOD(MongoDBDriverCursor, rewind)
@@ -323,6 +315,9 @@ void HHVM_METHOD(MongoDBDriverCursor, setTypeMap, const Array &typemap)
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 
 	parseTypeMap(&data->bson_options, typemap);
+
+	/* Reconvert the current document to use the new typemap */
+	hippo_cursor_load_current(data);
 }
 
 }
