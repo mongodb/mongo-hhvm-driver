@@ -214,15 +214,15 @@ static class MongoDBExtension : public Extension {
 
 			Native::registerNativeDataInfo<MongoDBDriverServerData>(MongoDBDriverServerData::s_className.get());
 
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_UNKNOWN"), (int64_t) MONGOC_SERVER_UNKNOWN);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_STANDALONE"), (int64_t) MONGOC_SERVER_STANDALONE);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_MONGOS"), (int64_t) MONGOC_SERVER_MONGOS);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_POSSIBLE_PRIMARY"), (int64_t) MONGOC_SERVER_POSSIBLE_PRIMARY);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_PRIMARY"), (int64_t) MONGOC_SERVER_RS_PRIMARY);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_SECONDARY"), (int64_t) MONGOC_SERVER_RS_SECONDARY);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_ARBITER"), (int64_t) MONGOC_SERVER_RS_ARBITER);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_OTHER"), (int64_t) MONGOC_SERVER_RS_OTHER);
-			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_GHOST"), (int64_t) MONGOC_SERVER_RS_GHOST);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_UNKNOWN"), (int64_t) HIPPO_SERVER_UNKNOWN);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_STANDALONE"), (int64_t) HIPPO_SERVER_STANDALONE);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_MONGOS"), (int64_t) HIPPO_SERVER_MONGOS);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_POSSIBLE_PRIMARY"), (int64_t) HIPPO_SERVER_POSSIBLE_PRIMARY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_PRIMARY"), (int64_t) HIPPO_SERVER_RS_PRIMARY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_SECONDARY"), (int64_t) HIPPO_SERVER_RS_SECONDARY);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_ARBITER"), (int64_t) HIPPO_SERVER_RS_ARBITER);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_OTHER"), (int64_t) HIPPO_SERVER_RS_OTHER);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverServer_className.get(), makeStaticString("TYPE_RS_GHOST"), (int64_t) HIPPO_SERVER_RS_GHOST);
 
 			/* MongoDb\Driver\WriteConcern */
 			HHVM_MALIAS(MongoDB\\Driver\\WriteConcern, __construct, MongoDBDriverWriteConcern, __construct);

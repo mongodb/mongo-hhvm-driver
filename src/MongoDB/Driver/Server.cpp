@@ -49,6 +49,18 @@ const StaticString
 	s_MongoDriverServer_round_trip_time("round_trip_time"),
 	s_command("command");
 
+hippo_server_description_type_map_t hippo_server_description_type_map[HIPPO_SERVER_DESCRIPTION_TYPES] = {
+	{ HIPPO_SERVER_UNKNOWN, "Unknown" },
+	{ HIPPO_SERVER_STANDALONE, "Standalone" },
+	{ HIPPO_SERVER_MONGOS, "Mongos" },
+	{ HIPPO_SERVER_POSSIBLE_PRIMARY, "PossiblePrimary" },
+	{ HIPPO_SERVER_RS_PRIMARY, "RSPrimary" },
+	{ HIPPO_SERVER_RS_SECONDARY, "RSSecondary" },
+	{ HIPPO_SERVER_RS_ARBITER, "RSArbiter" },
+	{ HIPPO_SERVER_RS_OTHER, "RSOther" },
+	{ HIPPO_SERVER_RS_GHOST, "RSGhost" },
+};
+
 Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_t server_id)
 {
 	static Class* c_server;
@@ -78,39 +90,51 @@ Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_
 	return tmp;
 }
 
+hippo_server_description_type_t hippo_server_description_type(mongoc_server_description_t *sd)
+{
+	int i;
+	const char *name = mongoc_server_description_type(sd);
+
+	for (i = 0; i < HIPPO_SERVER_DESCRIPTION_TYPES; i++) {
+		if (strcmp(name, hippo_server_description_type_map[i].name) == 0) {
+			return hippo_server_description_type_map[i].type;
+		}
+	}
+
+	return HIPPO_SERVER_UNKNOWN;
+}
+
 
 static bool mongodb_driver_add_server_debug(mongoc_server_description_t *sd, Array *retval)
 {
+	mongoc_host_list_t *host = mongoc_server_description_host(sd);
+	const bson_t       *is_master = mongoc_server_description_ismaster(sd);
+
 	Variant v_last_is_master;
 	Array   a_last_is_master;
 
-	retval->set(s_MongoDriverServer_host, sd->host.host);
-	retval->set(s_MongoDriverServer_port, sd->host.port);
-	retval->set(s_MongoDriverServer_type, sd->type);
-	retval->set(s_MongoDriverServer_is_primary, !!(sd->type == MONGOC_SERVER_RS_PRIMARY));
-	retval->set(s_MongoDriverServer_is_secondary, !!(sd->type == MONGOC_SERVER_RS_SECONDARY));
-	retval->set(s_MongoDriverServer_is_arbiter, !!(sd->type == MONGOC_SERVER_RS_ARBITER));
+	retval->set(s_MongoDriverServer_host, host->host);
+	retval->set(s_MongoDriverServer_port, host->port);
+	retval->set(s_MongoDriverServer_type, hippo_server_description_type(sd));
+	retval->set(s_MongoDriverServer_is_primary, strcmp(mongoc_server_description_type(sd), hippo_server_description_type_map[HIPPO_SERVER_RS_PRIMARY].name) == 0);
+	retval->set(s_MongoDriverServer_is_secondary, strcmp(mongoc_server_description_type(sd), hippo_server_description_type_map[HIPPO_SERVER_RS_SECONDARY].name) == 0);
+	retval->set(s_MongoDriverServer_is_arbiter, strcmp(mongoc_server_description_type(sd), hippo_server_description_type_map[HIPPO_SERVER_RS_ARBITER].name) == 0);
 
 	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-	BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
+	BsonToVariantConverter convertor(bson_get_data(is_master), is_master->len, options);
 	convertor.convert(&v_last_is_master);
 	a_last_is_master = v_last_is_master.toArray();
 
 	retval->set(s_MongoDriverServer_is_hidden, a_last_is_master.exists(s_MongoDriverServer_hidden) && !!a_last_is_master[s_MongoDriverServer_hidden].toBoolean());
 	retval->set(s_MongoDriverServer_is_passive, a_last_is_master.exists(s_MongoDriverServer_passive) && !!a_last_is_master[s_MongoDriverServer_passive].toBoolean());
 
-	if (sd->tags.len) {
-		Variant v_tags;
-
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-		BsonToVariantConverter convertor(bson_get_data(&sd->tags), sd->tags.len, options);
-		convertor.convert(&v_tags);
-		retval->set(s_MongoDriverServer_tags, v_tags);
+	if (a_last_is_master.exists(s_MongoDriverServer_tags)) {
+		retval->set(s_MongoDriverServer_tags, a_last_is_master[s_MongoDriverServer_tags]);
 	}
 
 	retval->set(s_MongoDriverServer_last_is_master, a_last_is_master);
 
-	retval->set(s_MongoDriverServer_round_trip_time, sd->round_trip_time);
+	retval->set(s_MongoDriverServer_round_trip_time, mongoc_server_description_round_trip_time(sd));
 
 	return true;
 }
@@ -138,169 +162,237 @@ Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 
 	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
 		mongodb_driver_add_server_debug(sd, &retval);
+
+		mongoc_server_description_destroy(sd);
 		return retval;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 String HHVM_METHOD(MongoDBDriverServer, getHost)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return String(sd->host.host);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		String host(mongoc_server_description_host(sd)->host);
+		mongoc_server_description_destroy(sd);
+
+		return host;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 Array HHVM_METHOD(MongoDBDriverServer, getInfo)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		const bson_t       *is_master = mongoc_server_description_ismaster(sd);
+
 		Variant v;
+
 		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
-		BsonToVariantConverter convertor(bson_get_data(&sd->last_is_master), sd->last_is_master.len, options);
-		convertor.convert(&v);
+		/* Yeah, this is not pretty. But, C++ doesn't have finally, and I don't
+		 * want to bson_copy the is_master thing just because of that */
+		try {
+			BsonToVariantConverter convertor(bson_get_data(is_master), is_master->len, options);
+			convertor.convert(&v);
+		} catch (...) {
+			mongoc_server_description_destroy(sd);
+			throw;
+		}
 
 		return v.toArray();
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 int64_t HHVM_METHOD(MongoDBDriverServer, getLatency)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return (int64_t) (sd->round_trip_time);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		int64_t round_trip;
+
+		round_trip = mongoc_server_description_round_trip_time(sd);
+
+		mongoc_server_description_destroy(sd);
+
+		return round_trip;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 int64_t HHVM_METHOD(MongoDBDriverServer, getPort)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return (int64_t) (sd->host.port);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		int64_t port;
+
+		port = mongoc_server_description_host(sd)->port;
+		mongoc_server_description_destroy(sd);
+
+		return port;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 Array HHVM_METHOD(MongoDBDriverServer, getTags)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		Variant v;
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		const bson_t       *is_master = mongoc_server_description_ismaster(sd);
+
+		Variant v_last_is_master;
+		Array   a_last_is_master;
+
 		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
 
-		BsonToVariantConverter convertor(bson_get_data(&sd->tags), sd->tags.len, options);
-		convertor.convert(&v);
+		/* Yeah, this is not pretty. But, C++ doesn't have finally, and I don't
+		 * want to bson_copy the is_master thing just because of that */
+		try {
+			BsonToVariantConverter convertor(bson_get_data(is_master), is_master->len, options);
+			convertor.convert(&v_last_is_master);
+		} catch (...) {
+			mongoc_server_description_destroy(sd);
+			throw;
+		}
 
-		return v.toArray();
+		a_last_is_master = v_last_is_master.toArray();
+
+		if (a_last_is_master.exists(s_MongoDriverServer_tags)) {
+			return a_last_is_master[s_MongoDriverServer_tags].toArray();
+		}
+
+		mongoc_server_description_destroy(sd);
+		a_last_is_master = Array();
+		return a_last_is_master;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 int64_t HHVM_METHOD(MongoDBDriverServer, getType)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return (int64_t) (sd->type);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		int type;
+
+		type = hippo_server_description_type(sd);
+
+		mongoc_server_description_destroy(sd);
+
+		return type;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isPrimary)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return (bool) (sd->type == MONGOC_SERVER_RS_PRIMARY);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		bool isType;
+
+		isType = (strcmp(mongoc_server_description_type(sd), hippo_server_description_type_map[HIPPO_SERVER_RS_PRIMARY].name) == 0);
+
+		mongoc_server_description_destroy(sd);
+
+		return isType;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isSecondary)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return (bool) (sd->type == MONGOC_SERVER_RS_SECONDARY);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		bool isType;
+
+		isType = (strcmp(mongoc_server_description_type(sd), hippo_server_description_type_map[HIPPO_SERVER_RS_SECONDARY].name) == 0);
+
+		mongoc_server_description_destroy(sd);
+
+		return isType;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isArbiter)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
-		return (bool) (sd->type == MONGOC_SERVER_RS_ARBITER);
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
+		bool isType;
+
+		isType = (strcmp(mongoc_server_description_type(sd), hippo_server_description_type_map[HIPPO_SERVER_RS_ARBITER].name) == 0);
+
+		mongoc_server_description_destroy(sd);
+
+		return isType;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isHidden)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
 		bson_iter_t iter;
 
-		return !!(bson_iter_init_find_case(&iter, &sd->last_is_master, "hidden") && bson_iter_as_bool(&iter));
+		const bson_t *is_master = mongoc_server_description_ismaster(sd);
+		bool retval = !!(bson_iter_init_find_case(&iter, is_master, "hidden") && bson_iter_as_bool(&iter));
+
+		mongoc_server_description_destroy(sd);
+
+		return retval;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 bool HHVM_METHOD(MongoDBDriverServer, isPassive)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
 		bson_iter_t iter;
 
-		return !!(bson_iter_init_find_case(&iter, &sd->last_is_master, "passive") && bson_iter_as_bool(&iter));
+		const bson_t *is_master = mongoc_server_description_ismaster(sd);
+		bool retval = !!(bson_iter_init_find_case(&iter, is_master, "passive") && bson_iter_as_bool(&iter));
+
+		mongoc_server_description_destroy(sd);
+
+		return retval;
 	}
 
-	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(), HPHP::Variant((uint64_t) 0));
+	throw MongoDriver::Utils::CreateAndConstruct(MongoDriver::s_MongoDriverExceptionRuntimeException_className, "Failed to get server description", HPHP::Variant((uint64_t) 0));
 }
 
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference)
