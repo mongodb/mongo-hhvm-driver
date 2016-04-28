@@ -30,6 +30,7 @@ class MongoDBDriverBulkWriteData
 		static const StaticString s_className;
 
 		mongoc_bulk_operation_t *m_bulk;
+		size_t m_num_ops;
 
 		static Class* getClass();
 
@@ -39,6 +40,7 @@ class MongoDBDriverBulkWriteData
 
 		MongoDBDriverBulkWriteData() {
 			m_bulk = NULL;
+			m_num_ops = 0;
 		}
 
 		~MongoDBDriverBulkWriteData() {

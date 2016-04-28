@@ -47,6 +47,7 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOp
 	}
 
 	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
+	data->m_num_ops = 0;
 
 	if (!options.isNull()) {
 		if (options.exists(s_MongoDBDriverBulkWrite_bypassDocumentValidation)) {
@@ -68,6 +69,7 @@ Variant HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
 	converter.convert(bson);
 
 	mongoc_bulk_operation_insert(data->m_bulk, bson);
+	data->m_num_ops++;
 
 	return Variant(converter.m_out);
 }
@@ -134,6 +136,8 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 		}
 	}
 
+	data->m_num_ops++;
+
 	bson_clear(&bquery);
 	bson_clear(&bupdate);
 }
@@ -164,6 +168,8 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &query, const Var
 		mongoc_bulk_operation_remove(data->m_bulk, bquery);
 	}
 
+	data->m_num_ops++;
+
 	bson_clear(&bquery);
 }
 
@@ -171,7 +177,7 @@ int64_t HHVM_METHOD(MongoDBDriverBulkWrite, count)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 
-	return data->m_bulk->commands.len;
+	return data->m_num_ops;
 }
 
 const StaticString
