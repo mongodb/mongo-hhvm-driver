@@ -49,8 +49,30 @@ class MongoDBDriverServerData
 		};
 };
 
+/* This enum is necessary since mongoc_server_description_type_t is private and
+ * we need to translate strings returned by mongoc_server_description_type() to
+ * Server integer constants. */
+typedef enum {
+	HIPPO_SERVER_UNKNOWN           = 0,
+	HIPPO_SERVER_STANDALONE        = 1,
+	HIPPO_SERVER_MONGOS            = 2,
+	HIPPO_SERVER_POSSIBLE_PRIMARY  = 3,
+	HIPPO_SERVER_RS_PRIMARY        = 4,
+	HIPPO_SERVER_RS_SECONDARY      = 5,
+	HIPPO_SERVER_RS_ARBITER        = 6,
+	HIPPO_SERVER_RS_OTHER          = 7,
+	HIPPO_SERVER_RS_GHOST          = 8,
+	HIPPO_SERVER_DESCRIPTION_TYPES = 9,
+} hippo_server_description_type_t;
+
+typedef struct {
+	hippo_server_description_type_t  type;
+	const char                      *name;
+} hippo_server_description_type_map_t;
+
 Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_t server_id);
 bool mongodb_driver_add_server_debug_wrapper(void *item, void *context);
+hippo_server_description_type_t hippo_server_description_type(mongoc_server_description_t *sd);
 
 Array HHVM_METHOD(MongoDBDriverServer, __debugInfo);
 String HHVM_METHOD(MongoDBDriverServer, getHost);
