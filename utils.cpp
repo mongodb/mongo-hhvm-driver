@@ -184,19 +184,25 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 {
 	HPHP::MongoDBDriverBulkWriteData* bulk_data = HPHP::Native::data<HPHP::MongoDBDriverBulkWriteData>(bulk.get());
 	bson_error_t error;
-	char *database;
-	char *collection;
 	int success;
 	bson_t reply = BSON_INITIALIZER;
 
+	/* Free previous database/collection, until PHPC-676 and HHVM-222 are resolved */
+	if (bulk_data->m_database) {
+		free(bulk_data->m_database);
+	}
+	if (bulk_data->m_collection) {
+		free(bulk_data->m_collection);
+	}
+
 	/* Prepare */
-	if (!MongoDriver::Utils::splitNamespace(ns, &database, &collection)) {
+	if (!MongoDriver::Utils::splitNamespace(ns, &bulk_data->m_database, &bulk_data->m_collection)) {
 		throw throwInvalidArgumentException("Invalid namespace provided: " + ns);
 	}
 
 	/* Setup operation */
-	mongoc_bulk_operation_set_database(bulk_data->m_bulk, database);
-	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, collection);
+	mongoc_bulk_operation_set_database(bulk_data->m_bulk, bulk_data->m_database);
+	mongoc_bulk_operation_set_collection(bulk_data->m_bulk, bulk_data->m_collection);
 	mongoc_bulk_operation_set_client(bulk_data->m_bulk, client);
 
 	/* Deal with write concerns */
@@ -213,6 +219,7 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 
 	/* Run operation */
 	success = mongoc_bulk_operation_execute(bulk_data->m_bulk, &reply, &error);
+	bulk_data->m_executed = true;
 
 	/* Prepare result */
 	HPHP::Object obj = HPHP::hippo_write_result_init(&reply, &error, client, mongoc_bulk_operation_get_hint(bulk_data->m_bulk), success, write_concern);

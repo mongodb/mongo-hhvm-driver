@@ -34,6 +34,8 @@ IMPLEMENT_GET_CLASS(MongoDBDriverBulkWriteData);
 const StaticString s_MongoDBDriverBulkWrite_ordered("ordered");
 const StaticString s_MongoDBDriverBulkWrite_bypassDocumentValidation("bypassDocumentValidation");
 
+#define BYPASS_UNSET -1
+
 void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOptions)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
@@ -48,13 +50,14 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOp
 
 	data->m_bulk = mongoc_bulk_operation_new(b_ordered);
 	data->m_num_ops = 0;
+	data->m_ordered = b_ordered;
+	data->m_bypass = BYPASS_UNSET;
 
 	if (!options.isNull()) {
 		if (options.exists(s_MongoDBDriverBulkWrite_bypassDocumentValidation)) {
-			mongoc_bulk_operation_set_bypass_document_validation(
-				data->m_bulk,
-				options[s_MongoDBDriverBulkWrite_bypassDocumentValidation].toBoolean()
-			);
+			bool bypass = !!options[s_MongoDBDriverBulkWrite_bypassDocumentValidation].toBoolean();
+			mongoc_bulk_operation_set_bypass_document_validation(data->m_bulk, bypass);
+			data->m_bypass = bypass;
 		}
 	}
 }
@@ -184,6 +187,7 @@ const StaticString
 	s_database("database"),
 	s_collection("collection"),
 	s_ordered("ordered"),
+	s_bypassDocumentValidation("bypassDocumentValidation"),
 	s_executed("executed"),
 	s_server_id("server_id"),
 	s_write_concern("write_concern");
@@ -193,20 +197,27 @@ Array HHVM_METHOD(MongoDBDriverBulkWrite, __debugInfo)
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 	Array retval = Array::Create();
 
-	if (data->m_bulk->database) {
-		retval.set(s_database, data->m_bulk->database);
+	if (data->m_database) {
+		retval.set(s_database, data->m_database);
 	} else {
 		retval.set(s_database, Variant());
 	}
 
-	if (data->m_bulk->collection) {
-		retval.set(s_collection, data->m_bulk->collection);
+	if (data->m_collection) {
+		retval.set(s_collection, data->m_collection);
 	} else {
 		retval.set(s_collection, Variant());
 	}
 
-	retval.set(s_ordered, data->m_bulk->flags.ordered);
-	retval.set(s_executed, data->m_bulk->executed);
+	retval.set(s_ordered, data->m_ordered);
+
+	if (data->m_bypass != BYPASS_UNSET) {
+		retval.set(s_bypassDocumentValidation, (bool) !!data->m_bypass);
+	} else {
+		retval.set(s_bypassDocumentValidation, Variant());
+	}
+
+	retval.set(s_executed, data->m_executed);
 	retval.set(s_server_id, (int64_t) mongoc_bulk_operation_get_hint(data->m_bulk));
 
 	if (mongoc_bulk_operation_get_write_concern(data->m_bulk)) {
