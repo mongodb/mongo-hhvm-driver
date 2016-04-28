@@ -483,7 +483,7 @@ Array HHVM_METHOD(MongoDBDriverManager, __debugInfo)
 	Array retval = Array::Create();
 	Array servers = Array::Create();
 
-	retval.add(s_MongoDBDriverManager_uri, (char*) mongoc_uri_get_string(data->m_client->uri));
+	retval.add(s_MongoDBDriverManager_uri, (char*) mongoc_uri_get_string(mongoc_client_get_uri(data->m_client)));
 
 	sds = mongoc_client_get_server_descriptions(data->m_client, &n);
 	for (i = 0; i < n; i++) {
