@@ -636,7 +636,7 @@ Object HHVM_METHOD(MongoDBDriverManager, selectServer, const Object &readPrefere
 
 	selected_server = mongoc_client_select_server(data->m_client, false, rp_data->m_read_preference, &error);
 	if (selected_server) {
-		tmp = hippo_mongo_driver_server_create_from_id(data->m_client, selected_server->id);
+		tmp = hippo_mongo_driver_server_create_from_id(data->m_client, mongoc_server_description_id(selected_server));
 		mongoc_server_description_destroy(selected_server);
 		return tmp;
 	} else {
