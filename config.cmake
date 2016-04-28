@@ -1,5 +1,6 @@
 HHVM_EXTENSION(mongodb
- mongodb.cpp bson.cpp utils.cpp
+ mongodb.cpp
+ bson.cpp pool.cpp utils.cpp
  src/MongoDB/BSON/functions.cpp
  src/MongoDB/BSON/Binary.cpp
  src/MongoDB/BSON/Javascript.cpp
