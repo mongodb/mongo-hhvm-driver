@@ -30,17 +30,32 @@ class MongoDBDriverBulkWriteData
 		static const StaticString s_className;
 
 		mongoc_bulk_operation_t *m_bulk;
-		size_t m_num_ops;
+		size_t                   m_num_ops;
+		bool                     m_ordered;
+		int                      m_bypass;
+		char                    *m_database;
+		char                    *m_collection;
+		bool                     m_executed;
 
 		static Class* getClass();
 
 		void sweep() {
 			mongoc_bulk_operation_destroy(m_bulk);
+
+			if (m_database) {
+				free(m_database);
+			}
+			if (m_collection) {
+				free(m_collection);
+			}
 		}
 
 		MongoDBDriverBulkWriteData() {
 			m_bulk = NULL;
 			m_num_ops = 0;
+			m_database = NULL;
+			m_collection = NULL;
+			m_executed = false;
 		}
 
 		~MongoDBDriverBulkWriteData() {
