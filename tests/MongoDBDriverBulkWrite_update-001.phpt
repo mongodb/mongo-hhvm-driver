@@ -19,4 +19,4 @@ $bw->update( [ 'test' => 'new' ], [ '$set' => [ 'test' => 'ruby' ] ], [ 'upsert'
 echo $bw->count(), "\n";
 ?>
 --EXPECT--
-1
+4
