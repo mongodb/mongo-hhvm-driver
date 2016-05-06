@@ -263,8 +263,8 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, read_preference);
 
 	/* Handle server hint */
-	if (server_id > 0) {
-		cursor->server_id = server_id;
+	if (server_id > 0 && !mongoc_cursor_set_hint(cursor, server_id)) {
+		throw throwRunTimeException("Could not set cursor server_id");
 	}
 
 	/* This throws an exception upon error */
@@ -365,8 +365,8 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	mongoc_collection_destroy(collection);
 
 	/* Handle server hint */
-	if (server_id > 0) {
-		cursor->server_id = server_id;
+	if (server_id > 0 && !mongoc_cursor_set_hint(cursor, server_id)) {
+		throw throwRunTimeException("Could not set cursor server_id");
 	}
 
 	/* This throws an exception upon error */
