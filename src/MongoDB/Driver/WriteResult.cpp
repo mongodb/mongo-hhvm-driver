@@ -22,11 +22,6 @@
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 
-#define MONGOC_I_AM_A_DRIVER
-#include "../../../libmongoc/src/mongoc/mongoc-bulk-operation-private.h"
-#include "../../../libmongoc/src/mongoc/mongoc-write-concern-private.h"
-#undef MONGOC_I_AM_A_DRIVER
-
 #include "Server.h"
 #include "WriteConcern.h"
 #include "WriteResult.h"
