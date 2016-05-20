@@ -37,6 +37,11 @@ class MongoDBDriverCursorData
 		mongoc_cursor_t *cursor;
 		mongoc_client_t *client;
 		int              m_server_id;
+		char            *m_db;
+		char            *m_collection;
+		Variant          m_read_preference;
+		Variant          m_command;
+		Object           m_query;
 		int64_t          current;
 		int              next_after_rewind = 0;
 
@@ -73,7 +78,8 @@ bool HHVM_METHOD(MongoDBDriverCursor, isDead);
 
 Array HHVM_METHOD(MongoDBDriverCursor, toArray);
 
-Object hippo_cursor_init(mongoc_cursor_t *cursor, mongoc_client_t *client);
+Object hippo_cursor_init_for_command(mongoc_cursor_t *cursor, mongoc_client_t *client, const char *db, const Variant &command, const Variant &readPreference);
+Object hippo_cursor_init_for_query(mongoc_cursor_t *cursor, mongoc_client_t *client, const String &ns, const Object &query, const Variant &readPreference);
 
 }
 #endif

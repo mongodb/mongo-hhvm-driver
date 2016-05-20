@@ -412,10 +412,10 @@ final class Query {
 		return [
 			'query' => (object) $this->query['query'],
 			'selector' => array_key_exists('fields', $this->query) ? (object) $this->query['fields'] : NULL,
-			'flags' => $this->query['flags'],
-			'skip' => $this->query['skip'],
-			'limit' => $this->query['limit'],
-			'batch_size' => $this->query['batchSize'],
+			'flags' => array_key_exists('flags', $this->query) ? $this->query['flags'] : 0,
+			'skip' => array_key_exists('skip', $this->query) ? $this->query['skip'] : 0,
+			'limit' => array_key_exists('limit', $this->query) ? $this->query['limit'] : 0,
+			'batch_size' => array_key_exists('batchSize', $this->query) ? $this->query['batchSize'] : 0,
 			'readConcern' => array_key_exists('readConcern', $this->query) ? [ 'level' => $this->query['readConcern'] ] : NULL,
 		];
 	}

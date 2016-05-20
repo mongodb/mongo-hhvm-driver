@@ -19,11 +19,14 @@
 #include "hphp/runtime/base/execution-context.h"
 #include "hphp/runtime/vm/native-data.h"
 
+#include "bson.h"
 #include "utils.h"
 #include "mongodb.h"
 
 #include "src/MongoDB/Driver/BulkWrite.h"
+#include "src/MongoDB/Driver/Command.h"
 #include "src/MongoDB/Driver/Cursor.h"
+#include "src/MongoDB/Driver/Manager.h"
 #include "src/MongoDB/Driver/Query.h"
 #include "src/MongoDB/Driver/ReadConcern.h"
 #include "src/MongoDB/Driver/ReadPreference.h"
@@ -246,11 +249,27 @@ static void hippo_advance_cursor_and_check_for_error(mongoc_cursor_t *cursor)
 	}
 }
 
-HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, bson_t *command, HPHP::Variant readPreference)
+const HPHP::StaticString
+	s_query("query"),
+	s_skip("skip"),
+	s_limit("limit"),
+	s_batchSize("batchSize"),
+	s_flags("flags"),
+	s_fields("fields"),
+	s_readConcern("readConcern");
+
+
+HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, const HPHP::Object &command, const HPHP::Variant &readPreference)
 {
 	mongoc_cursor_t *cursor;
 	bson_iter_t iter;
 	mongoc_read_prefs_t *read_preference = NULL;
+	bson_t *bson;
+
+	auto zcommand = command->o_get(HPHP::s_MongoDBDriverManager_command, false, HPHP::s_MongoDriverCommand_className);
+	HPHP::VariantToBsonConverter converter(zcommand, HIPPO_BSON_NO_FLAGS);
+	bson = bson_new();
+	converter.convert(bson);
 
 	if (!readPreference.isNull()) {
 		HPHP::Object o_rp = readPreference.toObject();
@@ -260,7 +279,7 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 	}
 
 	/* Run operation */
-	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, command, NULL, read_preference);
+	cursor = mongoc_client_command(client, db, MONGOC_QUERY_NONE, 0, 1, 0, bson, NULL, read_preference);
 
 	/* Handle server hint */
 	if (server_id > 0) {
@@ -282,28 +301,19 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 		/* This throws an exception upon error */
 		hippo_advance_cursor_and_check_for_error(cmd_cursor);
 
-		return HPHP::hippo_cursor_init(cmd_cursor, client);
+		return HPHP::hippo_cursor_init_for_command(cmd_cursor, client, db, command, readPreference);
 	}
 
 	/* Prepare result */
-	HPHP::Object obj = HPHP::hippo_cursor_init(cursor, client);
+	HPHP::Object obj = HPHP::hippo_cursor_init_for_command(cursor, client, db, command, readPreference);
 
 	/* Destroy */
-	bson_destroy(command);
+	bson_destroy(bson);
 
 	return obj;
 }
 
-const HPHP::StaticString
-	s_query("query"),
-	s_skip("skip"),
-	s_limit("limit"),
-	s_batchSize("batchSize"),
-	s_flags("flags"),
-	s_fields("fields"),
-	s_readConcern("readConcern");
-
-HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, HPHP::Object query, HPHP::Variant readPreference)
+HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, const HPHP::Object &query, const HPHP::Variant &readPreference)
 {
 	bson_t *bson_query = NULL, *bson_fields = NULL;
 	mongoc_collection_t *collection;
@@ -373,7 +383,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	hippo_advance_cursor_and_check_for_error(cursor);
 
 	/* Prepare result */
-	return HPHP::hippo_cursor_init(cursor, client);
+	return HPHP::hippo_cursor_init_for_query(cursor, client, ns, query, readPreference);
 }
 
 
