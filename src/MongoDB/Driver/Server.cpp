@@ -65,22 +65,21 @@ Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_
 {
 	static Class* c_server;
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
 	c_server = Unit::lookupClass(s_MongoDriverServer_className.get());
 	Object tmp = Object{c_server};
 
-	sd = mongoc_topology_description_server_by_id(&client->topology->description, server_id, &error);
+	sd = mongoc_client_get_server_description(client, server_id);
 
 	if (!sd) {
 		throw MongoDriver::Utils::CreateAndConstruct(
 			MongoDriver::s_MongoDriverExceptionRuntimeException_className,
-			"Failed to get server description, server likely gone: " + HPHP::Variant(error.message).toString(),
+			"Failed to get server description",
 			HPHP::Variant((uint64_t) 0)
 		);
 	}
 
-	tmp->o_set(s_MongoDriverServer___serverId, sd->host.host_and_port, s_MongoDriverServer_className);
+	tmp->o_set(s_MongoDriverServer___serverId, mongoc_server_description_host(sd)->host_and_port, s_MongoDriverServer_className);
 
 	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(tmp);
 
@@ -156,11 +155,10 @@ Array HHVM_METHOD(MongoDBDriverServer, __debugInfo)
 {
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
 	mongoc_server_description_t *sd;
-	bson_error_t error;
 
 	Array retval = Array::Create();
 
-	if ((sd = mongoc_topology_description_server_by_id(&data->m_client->topology->description, data->m_server_id, &error))) {
+	if ((sd = mongoc_client_get_server_description(data->m_client, data->m_server_id))) {
 		mongodb_driver_add_server_debug(sd, &retval);
 
 		mongoc_server_description_destroy(sd);
