@@ -25,6 +25,8 @@ extern "C" {
 
 namespace HPHP {
 
+extern const StaticString s_MongoDBDriverManager_command;
+
 class MongoDBDriverManagerData
 {
 	public:
