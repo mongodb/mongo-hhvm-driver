@@ -507,20 +507,13 @@ void HHVM_METHOD(MongoDBDriverManager, __wakeup)
 
 Object HHVM_METHOD(MongoDBDriverManager, executeCommand, const String &db, const Object &command, const Variant &readPreference)
 {
-	bson_t *bson;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(this_);
-
-	auto zquery = command->o_get(s_MongoDBDriverManager_command, false, s_MongoDriverCommand_className);
-
-	VariantToBsonConverter converter(zquery, HIPPO_BSON_NO_FLAGS);
-	bson = bson_new();
-	converter.convert(bson);
 
 	return MongoDriver::Utils::doExecuteCommand(
 		db.c_str(),
 		data->m_client,
 		-1,
-		bson,
+		command,
 		readPreference
 	);
 }

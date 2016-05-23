@@ -397,20 +397,13 @@ bool HHVM_METHOD(MongoDBDriverServer, isPassive)
 
 Object HHVM_METHOD(MongoDBDriverServer, executeCommand, const String &db, const Object &command, const Variant &readPreference)
 {
-	bson_t *bson;
 	MongoDBDriverServerData* data = Native::data<MongoDBDriverServerData>(this_);
-
-	auto zquery = command->o_get(s_command, false, s_MongoDriverCommand_className);
-
-	VariantToBsonConverter converter(zquery, HIPPO_BSON_NO_FLAGS);
-	bson = bson_new();
-	converter.convert(bson);
 
 	return MongoDriver::Utils::doExecuteCommand(
 		db.c_str(),
 		data->m_client,
 		data->m_server_id,
-		bson,
+		command,
 		readPreference
 	);
 }

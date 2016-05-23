@@ -30,34 +30,20 @@ namespace HPHP {
 const StaticString s_MongoDriverCursor_className("MongoDB\\Driver\\Cursor");
 Class* MongoDBDriverCursorData::s_class = nullptr;
 const StaticString MongoDBDriverCursorData::s_className("MongoDBDriverCursor");
-const StaticString s_MongoDBDriverCursor_cursor("cursor");
-const StaticString s_MongoDBDriverCursor_stamp("stamp");
-const StaticString s_MongoDBDriverCursor_is_command("is_command");
-const StaticString s_MongoDBDriverCursor_sent("sent");
-const StaticString s_MongoDBDriverCursor_done("done");
-const StaticString s_MongoDBDriverCursor_failed("failed");
-const StaticString s_MongoDBDriverCursor_end_of_event("end_of_event");
-const StaticString s_MongoDBDriverCursor_in_exhaust("in_exhaust");
-const StaticString s_MongoDBDriverCursor_redir_primary("redir_primary");
-const StaticString s_MongoDBDriverCursor_has_fields("has_fields");
+const StaticString s_MongoDBDriverCursor_database("database");
+const StaticString s_MongoDBDriverCursor_collection("collection");
 const StaticString s_MongoDBDriverCursor_query("query");
-const StaticString s_MongoDBDriverCursor_fields("fields");
-const StaticString s_MongoDBDriverCursor_read_preference("read_preference");
-const StaticString s_MongoDBDriverCursor_read_preference_mode("mode");
-const StaticString s_MongoDBDriverCursor_read_preference_tags("tags");
-const StaticString s_MongoDBDriverCursor_flags("flags");
-const StaticString s_MongoDBDriverCursor_skip("skip");
-const StaticString s_MongoDBDriverCursor_limit("limit");
-const StaticString s_MongoDBDriverCursor_count("count");
-const StaticString s_MongoDBDriverCursor_batch_size("batch_size");
-const StaticString s_MongoDBDriverCursor_ns("ns");
-const StaticString s_MongoDBDriverCursor_current_doc("current_doc");
-const StaticString s_MongoDBDriverCursor_server_id("server_id");
+const StaticString s_MongoDBDriverCursor_command("command");
+const StaticString s_MongoDBDriverCursor_readPreference("readPreference");
+const StaticString s_MongoDBDriverCursor_isDead("isDead");
+const StaticString s_MongoDBDriverCursor_currentIndex("currentIndex");
+const StaticString s_MongoDBDriverCursor_currentDocument("currentDocument");
+const StaticString s_MongoDBDriverCursor_server("server");
 IMPLEMENT_GET_CLASS(MongoDBDriverCursorData);
 
 static bool hippo_cursor_load_current(MongoDBDriverCursorData* data);
 
-Object hippo_cursor_init(mongoc_cursor_t *cursor, mongoc_client_t *client)
+Object hippo_cursor_init(mongoc_cursor_t *cursor, mongoc_client_t *client, const Variant &readPreference)
 {
 	static HPHP::Class* c_result;
 
@@ -71,10 +57,37 @@ Object hippo_cursor_init(mongoc_cursor_t *cursor, mongoc_client_t *client)
 	cursor_data->client = client;
 	cursor_data->m_server_id = mongoc_cursor_get_hint(cursor);
 	cursor_data->next_after_rewind = 0;
+	cursor_data->m_read_preference = readPreference;
+	cursor_data->m_db = NULL;
+	cursor_data->m_collection = NULL;
+	cursor_data->current = -1;
 
 	hippo_cursor_load_current(cursor_data);
 
 	return obj;
+}
+
+Object hippo_cursor_init_for_command(mongoc_cursor_t *cursor, mongoc_client_t *client, const char *db, const Variant &command, const Variant &readPreference)
+{
+	auto tmp = hippo_cursor_init(cursor, client, readPreference);
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(tmp.get());
+
+	cursor_data->m_db = strdup(db);
+	cursor_data->m_command = command;
+
+	return tmp;
+}
+
+Object hippo_cursor_init_for_query(mongoc_cursor_t *cursor, mongoc_client_t *client, const String &ns, const Object &query, const Variant &readPreference)
+{
+	auto tmp = hippo_cursor_init(cursor, client, readPreference);
+	HPHP::MongoDBDriverCursorData* cursor_data = HPHP::Native::data<HPHP::MongoDBDriverCursorData>(tmp.get());
+
+	MongoDriver::Utils::splitNamespace(ns, &cursor_data->m_db, &cursor_data->m_collection);
+
+	cursor_data->m_query = query;
+
+	return tmp;
 }
 
 static void invalidate_current(MongoDBDriverCursorData *data)
@@ -89,74 +102,46 @@ Array HHVM_METHOD(MongoDBDriverCursor, __debugInfo)
 	MongoDBDriverCursorData* data = Native::data<MongoDBDriverCursorData>(this_);
 	Array retval = Array::Create();
 
-	if (data->cursor) {
-		Array cretval = Array::Create();
-		const bson_t *tags = mongoc_read_prefs_get_tags(data->cursor->read_prefs);
-
-		cretval.add(s_MongoDBDriverCursor_stamp, (int64_t) data->cursor->stamp);
-		cretval.add(s_MongoDBDriverCursor_is_command, !!(data->cursor->is_command));
-		cretval.add(s_MongoDBDriverCursor_sent, !!data->cursor->sent);
-		cretval.add(s_MongoDBDriverCursor_done, !!data->cursor->done);
-		cretval.add(s_MongoDBDriverCursor_end_of_event, !!data->cursor->end_of_event);
-		cretval.add(s_MongoDBDriverCursor_in_exhaust, !!data->cursor->in_exhaust);
-		cretval.add(s_MongoDBDriverCursor_has_fields, !!data->cursor->has_fields);
-
-		{
-			Variant v_query;
-
-			hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
-			BsonToVariantConverter convertor(bson_get_data(&data->cursor->query), data->cursor->query.len, options);
-			convertor.convert(&v_query);
-			cretval.add(s_MongoDBDriverCursor_query, v_query);
-		}
-		{
-			Variant v_fields;
-
-			hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
-			BsonToVariantConverter convertor(bson_get_data(&data->cursor->fields), data->cursor->fields.len, options);
-			convertor.convert(&v_fields);
-			cretval.add(s_MongoDBDriverCursor_fields, v_fields);
-		}
-		if (tags->len) {
-			Array rp_retval = Array::Create();
-			Variant v_read_preference;
-
-			rp_retval.add(s_MongoDBDriverCursor_read_preference_mode, (int64_t) mongoc_read_prefs_get_mode(data->cursor->read_prefs));
-
-			hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-			BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
-			convertor.convert(&v_read_preference);
-			rp_retval.add(s_MongoDBDriverCursor_read_preference_tags, v_read_preference);
-
-			cretval.add(s_MongoDBDriverCursor_read_preference, rp_retval);
-		} else {
-			cretval.add(s_MongoDBDriverCursor_read_preference, Variant());
-		}
-
-		cretval.add(s_MongoDBDriverCursor_flags, (int64_t) data->cursor->flags);
-		cretval.add(s_MongoDBDriverCursor_skip, (int64_t) data->cursor->skip);
-		cretval.add(s_MongoDBDriverCursor_limit, (int64_t) data->cursor->limit);
-		cretval.add(s_MongoDBDriverCursor_count, (int64_t) data->cursor->count);
-		cretval.add(s_MongoDBDriverCursor_batch_size, (int64_t) data->cursor->batch_size);
-
-		cretval.add(s_MongoDBDriverCursor_ns, data->cursor->ns);
-
-		if (data->cursor->current) {
-			Array doc_retval = Array::Create();
-			Variant v_doc;
-
-			hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
-			BsonToVariantConverter convertor(bson_get_data(data->cursor->current), data->cursor->current->len, options);
-			convertor.convert(&v_doc);
-			cretval.add(s_MongoDBDriverCursor_current_doc, v_doc);
-		}
-
-		retval.add(s_MongoDBDriverCursor_cursor, cretval);
+	if (data->m_db) {
+		retval.add(s_MongoDBDriverCursor_database, data->m_db);
 	} else {
-		retval.add(s_MongoDBDriverCursor_cursor, Variant());
+		retval.add(s_MongoDBDriverCursor_database, Variant());
+	}
+	if (data->m_collection) {
+		retval.add(s_MongoDBDriverCursor_collection, data->m_collection);
+	} else {
+		retval.add(s_MongoDBDriverCursor_collection, Variant());
 	}
 
-	retval.add(s_MongoDBDriverCursor_server_id, data->m_server_id);
+	if (!data->m_query.isNull()) {
+		retval.add(s_MongoDBDriverCursor_query, data->m_query);
+	} else {
+		retval.add(s_MongoDBDriverCursor_query, Variant());
+	}
+
+	if (!data->m_command.isNull()) {
+		retval.add(s_MongoDBDriverCursor_command, data->m_command);
+	} else {
+		retval.add(s_MongoDBDriverCursor_command, Variant());
+	}
+
+	if (!data->m_read_preference.isNull()) {
+		retval.add(s_MongoDBDriverCursor_readPreference, data->m_read_preference);
+	} else {
+		retval.add(s_MongoDBDriverCursor_readPreference, Variant());
+	}
+
+	retval.add(s_MongoDBDriverCursor_isDead, !mongoc_cursor_is_alive(data->cursor));
+
+	if (data->zchild_active && data->current != -1) {
+		retval.add(s_MongoDBDriverCursor_currentIndex, data->current);
+		retval.add(s_MongoDBDriverCursor_currentDocument, data->zchild);
+	} else {
+		retval.add(s_MongoDBDriverCursor_currentIndex, 0);
+		retval.add(s_MongoDBDriverCursor_currentDocument, Variant());
+	}
+
+	retval.add(s_MongoDBDriverCursor_server, hippo_mongo_driver_server_create_from_id(data->client, data->m_server_id));
 
 	return retval;
 }
