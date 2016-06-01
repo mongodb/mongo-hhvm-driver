@@ -736,6 +736,11 @@ final class ObjectID implements Type, \Serializable
 
 	<<__Native>>
 	public function __debugInfo() : array;
+
+	public function getTimestamp() : int
+	{
+		return hexdec( substr( (string) $this, 0, 8 ) );
+	}
 }
 
 final class Regex implements Type, \Serializable
