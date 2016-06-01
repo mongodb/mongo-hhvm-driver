@@ -190,7 +190,10 @@ HPHP::Object Utils::doExecuteBulkWrite(const HPHP::String ns, mongoc_client_t *c
 	int success;
 	bson_t reply = BSON_INITIALIZER;
 
-	/* Free previous database/collection, until PHPC-676 and HHVM-222 are resolved */
+	if (bulk_data->m_executed == true) {
+		throw throwBulkWriteException("BulkWrite objects may only be executed once and this instance has already been executed");
+	}
+
 	if (bulk_data->m_database) {
 		free(bulk_data->m_database);
 	}
