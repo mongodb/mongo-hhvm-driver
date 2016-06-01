@@ -111,7 +111,6 @@ static class MongoDBExtension : public Extension {
 			Native::registerNativeDataInfo<MongoDBBsonObjectIDData>(MongoDBBsonObjectIDData::s_className.get());
 
 			/* MongoDB\BSON\UTCDateTime */
-			HHVM_MALIAS(MongoDB\\BSON\\UTCDateTime, __construct, MongoDBBsonUTCDateTime, __construct);
 			HHVM_MALIAS(MongoDB\\BSON\\UTCDateTime, toDateTime, MongoDBBsonUTCDateTime, toDateTime);
 
 			/* MongoDB\Driver\Manager */

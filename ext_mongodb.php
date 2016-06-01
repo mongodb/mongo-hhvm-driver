@@ -811,8 +811,16 @@ final class UTCDateTime implements Type, \Serializable
 
 	private int $milliseconds;
 
-	<<__Native>>
-	public function __construct(mixed $milliseconds);
+	public function __construct(mixed $milliseconds = NULL)
+	{
+		if ($milliseconds === NULL) {
+			$this->milliseconds = floor( microtime( true ) * 1000 );
+		} elseif (is_object($milliseconds) && get_class($milliseconds) == 'DateTime') {
+			$this->milliseconds = floor( (string) $milliseconds->format('U.u') * 1000 );
+		} else {
+			$this->milliseconds = (int) $milliseconds;
+		}
+	}
 
 	public function __toString() : string
 	{
