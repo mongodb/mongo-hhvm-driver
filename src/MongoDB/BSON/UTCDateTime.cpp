@@ -30,11 +30,6 @@ const StaticString s_MongoBsonUTCDateTime_milliseconds("milliseconds");
 
 const StaticString s_DateTime("DateTime");
 
-void HHVM_METHOD(MongoDBBsonUTCDateTime, __construct, const Variant &milliseconds)
-{
-	this_->o_set(s_MongoBsonUTCDateTime_milliseconds, milliseconds.toInt64(), s_MongoBsonUTCDateTime_className);
-}
-
 Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 {
 	int64_t milliseconds = this_->o_get(s_MongoBsonUTCDateTime_milliseconds, false, s_MongoBsonUTCDateTime_className).toInt64();
@@ -48,6 +43,12 @@ Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 #else
 	data->m_dt = makeSmartPtr<DateTime>(milliseconds / 1000, true);
 #endif
+
+	/* It would be nice to do this, but HHVM doesn't export this yet
+	 *
+	 * data->m_dt->fraction( ( (double)(milliseconds % 1000) ) / 1000);
+	 */
+
 	data->m_dt->setTimezone(req::make<TimeZone>(String("UTC")));
 
 	return obj;
