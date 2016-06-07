@@ -31,6 +31,7 @@
 
 #include "src/MongoDB/BSON/functions.h"
 #include "src/MongoDB/BSON/Binary.h"
+#include "src/MongoDB/BSON/Decimal.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectID.h"
 #include "src/MongoDB/BSON/UTCDateTime.h"
@@ -102,6 +103,13 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_USER_DEFINED"), (int64_t) BSON_SUBTYPE_USER);
 
 			HHVM_MALIAS(MongoDB\\BSON\\Binary, __debugInfo, MongoDBBsonBinary, __debugInfo);
+
+			/* MongoDB\BSON\Decimal */
+			HHVM_MALIAS(MongoDB\\BSON\\Decimal, __construct, MongoDBBsonDecimal, __construct);
+			HHVM_MALIAS(MongoDB\\BSON\\Decimal, __debugInfo, MongoDBBsonDecimal, __debugInfo);
+			HHVM_MALIAS(MongoDB\\BSON\\Decimal, __toString, MongoDBBsonDecimal, __toString);
+
+			Native::registerNativeDataInfo<MongoDBBsonDecimalData>(MongoDBBsonDecimalData::s_className.get());
 
 			/* MongoDB\BSON\ObjectID */
 			HHVM_MALIAS(MongoDB\\BSON\\ObjectID, __construct, MongoDBBsonObjectID, __construct);

@@ -696,6 +696,21 @@ final class Binary implements Type, \Serializable
 	function __debugInfo() : array;
 }
 
+<<__NativeData("MongoDBBsonDecimal")>>
+final class Decimal implements Type, \Serializable
+{
+	use DenySerialization;
+
+	<<__Native>>
+	function __construct(string $decimal);
+
+	<<__Native>>
+	function __toString() : string;
+
+	<<__Native>>
+	function __debugInfo() : array;
+}
+
 final class Javascript implements Type, \Serializable
 {
 	use DenySerialization;

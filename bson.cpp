@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include "src/MongoDB/BSON/Binary.h"
+#include "src/MongoDB/BSON/Decimal.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectID.h"
 #include "src/MongoDB/BSON/Regex.h"
@@ -282,6 +283,15 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
+/* {{{ MongoDriver\BSON\Decimal */
+void VariantToBsonConverter::_convertDecimal(bson_t *bson, const char *key, Object v)
+{
+	MongoDBBsonDecimalData* data = Native::data<MongoDBBsonDecimalData>(v.get());
+
+	bson_append_decimal128(bson, key, -1, &data->m_decimal);
+}
+/* }}} */
+
 /* {{{ MongoDriver\BSON\Javascript */
 void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, Object v)
 {
@@ -428,6 +438,10 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 
 		if (v.instanceof(s_MongoBsonBinary_className)) {
 			_convertBinary(bson, key, v);
+			return true;
+		}
+		if (v.instanceof(s_MongoBsonDecimal_className)) {
+			_convertDecimal(bson, key, v);
 			return true;
 		}
 		if (v.instanceof(s_MongoBsonJavascript_className)) {
@@ -732,6 +746,24 @@ void hippo_bson_visit_unsupported_type(const bson_iter_t *iter __attribute__((un
 	throw MongoDriver::Utils::throwUnexpectedValueException(message);
 }
 
+bool hippo_bson_visit_decimal128(const bson_iter_t *iter __attribute__((unused)), const char *key, const bson_decimal128_t *v_decimal128, void *data)
+{
+	hippo_bson_state *state = (hippo_bson_state*) data;
+	static Class* c_decimal128;
+
+	c_decimal128 = Unit::lookupClass(s_MongoBsonDecimal_className.get());
+	assert(c_decimal128);
+	Object obj = Object{c_decimal128};
+
+	MongoDBBsonDecimalData* obj_data = Native::data<MongoDBBsonDecimalData>(obj);
+	memcpy(&obj_data->m_decimal, v_decimal128, sizeof(bson_decimal128_t));
+
+	state->zchild.add(String::FromCStr(key), Variant(obj));
+
+	return false;
+}
+
+
 static const bson_visitor_t hippo_bson_visitors = {
 	NULL /* hippo_phongo_bson_visit_before*/,
 	NULL /*hippo_phongo_bson_visit_after*/,
@@ -757,7 +789,7 @@ static const bson_visitor_t hippo_bson_visitors = {
 	hippo_bson_visit_maxkey,
 	hippo_bson_visit_minkey,
 	hippo_bson_visit_unsupported_type,
-	NULL, /* hippo_bson_visit_decimal128 */
+	hippo_bson_visit_decimal128,
 	{ NULL }
 };
 /* }}} */
