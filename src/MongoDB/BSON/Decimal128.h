@@ -21,9 +21,9 @@ extern "C" {
 #include "../../../libbson/src/bson/bson.h"
 }
 
-extern const StaticString s_MongoBsonDecimal_className;
+extern const StaticString s_MongoBsonDecimal128_className;
 
-class MongoDBBsonDecimalData
+class MongoDBBsonDecimal128Data
 {
 	public:
 		static Class* s_class;
@@ -36,13 +36,13 @@ class MongoDBBsonDecimalData
 		void sweep() {
 		}
 
-		~MongoDBBsonDecimalData() {
+		~MongoDBBsonDecimal128Data() {
 			sweep();
 		};
 };
 
-void HHVM_METHOD(MongoDBBsonDecimal, __construct, const String &decimal);
-String HHVM_METHOD(MongoDBBsonDecimal, __toString);
-Array HHVM_METHOD(MongoDBBsonDecimal, __debugInfo);
+void HHVM_METHOD(MongoDBBsonDecimal128, __construct, const String &decimal);
+String HHVM_METHOD(MongoDBBsonDecimal128, __toString);
+Array HHVM_METHOD(MongoDBBsonDecimal128, __debugInfo);
 }
 #endif

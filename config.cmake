@@ -3,7 +3,7 @@ HHVM_EXTENSION(mongodb
  bson.cpp pool.cpp utils.cpp
  src/MongoDB/BSON/functions.cpp
  src/MongoDB/BSON/Binary.cpp
- src/MongoDB/BSON/Decimal.cpp
+ src/MongoDB/BSON/Decimal128.cpp
  src/MongoDB/BSON/Javascript.cpp
  src/MongoDB/BSON/ObjectID.cpp
  src/MongoDB/BSON/Regex.cpp

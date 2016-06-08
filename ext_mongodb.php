@@ -696,8 +696,8 @@ final class Binary implements Type, \Serializable
 	function __debugInfo() : array;
 }
 
-<<__NativeData("MongoDBBsonDecimal")>>
-final class Decimal implements Type, \Serializable
+<<__NativeData("MongoDBBsonDecimal128")>>
+final class Decimal128 implements Type, \Serializable
 {
 	use DenySerialization;
 

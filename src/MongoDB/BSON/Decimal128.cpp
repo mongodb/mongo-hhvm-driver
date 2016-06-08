@@ -20,27 +20,27 @@
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 
-#include "Decimal.h"
+#include "Decimal128.h"
 
 namespace HPHP {
 
-const StaticString s_MongoBsonDecimal_className("MongoDB\\BSON\\Decimal");
-Class* MongoDBBsonDecimalData::s_class = nullptr;
-const StaticString MongoDBBsonDecimalData::s_className("MongoDBBsonDecimal");
-IMPLEMENT_GET_CLASS(MongoDBBsonDecimalData);
+const StaticString s_MongoBsonDecimal128_className("MongoDB\\BSON\\Decimal128");
+Class* MongoDBBsonDecimal128Data::s_class = nullptr;
+const StaticString MongoDBBsonDecimal128Data::s_className("MongoDBBsonDecimal128");
+IMPLEMENT_GET_CLASS(MongoDBBsonDecimal128Data);
 
-const StaticString s_MongoDBBsonDecimal_decimal("decimal");
+const StaticString s_MongoDBBsonDecimal128_decimal("decimal");
 
-void HHVM_METHOD(MongoDBBsonDecimal, __construct, const String &decimal)
+void HHVM_METHOD(MongoDBBsonDecimal128, __construct, const String &decimal)
 {
-	MongoDBBsonDecimalData* data = Native::data<MongoDBBsonDecimalData>(this_);
+	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
 
 	if (!bson_decimal128_from_string(decimal.c_str(), &data->m_decimal)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("The argument (" + decimal + ") does not represent a valid decimal128 string");
 	}
 }
 
-static String decimalAsString(MongoDBBsonDecimalData* data)
+static String decimalAsString(MongoDBBsonDecimal128Data* data)
 {
 	String s;
 	char *data_s;
@@ -53,19 +53,19 @@ static String decimalAsString(MongoDBBsonDecimalData* data)
 	return s;
 }
 
-String HHVM_METHOD(MongoDBBsonDecimal, __toString)
+String HHVM_METHOD(MongoDBBsonDecimal128, __toString)
 {
-	MongoDBBsonDecimalData* data = Native::data<MongoDBBsonDecimalData>(this_);
+	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
 
 	return decimalAsString(data);
 }
 
-Array HHVM_METHOD(MongoDBBsonDecimal, __debugInfo)
+Array HHVM_METHOD(MongoDBBsonDecimal128, __debugInfo)
 {
-	MongoDBBsonDecimalData* data = Native::data<MongoDBBsonDecimalData>(this_);
+	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
 	Array retval = Array::Create();
 
-	retval.add(s_MongoDBBsonDecimal_decimal, decimalAsString(data));
+	retval.add(s_MongoDBBsonDecimal128_decimal, decimalAsString(data));
 
 	return retval;
 }

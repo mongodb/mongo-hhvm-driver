@@ -26,7 +26,7 @@
 #include <iostream>
 
 #include "src/MongoDB/BSON/Binary.h"
-#include "src/MongoDB/BSON/Decimal.h"
+#include "src/MongoDB/BSON/Decimal128.h"
 #include "src/MongoDB/BSON/Javascript.h"
 #include "src/MongoDB/BSON/ObjectID.h"
 #include "src/MongoDB/BSON/Regex.h"
@@ -283,10 +283,10 @@ void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Objec
 }
 /* }}} */
 
-/* {{{ MongoDriver\BSON\Decimal */
-void VariantToBsonConverter::_convertDecimal(bson_t *bson, const char *key, Object v)
+/* {{{ MongoDriver\BSON\Decimal128 */
+void VariantToBsonConverter::_convertDecimal128(bson_t *bson, const char *key, Object v)
 {
-	MongoDBBsonDecimalData* data = Native::data<MongoDBBsonDecimalData>(v.get());
+	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(v.get());
 
 	bson_append_decimal128(bson, key, -1, &data->m_decimal);
 }
@@ -440,8 +440,8 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 			_convertBinary(bson, key, v);
 			return true;
 		}
-		if (v.instanceof(s_MongoBsonDecimal_className)) {
-			_convertDecimal(bson, key, v);
+		if (v.instanceof(s_MongoBsonDecimal128_className)) {
+			_convertDecimal128(bson, key, v);
 			return true;
 		}
 		if (v.instanceof(s_MongoBsonJavascript_className)) {
@@ -751,11 +751,11 @@ bool hippo_bson_visit_decimal128(const bson_iter_t *iter __attribute__((unused))
 	hippo_bson_state *state = (hippo_bson_state*) data;
 	static Class* c_decimal128;
 
-	c_decimal128 = Unit::lookupClass(s_MongoBsonDecimal_className.get());
+	c_decimal128 = Unit::lookupClass(s_MongoBsonDecimal128_className.get());
 	assert(c_decimal128);
 	Object obj = Object{c_decimal128};
 
-	MongoDBBsonDecimalData* obj_data = Native::data<MongoDBBsonDecimalData>(obj);
+	MongoDBBsonDecimal128Data* obj_data = Native::data<MongoDBBsonDecimal128Data>(obj);
 	memcpy(&obj_data->m_decimal, v_decimal128, sizeof(bson_decimal128_t));
 
 	state->zchild.add(String::FromCStr(key), Variant(obj));

@@ -1,5 +1,5 @@
 --TEST--
-MongoDB\BSON\Binary value object
+MongoDB\BSON\Decimal128 value object
 --FILE--
 <?php
 $tests = [
@@ -17,7 +17,7 @@ foreach ( $tests as $test )
 	try {
 		echo "Testing '$test'\n";
 
-		$d = new \MongoDB\BSON\Decimal( $test );
+		$d = new \MongoDB\BSON\Decimal128( $test );
 
 		var_dump( $d );
 		echo (string) $d, "\n";
@@ -31,35 +31,35 @@ foreach ( $tests as $test )
 ?>
 --EXPECTF--
 Testing '1234.5678'
-object(MongoDB\BSON\Decimal)#%d (1) {
+object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
   string(9) "1234.5678"
 }
 1234.5678
 
 Testing '1234e5'
-object(MongoDB\BSON\Decimal)#%d (1) {
+object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
   string(8) "1.234E+8"
 }
 1.234E+8
 
 Testing '1234.56e-78'
-object(MongoDB\BSON\Decimal)#%d (1) {
+object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
   string(11) "1.23456E-75"
 }
 1.23456E-75
 
 Testing '-1234.5678'
-object(MongoDB\BSON\Decimal)#%d (1) {
+object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
   string(10) "-1234.5678"
 }
 -1234.5678
 
 Testing '-234.567'
-object(MongoDB\BSON\Decimal)#%d (1) {
+object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
   string(8) "-234.567"
 }
@@ -69,7 +69,7 @@ Testing 'NAN'
 The argument (NAN) does not represent a valid decimal128 string
 
 Testing 'INF'
-object(MongoDB\BSON\Decimal)#%d (1) {
+object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
   string(3) "Inf"
 }

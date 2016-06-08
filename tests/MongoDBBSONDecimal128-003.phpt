@@ -1,5 +1,5 @@
 --TEST--
-MongoDB\BSON\Binary round trip
+MongoDB\BSON\Decimal128 round trip
 --FILE--
 <?php
 include dirname(__FILE__) . '/utils.inc';
@@ -7,7 +7,7 @@ include dirname(__FILE__) . '/utils.inc';
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 cleanup( $m );
 
-$d = new \MongoDB\BSON\Decimal("1234.5678");
+$d = new \MongoDB\BSON\Decimal128("1234.5678");
 
 $bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => false ] );
 $_id = $bw->insert( [ 'decimal' => $d ] );
@@ -27,7 +27,7 @@ array(1) {
       string(24) "%s"
     }
     ["decimal"]=>
-    object(MongoDB\BSON\Decimal)#%d (1) {
+    object(MongoDB\BSON\Decimal128)#%d (1) {
       ["decimal"]=>
       string(9) "1234.5678"
     }

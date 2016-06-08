@@ -1,13 +1,13 @@
 --TEST--
-MongoDB\BSON\Binary BSON encode
+MongoDB\BSON\Decimal128 BSON encode
 --FILE--
 <?php
 $tests = [
-	[ 'field' => new \MongoDB\BSON\Decimal("1234.5678") ],
-	[ 'field' => new \MongoDB\BSON\Decimal("1234e5") ],
-	[ 'field' => new \MongoDB\BSON\Decimal("1234.56e-78") ],
-	[ 'field' => new \MongoDB\BSON\Decimal("1234.5678") ],
-	[ 'field' => new \MongoDB\BSON\Decimal(-234.567) ],
+	[ 'field' => new \MongoDB\BSON\Decimal128("1234.5678") ],
+	[ 'field' => new \MongoDB\BSON\Decimal128("1234e5") ],
+	[ 'field' => new \MongoDB\BSON\Decimal128("1234.56e-78") ],
+	[ 'field' => new \MongoDB\BSON\Decimal128("1234.5678") ],
+	[ 'field' => new \MongoDB\BSON\Decimal128(-234.567) ],
 ];
 
 
