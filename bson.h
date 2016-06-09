@@ -61,6 +61,7 @@ class VariantToBsonConverter
 		int _isPackedArray(const Array &a);
 		char *_getUnmangledPropertyName(String key);
 		void _convertBinary(bson_t *bson, const char *key, Object v);
+		void _convertDecimal128(bson_t *bson, const char *key, Object v);
 		void _convertJavascript(bson_t *bson, const char *key, Object v);
 		void _convertMaxKey(bson_t *bson, const char *key, Object v);
 		void _convertMinKey(bson_t *bson, const char *key, Object v);
