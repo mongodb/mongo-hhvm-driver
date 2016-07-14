@@ -169,6 +169,9 @@ Examples
 Deserialization from BSON
 =========================
 
+Compound Types
+--------------
+
 For compound types, there are three data types:
 
 - ``root``: refers to the top-level BSON document *only*
@@ -222,6 +225,53 @@ possible mapping values are:
   if it exists, will be sent as an associative array to the ``bsonUnserialize``
   function to initialise the object's properties.
 
+Scalar Types
+------------
+
+For types that the driver has a wrapper class for, it is possible to define a
+map from each supported data type to a class of your own, providing it
+implements the ``MongoDB\Driver\TypeWrapper`` interface.
+
+The supported data types are Binary, Decimal128, Javascript, MaxKey, MinKey,
+ObjectID, Regex, Timestamp, and UTCDateTime.
+
+The ``MongoDB\BSON\TypeWrapper`` interface defines two functions:
+``fromType()``, which takes a ``MongoDB\BSON\Type`` argument, and
+``toType()``, which returns a ``MongoDB\BSON\Type`` value.
+
+As an example, a wrapped UTCDateTime class, could look like::
+
+    class UTCDateTimeWrapper implements \MongoDB\Driver\TypeWrapper
+    {
+        private $intern;
+
+        function fromType(\MongoDB\BSON\Type $type)
+        {
+            if (! $type instanceof \MongoDB\BSON\UTCDateTime) {
+                throw UnexpectedValueException;
+            }
+
+            $this->intern = $type->toDateTime();
+        }
+
+        function toType() : \MongoDB\BSON\Type
+        {
+            return new \MongoDB\BSON\UTCDateTime( $this->intern );
+        }
+    }
+
+
+If the defined class is inheriting an original ``MongoDB\BSON\*`` class, then
+it SHOULD also implement the accompanying
+``\MongoDB\BSON\<classname>Interface`` interface.
+
+The type specific interfaces include all of the methods from the original
+class, with the exact same arguments and return types.
+
+For example, a user defined ``MyUTCDateTime`` class needs to implement the
+``MongoDB\BSON\UTCDateTimeInterface`` and ``MongoDB\BSON\TypeWrapper``
+interfaces.
+
 TypeMaps
 --------
 
@@ -229,6 +279,14 @@ TypeMaps can be set through the ``setTypeMap()`` method on a
 ``MongoDB\Driver\Cursor`` object, or the ``$typeMap`` argument of
 ``MongoDB\BSON\toPHP()`` (previously, ``MongoDB\BSON\toArray()``). Each of the
 three classes (``root``, ``document`` and ``array``) can be individually set.
+
+Additionally, you can specify the scalar type mappings through a ``types``
+element. Each element in that ``types`` array maps a MongoDB data type to
+a user defined class name.
+
+If the named class does not exist, is not concrete (i.e. it is abstract or an
+interface), or does not implement ``MongoDB\Driver\TypeWrapper``, then an
+``MongoDB\Driver\Exception\InvalidArgumentException`` exception is thrown.
 
 If the value in the map is ``NULL``, it means the same as the *default* value
 for that item.
@@ -349,6 +407,12 @@ iterate over the array and set the properties without modifications. It
     /* typemap: [ 'root' => 'object', 'document' => 'object' ] */
     { "foo": "yes", "__pclass": { "$type": "80", "$binary": "MyClass" } }
       -> stdClass { $foo => "yes", "__pclass" => Binary(0x80, "MyClass") }
+
+::
+
+    /* typemap: [ 'types' => [ 'UTCDateTime' => 'MyUTCDateTime' ] ] */
+    { "date" : ISODate("2016-07-19T16:49:54") }
+      -> stdClass { $date => MyUTCDateTime(…) }
 
 
 Related Tickets

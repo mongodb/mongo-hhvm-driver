@@ -1,6 +1,12 @@
 <?hh
 namespace MongoDB\Driver;
 
+interface TypeWrapper
+{
+	public function fromType(\MongoDB\BSON\Type $type);
+	public function toType() : \MongoDB\BSON\Type;
+}
+
 final class WriteConcernError {
 	private $code;
 	private $message;
@@ -620,6 +626,69 @@ abstract class WriteException extends RunTimeException
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;
 
+/* {{{ Interfaces */
+interface BinaryInterface
+{
+	public function __construct(string $data, int $type);
+	public function getType() : int;
+	public function getData() : string;
+	function __debugInfo() : array;
+}
+
+interface Decimal128Interface
+{
+	function __construct(string $decimal);
+	function __toString() : string;
+	function __debugInfo() : array;
+}
+
+interface JavascriptInterface
+{
+	public function __construct(string $code, ?mixed $scope = NULL);
+	function __debugInfo() : array;
+}
+
+interface MaxKeyInterface
+{
+}
+
+interface MinKeyInterface
+{
+}
+
+interface ObjectIDInterface
+{
+	public function __construct(string $objectId = null);
+	public function __toString() : string;
+	public function __debugInfo() : array;
+	public function getTimestamp() : int;
+}
+
+interface RegexInterface
+{
+	public function __construct(string $pattern, string $flags);
+	public function getPattern() : string;
+	public function getFlags() : string;
+	public function __toString() : string;
+	public function __debugInfo() : array;
+}
+
+interface TimestampInterface
+{
+	public function __construct(int $increment, int $timestamp);
+	public function __toString() : string;
+	public function __debugInfo() : array;
+}
+
+interface UTCDateTimeInterface
+{
+	public function __construct(mixed $milliseconds = NULL);
+	public function __toString() : string;
+	public function toDateTime() : \DateTime;
+	public function __debugInfo() : array;
+}
+/* }}} */
+
 <<__Native>>
 function fromPHP(mixed $data) : string;
 
@@ -665,6 +734,12 @@ interface Persistable extends Serializable, Unserializable
 {
 }
 
+interface TypeWrapper {
+	function fromType(Type $type);
+	function toType() : Type;
+}
+
+
 final class Binary implements Type, \Serializable
 {
 	use DenySerialization;
@@ -677,7 +752,7 @@ final class Binary implements Type, \Serializable
 		}
 	}
 
-	public function getType()
+	public function getType() : int
 	{
 		$func_args = func_num_args();
 		if ($func_args != 0) {
@@ -702,7 +777,7 @@ final class Binary implements Type, \Serializable
 }
 
 <<__NativeData("MongoDBBsonDecimal128")>>
-final class Decimal128 implements Type, \Serializable
+final class Decimal128 implements Type, \Serializable, Decimal128Interface
 {
 	use DenySerialization;
 
@@ -716,7 +791,7 @@ final class Decimal128 implements Type, \Serializable
 	function __debugInfo() : array;
 }
 
-final class Javascript implements Type, \Serializable
+final class Javascript implements Type, \Serializable, JavascriptInterface
 {
 	use DenySerialization;
 
@@ -759,18 +834,18 @@ final class Javascript implements Type, \Serializable
 	}
 }
 
-final class MaxKey implements Type, \Serializable
+final class MaxKey implements Type, \Serializable, MaxKeyInterface
 {
 	use DenySerialization;
 }
 
-final class MinKey implements Type, \Serializable
+final class MinKey implements Type, \Serializable, MinKeyInterface
 {
 	use DenySerialization;
 }
 
 <<__NativeData("MongoDBBsonObjectID")>>
-final class ObjectID implements Type, \Serializable
+final class ObjectID implements Type, \Serializable, ObjectIDInterface
 {
 	use DenySerialization;
 
@@ -789,7 +864,7 @@ final class ObjectID implements Type, \Serializable
 	}
 }
 
-final class Regex implements Type, \Serializable
+final class Regex implements Type, \Serializable, RegexInterface
 {
 	use DenySerialization;
 
@@ -821,7 +896,7 @@ final class Regex implements Type, \Serializable
 	}
 }
 
-final class Timestamp implements Type, \Serializable
+final class Timestamp implements Type, \Serializable, TimestampInterface
 {
 	use DenySerialization;
 
@@ -851,7 +926,7 @@ final class Timestamp implements Type, \Serializable
 	}
 }
 
-final class UTCDateTime implements Type, \Serializable
+final class UTCDateTime implements Type, \Serializable, UTCDateTimeInterface
 {
 	use DenySerialization;
 
