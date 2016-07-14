@@ -56,8 +56,8 @@ commands::
 
 	mkdir hhvm-mongodb
 	cd hhvm-mongodb
-	tar -xvzf ../hhvm-mongodb-1.0alpha1.tgz
-	cd hhvm-mongodb-1.0alpha1
+	tar -xvzf ../hhvm-mongodb-1.1.2.tgz
+	cd hhvm-mongodb-1.1.2
 	hphpize
 	cmake .
 	make configlib
@@ -72,7 +72,7 @@ commands::
 
 	git clone https://github.com/mongodb/mongo-hhvm-driver --branch master
 	cd mongo-hhvm-driver/
-	git submodule update --init
+	git submodule update --init --recursive
 	hphpize
 	cmake .
 	make configlib
