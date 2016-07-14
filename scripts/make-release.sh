@@ -8,8 +8,7 @@ cd /tmp/hhvm-build
 git clone git@github.com:mongodb/mongo-hhvm-driver.git hhvm-mongodb-${version}
 cd hhvm-mongodb-${version}
 git checkout "$version"
-git submodule init
-git submodule update
+git submodule update --init --recursive
 
 #removing nonsense
 rm -rf /tmp/hhvm-build/hhvm-mongodb-${version}/.git
