@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+1.1.3
+-----
+
+** Bug
+    * [HHVM-238] - Driver does not compile with HHVM 3.14
+
+
 1.1.2
 -----
 
