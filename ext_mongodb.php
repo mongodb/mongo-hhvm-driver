@@ -739,6 +739,20 @@ final class Javascript implements Type, \Serializable
 		];
 	}
 
+	public function getCode() : string
+	{
+		return $this->code;
+	}
+
+	public function getScope() : mixed
+	{
+		if ( $this->scope !== NULL )
+		{
+			return (object) $this->scope;
+		}
+		return NULL;
+	}
+
 	public function __toString() : string
 	{
 		return $this->code;
