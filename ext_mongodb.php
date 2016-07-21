@@ -692,6 +692,11 @@ final class Binary implements Type, \Serializable
 		return $this->data;
 	}
 
+	public function __toString() : string
+	{
+		return $this->data;
+	}
+
 	<<__Native>>
 	function __debugInfo() : array;
 }
@@ -715,16 +720,42 @@ final class Javascript implements Type, \Serializable
 {
 	use DenySerialization;
 
-	public function __construct(private string $code, private ?mixed $scope = NULL)
+	private $code;
+
+	public function __construct(string $code, private ?mixed $scope = NULL)
 	{
+		if ( strstr( $code, "\0" ) !== false )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Code cannot contain null bytes" );
+		}
+		$this->code = $code;
 	}
 
 	public function __debugInfo() : array
 	{
 		return [
-			'javascript' => $this->code,
+			'code' => $this->code,
 			'scope' => (object) $this->scope
 		];
+	}
+
+	public function getCode() : string
+	{
+		return $this->code;
+	}
+
+	public function getScope() : mixed
+	{
+		if ( $this->scope !== NULL )
+		{
+			return (object) $this->scope;
+		}
+		return NULL;
+	}
+
+	public function __toString() : string
+	{
+		return $this->code;
 	}
 }
 
