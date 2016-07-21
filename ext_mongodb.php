@@ -692,6 +692,11 @@ final class Binary implements Type, \Serializable
 		return $this->data;
 	}
 
+	public function __toString() : string
+	{
+		return $this->data;
+	}
+
 	<<__Native>>
 	function __debugInfo() : array;
 }
@@ -732,6 +737,11 @@ final class Javascript implements Type, \Serializable
 			'javascript' => $this->code,
 			'scope' => (object) $this->scope
 		];
+	}
+
+	public function __toString() : string
+	{
+		return $this->code;
 	}
 }
 
