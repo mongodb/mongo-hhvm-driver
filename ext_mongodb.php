@@ -715,8 +715,15 @@ final class Javascript implements Type, \Serializable
 {
 	use DenySerialization;
 
-	public function __construct(private string $code, private ?mixed $scope = NULL)
+	private $code;
+
+	public function __construct(string $code, private ?mixed $scope = NULL)
 	{
+		if ( strstr( $code, "\0" ) !== false )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Code cannot contain null bytes" );
+		}
+		$this->code = $code;
 	}
 
 	public function __debugInfo() : array
