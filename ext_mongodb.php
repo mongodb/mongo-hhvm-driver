@@ -734,7 +734,7 @@ final class Javascript implements Type, \Serializable
 	public function __debugInfo() : array
 	{
 		return [
-			'javascript' => $this->code,
+			'code' => $this->code,
 			'scope' => (object) $this->scope
 		];
 	}
