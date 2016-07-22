@@ -930,20 +930,23 @@ interface BinaryInterface
 	public function __construct(string $data, int $type);
 	public function getType() : int;
 	public function getData() : string;
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 interface Decimal128Interface
 {
-	function __construct(string $decimal);
-	function __toString() : string;
-	function __debugInfo() : array;
+	public function __construct(string $decimal);
+	public function __toString() : string;
+	public function __debugInfo() : array;
 }
 
 interface JavascriptInterface
 {
 	public function __construct(string $code, ?mixed $scope = NULL);
-	function __debugInfo() : array;
+	public function __toString() : string;
+	public function __debugInfo() : array;
+	public function getCode() : string;
+	public function getScope() : mixed;
 }
 
 interface MaxKeyInterface
@@ -1085,7 +1088,7 @@ final class Binary implements Type, \Serializable, \JsonSerializable, BinaryInte
 	}
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 <<__NativeData("MongoDBBsonDecimal128")>>
@@ -1122,7 +1125,7 @@ final class Decimal128 implements Type, \Serializable, \JsonSerializable, Decima
 	}
 
 	<<__Native>>
-	function __construct(string $decimal);
+	public function __construct(string $decimal);
 
 	static public function __set_state(array $state)
 	{
@@ -1131,10 +1134,10 @@ final class Decimal128 implements Type, \Serializable, \JsonSerializable, Decima
 	}
 
 	<<__Native>>
-	function __toString() : string;
+	public function __toString() : string;
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 final class Javascript implements Type, \Serializable, \JsonSerializable, JavascriptInterface
