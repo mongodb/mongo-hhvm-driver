@@ -734,11 +734,6 @@ interface Persistable extends Serializable, Unserializable
 {
 }
 
-interface TypeWrapper {
-	function fromType(Type $type);
-	function toType() : Type;
-}
-
 
 final class Binary implements Type, \Serializable
 {

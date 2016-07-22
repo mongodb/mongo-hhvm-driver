@@ -261,14 +261,14 @@ As an example, a wrapped UTCDateTime class, could look like::
     }
 
 
-If the defined class is inheriting an original ``MongoDB\BSON\*`` class, then
-it SHOULD also implement the accompanying
+If the defined class wraps (composes) an original ``MongoDB\BSON\*`` class,
+then it SHOULD also implement the accompanying
 ``\MongoDB\BSON\<classname>Interface`` interface.
 
 The type specific interfaces include all of the methods from the original
 class, with the exact same arguments and return types.
 
-For example, a user defined ``MyUTCDateTime`` class needs to implement the
+For example, a user-defined ``MyUTCDateTime`` class needs to implement the
 ``MongoDB\BSON\UTCDateTimeInterface`` and ``MongoDB\BSON\TypeWrapper``
 interfaces.
 
