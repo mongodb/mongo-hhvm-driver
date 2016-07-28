@@ -18,6 +18,7 @@
 namespace HPHP {
 
 extern const StaticString s_MongoBsonUTCDateTime_className;
+extern const StaticString s_MongoBsonUTCDateTime_shortName;
 extern const StaticString s_MongoBsonUTCDateTime_milliseconds;
 
 Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime);

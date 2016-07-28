@@ -25,6 +25,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonUTCDateTime_className("MongoDB\\BSON\\UTCDateTime");
+const StaticString s_MongoBsonUTCDateTime_shortName("UTCDateTime");
 
 const StaticString s_MongoBsonUTCDateTime_milliseconds("milliseconds");
 

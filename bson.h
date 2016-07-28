@@ -92,6 +92,16 @@ typedef struct {
 	String array_class_name;
 	String root_class_name;
 	String document_class_name;
+
+	struct {
+		String binary_class_name;
+		String decimal128_class_name;
+		String javascript_class_name;
+		String objectid_class_name;
+		String regex_class_name;
+		String timestamp_class_name;
+		String utcdatetime_class_name;
+	} types;
 } hippo_bson_conversion_options_t;
 
 typedef struct {

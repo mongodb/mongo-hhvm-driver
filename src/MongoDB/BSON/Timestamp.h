@@ -18,6 +18,7 @@
 namespace HPHP {
 
 extern const StaticString s_MongoBsonTimestamp_className;
+extern const StaticString s_MongoBsonTimestamp_shortName;
 extern const StaticString s_MongoBsonTimestamp_timestamp;
 extern const StaticString s_MongoBsonTimestamp_increment;
 
