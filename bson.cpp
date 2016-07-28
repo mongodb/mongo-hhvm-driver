@@ -646,8 +646,14 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 
 	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className);
 	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className);
-
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	
+	if (! state->options.types.regex_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.regex_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
