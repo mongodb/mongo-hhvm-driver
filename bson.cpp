@@ -676,7 +676,13 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 
 	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.javascript_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.javascript_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -709,7 +715,13 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	obj->o_set(s_MongoBsonJavascript_scope, scope_v, s_MongoBsonJavascript_className);
 
 	/* add to array */
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.javascript_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.javascript_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
