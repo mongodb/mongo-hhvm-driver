@@ -746,7 +746,13 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className);
 	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.timestamp_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.timestamp_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
