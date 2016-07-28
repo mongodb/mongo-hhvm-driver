@@ -28,6 +28,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonObjectID_className("MongoDB\\BSON\\ObjectID");
+const StaticString s_MongoBsonObjectID_shortName("ObjectID");
 const StaticString s_MongoBsonObjectID_oid("oid");
 Class* MongoDBBsonObjectIDData::s_class = nullptr;
 const StaticString MongoDBBsonObjectIDData::s_className("MongoDBBsonObjectID");

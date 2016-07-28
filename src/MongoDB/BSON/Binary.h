@@ -23,6 +23,7 @@ extern "C" {
 namespace HPHP {
 
 extern const StaticString s_MongoBsonBinary_className;
+extern const StaticString s_MongoBsonBinary_shortName;
 extern const StaticString s_MongoBsonBinary_data;
 extern const StaticString s_MongoBsonBinary_type;
 

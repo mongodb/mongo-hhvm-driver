@@ -49,7 +49,8 @@ const StaticString
 	s_document("document"),
 	s_object("object"),
 	s_stdClass("stdClass"),
-	s_array("array");
+	s_array("array"),
+	s_types("types");
 /* }}} */
 
 int VariantToBsonConverter::_isPackedArray(const Array &a)
@@ -1012,6 +1013,24 @@ static void validateClass(String class_name)
 	}
 }
 
+static void validateTypeWrapperClass(String class_name)
+{
+	static Class* c_class;
+	static Class* c_unserializable_interface = Unit::lookupClass(s_MongoBSONTypeWrapper_className.get());
+
+	c_class = Unit::getClass(class_name.get(), true);
+
+	if (!c_class) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not exist");
+	}
+	if (c_class && (!isNormalClass(c_class) || isAbstract(c_class))) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " is not instantiatable");
+	}
+	if (c_class && !c_class->classof(c_unserializable_interface)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not implement MongoDB\\BSON\\TypeWrapper");
+	}
+}
+
 void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap)
 {
 	if (typemap.exists(s_root) && typemap[s_root].isString()) {
@@ -1062,6 +1081,49 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 
 			options->array_type = HIPPO_TYPEMAP_NAMEDCLASS;
 			options->array_class_name = array_type;
+		}
+	}
+
+	if (typemap.exists(s_types)) {
+		if (!typemap[s_types].isArray()) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("The 'types' key in the type map should be an array");
+		}
+
+		for (ArrayIter iter(typemap[s_types]); iter; ++iter) {
+			Variant key(iter.first());
+			String s_key = key.toString();
+
+			const Variant& data(iter.secondRef());
+			if (!data.isString()) {
+				throw MongoDriver::Utils::throwInvalidArgumentException("The typemap for type '" + s_key + "' should be a string");
+			}
+			String s_type_class = data.toString();
+
+			/* Depending on the key, set the right option (or throw an exception) */
+			if (CASECMP(s_key, s_MongoBsonBinary_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.binary_class_name = s_type_class;
+			} else if (CASECMP(s_key, s_MongoBsonDecimal128_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.decimal128_class_name = s_type_class;
+			} else if (CASECMP(s_key, s_MongoBsonJavascript_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.javascript_class_name = s_type_class;
+			} else if (CASECMP(s_key, s_MongoBsonObjectID_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.objectid_class_name = s_type_class;
+			} else if (CASECMP(s_key, s_MongoBsonRegex_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.regex_class_name = s_type_class;
+			} else if (CASECMP(s_key, s_MongoBsonTimestamp_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.timestamp_class_name = s_type_class;
+			} else if (CASECMP(s_key, s_MongoBsonUTCDateTime_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.utcdatetime_class_name = s_type_class;
+			} else {
+				throw MongoDriver::Utils::throwInvalidArgumentException("The type '" + s_key + "' is not supported in the type map");
+			}
 		}
 	}
 }
