@@ -21,12 +21,6 @@ interface Persistable extends Serializable, Unserializable
 
 namespace MongoDB\Driver;
 
-interface TypeWrapper
-{
-	public function fromType(\MongoDB\BSON\Type $type);
-	public function toType() : \MongoDB\BSON\Type;
-}
-
 final class WriteConcernError {
 	private $code;
 	private $message;
@@ -925,6 +919,12 @@ abstract class WriteException extends RunTimeException
 namespace MongoDB\BSON;
 
 /* {{{ Interfaces */
+interface TypeWrapper
+{
+	static public function createFromBSONType(\MongoDB\BSON\Type $type) : \MongoDB\BSON\TypeWrapper;
+	public function toBSONType() : \MongoDB\BSON\Type;
+}
+
 interface BinaryInterface
 {
 	public function __construct(string $data, int $type);

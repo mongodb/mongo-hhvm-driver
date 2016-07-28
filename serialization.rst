@@ -230,31 +230,36 @@ Scalar Types
 
 For types that the driver has a wrapper class for, it is possible to define a
 map from each supported data type to a class of your own, providing it
-implements the ``MongoDB\Driver\TypeWrapper`` interface.
+implements the ``MongoDB\BSON\TypeWrapper`` interface.
 
 The supported data types are Binary, Decimal128, Javascript, MaxKey, MinKey,
 ObjectID, Regex, Timestamp, and UTCDateTime.
 
 The ``MongoDB\BSON\TypeWrapper`` interface defines two functions:
-``fromType()``, which takes a ``MongoDB\BSON\Type`` argument, and
-``toType()``, which returns a ``MongoDB\BSON\Type`` value.
+``createFromBSONType()``, a factory method which takes a ``MongoDB\BSON\Type``
+argument, and ``toBSONType()``, which returns a ``MongoDB\BSON\Type`` value.
 
 As an example, a wrapped UTCDateTime class, could look like::
 
-    class UTCDateTimeWrapper implements \MongoDB\Driver\TypeWrapper
+    class UTCDateTimeWrapper implements \MongoDB\BSON\TypeWrapper
     {
         private $intern;
 
-        function fromType(\MongoDB\BSON\Type $type)
+        public function __construct( \MongoDB\BSON\UTCDateTime $type )
+        {
+            $this->intern = $type->toDateTime();
+        }
+
+        static function createFromBSONType(\MongoDB\BSON\Type $type)
         {
             if (! $type instanceof \MongoDB\BSON\UTCDateTime) {
                 throw UnexpectedValueException;
             }
 
-            $this->intern = $type->toDateTime();
+            return new UTCDateTimeWrapper( $type );
         }
 
-        function toType() : \MongoDB\BSON\Type
+        function toBSONType() : \MongoDB\BSON\Type
         {
             return new \MongoDB\BSON\UTCDateTime( $this->intern );
         }
@@ -268,9 +273,13 @@ then it SHOULD also implement the accompanying
 The type specific interfaces include all of the methods from the original
 class, with the exact same arguments and return types.
 
-For example, a user-defined ``MyUTCDateTime`` class needs to implement the
+For example, a user-defined ``UTCDateTimeWrapper`` class needs to implement the
 ``MongoDB\BSON\UTCDateTimeInterface`` and ``MongoDB\BSON\TypeWrapper``
 interfaces.
+
+It is not necessary to return an object from the ``createFromBSONType``
+"factory" method. You may also return a simple scalar value.
+
 
 TypeMaps
 --------
@@ -285,11 +294,8 @@ element. Each element in that ``types`` array maps a MongoDB data type to
 a user defined class name.
 
 If the named class does not exist, is not concrete (i.e. it is abstract or an
-interface), or does not implement ``MongoDB\Driver\TypeWrapper``, then an
+interface), or does not implement ``MongoDB\BSON\TypeWrapper``, then an
 ``MongoDB\Driver\Exception\InvalidArgumentException`` exception is thrown.
-
-If the value in the map is ``NULL``, it means the same as the *default* value
-for that item.
 
 Examples
 --------
@@ -410,9 +416,13 @@ iterate over the array and set the properties without modifications. It
 
 ::
 
-    /* typemap: [ 'types' => [ 'UTCDateTime' => 'MyUTCDateTime' ] ] */
+    /* typemap: [ 'types' => [ 'UTCDateTime' => 'UTCDateTimeWrapper' ] ] */
     { "date" : ISODate("2016-07-19T16:49:54") }
-      -> stdClass { $date => MyUTCDateTime(…) }
+      -> stdClass { $date => UTCDateTimeWrapper(…) }
+
+    /* typemap: [ 'types' => [ 'UTCDateTime' => 'UTCDateTimeAsUnixTimestamp' ] ] */
+    { "date" : ISODate("2016-07-19T16:49:54") }
+      -> stdClass { $date => 1468946994 }
 
 
 Related Tickets
