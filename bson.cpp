@@ -586,7 +586,13 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
 	bson_oid_copy(v_oid, &obj_data->m_oid);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.objectid_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.objectid_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
