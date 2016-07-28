@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/array-iterator.h"
+#include "hphp/runtime/base/builtin-functions.h"
 #include "hphp/runtime/base/execution-context.h"
 #include "hphp/runtime/base/type-string.h"
 #include "hphp/util/logger.h"
@@ -274,6 +275,10 @@ const StaticString s_MongoDriverBsonSerializable_functionName("bsonSerialize");
 const StaticString s_MongoDriverBsonUnserializable_functionName("bsonUnserialize");
 const StaticString s_MongoDriverBsonODM_fieldName("__pclass");
 
+const StaticString s_MongoBSONTypeWrapper_className("MongoDB\\BSON\\TypeWrapper");
+const StaticString s_MongoBSONTypeWrapper_createFromBSONType("createFromBSONType");
+const StaticString s_MongoBSONTypeWrapper_toBSONType("toBSONType");
+
 /* {{{ MongoDriver\BSON\Binary */
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
 {
@@ -488,6 +493,15 @@ BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int da
 	m_options = options;
 }
 
+/* {{{ TypeWrapping */
+Variant wrapObject(String class_name, Object typeObject)
+{
+	Variant result = invoke_static_method(class_name, s_MongoBSONTypeWrapper_createFromBSONType, Array::Create(typeObject));
+
+	return result;
+}
+/* }}} */
+
 /* {{{ Visitors */
 void hippo_bson_visit_corrupt(const bson_iter_t *iter __attribute__((unused)), void *data)
 {
@@ -549,7 +563,13 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 
 	obj = createMongoBsonBinaryObject(v_binary, v_binary_len, v_subtype);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.binary_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.binary_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
