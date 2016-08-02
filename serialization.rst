@@ -270,8 +270,9 @@ If the defined class wraps (composes) an original ``MongoDB\BSON\*`` class,
 then it SHOULD also implement the accompanying
 ``\MongoDB\BSON\<classname>Interface`` interface.
 
-The type specific interfaces include all of the methods from the original
-class, with the exact same arguments and return types.
+The type specific interfaces include all the type-specific methods from the
+original class, with the exact same arguments and return types. For example,
+they will not include the ``__construct()`` and ``__debugInfo()`` methods.
 
 For example, a user-defined ``UTCDateTimeWrapper`` class needs to implement the
 ``MongoDB\BSON\UTCDateTimeInterface`` and ``MongoDB\BSON\TypeWrapper``
