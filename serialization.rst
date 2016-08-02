@@ -237,7 +237,7 @@ ObjectID, Regex, Timestamp, and UTCDateTime.
 
 The ``MongoDB\BSON\TypeWrapper`` interface defines two functions:
 ``createFromBSONType()``, a factory method which takes a ``MongoDB\BSON\Type``
-argument, and ``toBSONType()``, which returns a ``MongoDB\BSON\Type`` value.
+argument, and ``toBSONType()``.
 
 As an example, a wrapped UTCDateTime class, could look like::
 
@@ -253,13 +253,13 @@ As an example, a wrapped UTCDateTime class, could look like::
         static function createFromBSONType(\MongoDB\BSON\Type $type)
         {
             if (! $type instanceof \MongoDB\BSON\UTCDateTime) {
-                throw UnexpectedValueException;
+                throw new UnexpectedValueException;
             }
 
             return new UTCDateTimeWrapper( $type );
         }
 
-        function toBSONType() : \MongoDB\BSON\Type
+        function toBSONType()
         {
             return new \MongoDB\BSON\UTCDateTime( $this->intern );
         }
@@ -270,7 +270,7 @@ If the defined class wraps (composes) an original ``MongoDB\BSON\*`` class,
 then it SHOULD also implement the accompanying
 ``\MongoDB\BSON\<classname>Interface`` interface.
 
-The type specific interfaces include all the type-specific methods from the
+The type interfaces include all the type-specific methods from the
 original class, with the exact same arguments and return types. For example,
 they will not include the ``__construct()`` and ``__debugInfo()`` methods.
 
@@ -278,8 +278,15 @@ For example, a user-defined ``UTCDateTimeWrapper`` class needs to implement the
 ``MongoDB\BSON\UTCDateTimeInterface`` and ``MongoDB\BSON\TypeWrapper``
 interfaces.
 
-It is not necessary to return an object from the ``createFromBSONType``
-"factory" method. You may also return a simple scalar value.
+It is not necessary to return an object from the ``createFromBSONType()``
+"factory" method. You may return anything that can be serialized to BSON,
+including an object that implements ``MongoDB\BSON\Serializable``, but you MAY NOT
+return an object that implements ``MongoDB\BSON\TypeWrapper``. Returning a
+different type from the original one could be used as a way to migrate
+Decimal128 values to plain strings, or downgrade them to floating points or
+integers. Likewise, you could implement a UTCDateTime wrapper that converts
+dates to a formatted string; however, that would prevent round-tripping of the
+original date value.
 
 
 TypeMaps
@@ -292,7 +299,7 @@ three classes (``root``, ``document`` and ``array``) can be individually set.
 
 Additionally, you can specify the scalar type mappings through a ``types``
 element. Each element in that ``types`` array maps a MongoDB data type to
-a user defined class name.
+a user-defined class name.
 
 If the named class does not exist, is not concrete (i.e. it is abstract or an
 interface), or does not implement ``MongoDB\BSON\TypeWrapper``, then an
@@ -451,6 +458,7 @@ Related Tickets
 - HHVM-67_: ODM should only match field of specific name (__pclass)
 - HHVM-84_: Implement MongoDB\BSON\Serializable
 - HHVM-85_: Implement MongoDB\BSON\Unserializable / MongoDB\BSON\Persistable
+- HHVM-214_ Implement interfaces for userland BSON type classes
 
 - PHP-1457_: MongoCollection::insert() Non-public properties of objects.
 
@@ -475,6 +483,7 @@ Related Tickets
 .. _HHVM-67: https://jira.mongodb.org/browse/HHVM-67
 .. _HHVM-84: https://jira.mongodb.org/browse/HHVM-84
 .. _HHVM-85: https://jira.mongodb.org/browse/HHVM-85
+.. _HHVM-214: https://jira.mongodb.org/browse/HHVM-214
 .. _PHP-1457: https://jira.mongodb.org/browse/PHP-1457
 
 Unrelated Tickets
