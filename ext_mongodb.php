@@ -624,7 +624,7 @@ namespace MongoDB\BSON;
 interface TypeWrapper
 {
 	static public function createFromBSONType(\MongoDB\BSON\Type $type) : \MongoDB\BSON\TypeWrapper;
-	public function toBSONType() : \MongoDB\BSON\Type;
+	public function toBSONType();
 }
 
 interface BinaryInterface

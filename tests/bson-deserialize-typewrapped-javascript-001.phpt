@@ -27,7 +27,7 @@ class MyJavascript implements \MongoDB\BSON\TypeWrapper
 		return new self( $type );
 	}
 
-	function toBSONType() : \MongoDB\BSON\Type
+	function toBSONType()
 	{
 		return $this->intern;
 	}
