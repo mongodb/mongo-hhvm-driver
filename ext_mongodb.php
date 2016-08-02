@@ -927,26 +927,21 @@ interface TypeWrapper
 
 interface BinaryInterface
 {
-	public function __construct(string $data, int $type);
 	public function getType() : int;
 	public function getData() : string;
-	public function __debugInfo() : array;
+	public function __toString() : string;
 }
 
 interface Decimal128Interface
 {
-	public function __construct(string $decimal);
 	public function __toString() : string;
-	public function __debugInfo() : array;
 }
 
 interface JavascriptInterface
 {
-	public function __construct(string $code, ?mixed $scope = NULL);
-	public function __toString() : string;
-	public function __debugInfo() : array;
 	public function getCode() : string;
 	public function getScope() : mixed;
+	public function __toString() : string;
 }
 
 interface MaxKeyInterface
@@ -959,34 +954,26 @@ interface MinKeyInterface
 
 interface ObjectIDInterface
 {
-	public function __construct(string $objectId = null);
-	public function __toString() : string;
-	public function __debugInfo() : array;
 	public function getTimestamp() : int;
+	public function __toString() : string;
 }
 
 interface RegexInterface
 {
-	public function __construct(string $pattern, string $flags);
 	public function getPattern() : string;
 	public function getFlags() : string;
 	public function __toString() : string;
-	public function __debugInfo() : array;
 }
 
 interface TimestampInterface
 {
-	public function __construct(int $increment, int $timestamp);
 	public function __toString() : string;
-	public function __debugInfo() : array;
 }
 
 interface UTCDateTimeInterface
 {
-	public function __construct(mixed $milliseconds = NULL);
-	public function __toString() : string;
 	public function toDateTime() : \DateTime;
-	public function __debugInfo() : array;
+	public function __toString() : string;
 }
 /* }}} */
 
