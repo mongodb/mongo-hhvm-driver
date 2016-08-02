@@ -793,7 +793,7 @@ final class Regex implements Type, \Serializable
 {
 	use DenySerialization;
 
-	public function __construct(private string $pattern, private string $flags)
+	public function __construct(private string $pattern, private string $flags = '')
 	{
 	}
 
