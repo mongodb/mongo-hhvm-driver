@@ -322,6 +322,7 @@ void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, O
 
 /* {{{ MongoDriver\BSON\MaxKey */
 const StaticString s_MongoBsonMaxKey_className("MongoDB\\BSON\\MaxKey");
+const StaticString s_MongoBsonMaxKey_shortName("MaxKey");
 
 void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Object v)
 {
@@ -331,6 +332,7 @@ void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Objec
 
 /* {{{ MongoDriver\BSON\MinKey */
 const StaticString s_MongoBsonMinKey_className("MongoDB\\BSON\\MinKey");
+const StaticString s_MongoBsonMinKey_shortName("MinKey");
 
 void VariantToBsonConverter::_convertMinKey(bson_t *bson, const char *key, Object v)
 {
@@ -774,7 +776,13 @@ bool hippo_bson_visit_maxkey(const bson_iter_t *iter __attribute__((unused)), co
 	assert(c_objectId);
 	Object obj = Object{c_objectId};
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.maxkey_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.maxkey_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -788,7 +796,13 @@ bool hippo_bson_visit_minkey(const bson_iter_t *iter __attribute__((unused)), co
 	assert(c_objectId);
 	Object obj = Object{c_objectId};
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.minkey_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.minkey_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -1165,24 +1179,39 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 			if (CASECMP(s_key, s_MongoBsonBinary_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.binary_class_name = s_type_class;
+
 			} else if (CASECMP(s_key, s_MongoBsonDecimal128_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.decimal128_class_name = s_type_class;
+
 			} else if (CASECMP(s_key, s_MongoBsonJavascript_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.javascript_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonMaxKey_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.maxkey_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonMinKey_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.minkey_class_name = s_type_class;
+
 			} else if (CASECMP(s_key, s_MongoBsonObjectID_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.objectid_class_name = s_type_class;
+
 			} else if (CASECMP(s_key, s_MongoBsonRegex_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.regex_class_name = s_type_class;
+
 			} else if (CASECMP(s_key, s_MongoBsonTimestamp_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.timestamp_class_name = s_type_class;
+
 			} else if (CASECMP(s_key, s_MongoBsonUTCDateTime_shortName)) {
 				validateTypeWrapperClass(s_type_class);
 				options->types.utcdatetime_class_name = s_type_class;
+
 			} else {
 				throw MongoDriver::Utils::throwInvalidArgumentException("The type '" + s_key + "' is not supported in the type map");
 			}

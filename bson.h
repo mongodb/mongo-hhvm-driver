@@ -97,6 +97,8 @@ typedef struct {
 		String binary_class_name;
 		String decimal128_class_name;
 		String javascript_class_name;
+		String maxkey_class_name;
+		String minkey_class_name;
 		String objectid_class_name;
 		String regex_class_name;
 		String timestamp_class_name;
