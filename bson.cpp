@@ -93,8 +93,31 @@ void VariantToBsonConverter::convert(bson_t *bson)
 	}
 }
 
+const StaticString s_MongoBSONTypeWrapper_className("MongoDB\\BSON\\TypeWrapper");
+const StaticString s_MongoBSONTypeWrapper_createFromBSONType("createFromBSONType");
+const StaticString s_MongoBSONTypeWrapper_toBSONType("toBSONType");
+
 void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Variant v)
 {
+	/* We need to check whether it is a type wrapped object (ie, the class
+	 * implements TypeWrapper). If so, run the toBSONType() method on the
+	 * object. The returned value then needs to be processed as normal. */
+	if (v.isObject() && v.toObject().instanceof(s_MongoBSONTypeWrapper_className)) {
+		Object obj = v.toObject();
+		Class *cls = obj.get()->getVMClass();
+		Func  *m   = cls->lookupMethod(s_MongoBSONTypeWrapper_toBSONType.get());
+		TypedValue args[0] = {};
+		Variant    result;
+
+		g_context->invokeFuncFew(
+			result.asTypedValue(),
+			m, obj.get(),
+			nullptr, 0, args
+		);
+
+		v = result;
+	}
+
 	switch (v.getType()) {
 		case KindOfUninit:
 		case KindOfNull:
@@ -276,10 +299,6 @@ const StaticString s_MongoDriverBsonUnserializable_className("MongoDB\\BSON\\Uns
 const StaticString s_MongoDriverBsonSerializable_functionName("bsonSerialize");
 const StaticString s_MongoDriverBsonUnserializable_functionName("bsonUnserialize");
 const StaticString s_MongoDriverBsonODM_fieldName("__pclass");
-
-const StaticString s_MongoBSONTypeWrapper_className("MongoDB\\BSON\\TypeWrapper");
-const StaticString s_MongoBSONTypeWrapper_createFromBSONType("createFromBSONType");
-const StaticString s_MongoBSONTypeWrapper_toBSONType("toBSONType");
 
 /* {{{ MongoDriver\BSON\Binary */
 void VariantToBsonConverter::_convertBinary(bson_t *bson, const char *key, Object v)
