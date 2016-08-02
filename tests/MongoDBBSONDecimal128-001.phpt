@@ -66,7 +66,7 @@ object(MongoDB\BSON\Decimal128)#%d (1) {
 -234.567
 
 Testing 'NAN'
-The argument (NAN) does not represent a valid decimal128 string
+Error parsing Decimal128 string: NAN
 
 Testing 'INF'
 object(MongoDB\BSON\Decimal128)#%d (1) {
