@@ -21,7 +21,7 @@ class MyBinary implements \MongoDB\BSON\TypeWrapper
 	static function createFromBSONType(\MongoDB\BSON\Type $type) : \MongoDB\BSON\TypeWrapper
 	{
 		if (! $type instanceof \MongoDB\BSON\Binary) {
-			echo "Not of the right type\n";
+			throw Exception( "Not of the right type" );
 		}
 
 		return new self( $type );
@@ -45,7 +45,7 @@ class MyBinaryReturnScalarType implements \MongoDB\BSON\TypeWrapper
 	static function createFromBSONType(\MongoDB\BSON\Type $type)
 	{
 		if (! $type instanceof \MongoDB\BSON\Binary) {
-			echo "Not of the right type\n";
+			throw Exception( "Not of the right type" );
 		}
 
 		return 42;

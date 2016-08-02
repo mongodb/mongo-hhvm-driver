@@ -21,7 +21,7 @@ class MyTimestamp implements \MongoDB\BSON\TypeWrapper
 	static function createFromBSONType(\MongoDB\BSON\Type $type) : \MongoDB\BSON\TypeWrapper
 	{
 		if (! $type instanceof \MongoDB\BSON\Timestamp) {
-			echo "Not of the right type\n";
+			throw Exception( "Not of the right type" );
 		}
 
 		return new self( $type );
@@ -40,7 +40,7 @@ class MyTimestampReturnScalarType implements \MongoDB\BSON\TypeWrapper
 	static function createFromBSONType(\MongoDB\BSON\Type $type)
 	{
 		if (! $type instanceof \MongoDB\BSON\Timestamp) {
-			echo "Not of the right type\n";
+			throw Exception( "Not of the right type" );
 		}
 
 		return $type->__toString();
