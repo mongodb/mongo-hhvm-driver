@@ -190,7 +190,7 @@ final class WriteResult {
 <<__NativeData("MongoDBDriverManager")>>
 class Manager {
 	<<__Native>>
-	public function __construct(string $dsn = "mongodb://localhost", array $options = array(), array $driverOptions = array());
+	public function __construct(string $dsn = "mongodb://127.0.0.1/", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
 	public function __debugInfo() : array;
