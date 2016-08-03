@@ -36,7 +36,7 @@ void HHVM_METHOD(MongoDBBsonDecimal128, __construct, const String &decimal)
 	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
 
 	if (!bson_decimal128_from_string(decimal.c_str(), &data->m_decimal)) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("The argument (" + decimal + ") does not represent a valid decimal128 string");
+		throw MongoDriver::Utils::throwInvalidArgumentException("Error parsing Decimal128 string: " + decimal);
 	}
 }
 
