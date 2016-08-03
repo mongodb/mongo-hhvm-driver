@@ -39,7 +39,7 @@ void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 		if (bson_oid_is_valid((HHVM_FN(strtolower)(str_objectId)).c_str(), str_objectId.length())) {
 			bson_oid_init_from_string(&data->m_oid, (HHVM_FN(strtolower)(str_objectId)).c_str());
 		} else {
-			throw MongoDriver::Utils::throwInvalidArgumentException("Invalid BSON ID provided");
+			throw MongoDriver::Utils::throwInvalidArgumentException("Error parsing ObjectID string: " + str_objectId);
 		}
 	} else {
 		bson_oid_init(&data->m_oid, NULL);
