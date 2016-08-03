@@ -25,6 +25,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonDecimal128_className("MongoDB\\BSON\\Decimal128");
+const StaticString s_MongoBsonDecimal128_shortName("Decimal128");
 Class* MongoDBBsonDecimal128Data::s_class = nullptr;
 const StaticString MongoDBBsonDecimal128Data::s_className("MongoDBBsonDecimal128");
 IMPLEMENT_GET_CLASS(MongoDBBsonDecimal128Data);

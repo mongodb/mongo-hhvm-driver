@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/array-iterator.h"
+#include "hphp/runtime/base/builtin-functions.h"
 #include "hphp/runtime/base/execution-context.h"
 #include "hphp/runtime/base/type-string.h"
 #include "hphp/util/logger.h"
@@ -47,7 +48,8 @@ const StaticString
 	s_document("document"),
 	s_object("object"),
 	s_stdClass("stdClass"),
-	s_array("array");
+	s_array("array"),
+	s_types("types");
 /* }}} */
 
 int VariantToBsonConverter::_isPackedArray(const Array &a)
@@ -89,8 +91,31 @@ void VariantToBsonConverter::convert(bson_t *bson)
 	}
 }
 
+const StaticString s_MongoBSONTypeWrapper_className("MongoDB\\BSON\\TypeWrapper");
+const StaticString s_MongoBSONTypeWrapper_createFromBSONType("createFromBSONType");
+const StaticString s_MongoBSONTypeWrapper_toBSONType("toBSONType");
+
 void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Variant v)
 {
+	/* We need to check whether it is a type wrapped object (ie, the class
+	 * implements TypeWrapper). If so, run the toBSONType() method on the
+	 * object. The returned value then needs to be processed as normal. */
+	if (v.isObject() && v.toObject().instanceof(s_MongoBSONTypeWrapper_className)) {
+		Object obj = v.toObject();
+		Class *cls = obj.get()->getVMClass();
+		Func  *m   = cls->lookupMethod(s_MongoBSONTypeWrapper_toBSONType.get());
+		TypedValue args[0] = {};
+		Variant    result;
+
+		g_context->invokeFuncFew(
+			result.asTypedValue(),
+			m, obj.get(),
+			nullptr, 0, args
+		);
+
+		v = result;
+	}
+
 	switch (v.getType()) {
 		case KindOfUninit:
 		case KindOfNull:
@@ -314,6 +339,7 @@ void VariantToBsonConverter::_convertJavascript(bson_t *bson, const char *key, O
 
 /* {{{ MongoDriver\BSON\MaxKey */
 const StaticString s_MongoBsonMaxKey_className("MongoDB\\BSON\\MaxKey");
+const StaticString s_MongoBsonMaxKey_shortName("MaxKey");
 
 void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Object v)
 {
@@ -323,6 +349,7 @@ void VariantToBsonConverter::_convertMaxKey(bson_t *bson, const char *key, Objec
 
 /* {{{ MongoDriver\BSON\MinKey */
 const StaticString s_MongoBsonMinKey_className("MongoDB\\BSON\\MinKey");
+const StaticString s_MongoBsonMinKey_shortName("MinKey");
 
 void VariantToBsonConverter::_convertMinKey(bson_t *bson, const char *key, Object v)
 {
@@ -487,6 +514,15 @@ BsonToVariantConverter::BsonToVariantConverter(const unsigned char *data, int da
 	m_options = options;
 }
 
+/* {{{ TypeWrapping */
+Variant wrapObject(String class_name, Object typeObject)
+{
+	Variant result = invoke_static_method(class_name, s_MongoBSONTypeWrapper_createFromBSONType, Array::Create(typeObject));
+
+	return result;
+}
+/* }}} */
+
 /* {{{ Visitors */
 void hippo_bson_visit_corrupt(const bson_iter_t *iter __attribute__((unused)), void *data)
 {
@@ -548,7 +584,13 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 
 	obj = createMongoBsonBinaryObject(v_binary, v_binary_len, v_subtype);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.binary_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.binary_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -565,7 +607,13 @@ bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const
 	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
 	bson_oid_copy(v_oid, &obj_data->m_oid);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.objectid_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.objectid_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -589,7 +637,13 @@ bool hippo_bson_visit_date_time(const bson_iter_t *iter __attribute__((unused)),
 
 	obj->o_set(s_MongoBsonUTCDateTime_milliseconds, Variant(msec_since_epoch), s_MongoBsonUTCDateTime_className);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.utcdatetime_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.utcdatetime_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -613,8 +667,14 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 
 	obj->o_set(s_MongoBsonRegex_pattern, Variant(v_regex), s_MongoBsonRegex_className);
 	obj->o_set(s_MongoBsonRegex_flags, Variant(v_options), s_MongoBsonRegex_className);
-
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	
+	if (! state->options.types.regex_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.regex_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -637,7 +697,13 @@ bool hippo_bson_visit_code(const bson_iter_t *iter __attribute__((unused)), cons
 
 	obj->o_set(s_MongoBsonJavascript_code, s, s_MongoBsonJavascript_className);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.javascript_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.javascript_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -670,7 +736,13 @@ bool hippo_bson_visit_codewscope(const bson_iter_t *iter __attribute__((unused))
 	obj->o_set(s_MongoBsonJavascript_scope, scope_v, s_MongoBsonJavascript_className);
 
 	/* add to array */
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.javascript_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.javascript_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -695,7 +767,13 @@ bool hippo_bson_visit_timestamp(const bson_iter_t *iter __attribute__((unused)),
 	obj->o_set(s_MongoBsonTimestamp_timestamp, Variant((uint64_t) v_timestamp), s_MongoBsonTimestamp_className);
 	obj->o_set(s_MongoBsonTimestamp_increment, Variant((uint64_t) v_increment), s_MongoBsonTimestamp_className);
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.timestamp_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.timestamp_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -717,7 +795,13 @@ bool hippo_bson_visit_maxkey(const bson_iter_t *iter __attribute__((unused)), co
 	assert(c_objectId);
 	Object obj = Object{c_objectId};
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.maxkey_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.maxkey_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -731,7 +815,13 @@ bool hippo_bson_visit_minkey(const bson_iter_t *iter __attribute__((unused)), co
 	assert(c_objectId);
 	Object obj = Object{c_objectId};
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.minkey_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.minkey_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -758,7 +848,13 @@ bool hippo_bson_visit_decimal128(const bson_iter_t *iter __attribute__((unused))
 	MongoDBBsonDecimal128Data* obj_data = Native::data<MongoDBBsonDecimal128Data>(obj);
 	memcpy(&obj_data->m_decimal, v_decimal128, sizeof(bson_decimal128_t));
 
-	state->zchild.add(String::FromCStr(key), Variant(obj));
+	if (! state->options.types.decimal128_class_name.empty()) {
+		/* We have a type wrapped class, so wrap it */
+		Variant result = wrapObject(state->options.types.decimal128_class_name, obj);
+		state->zchild.add(String::FromCStr(key), result);
+	} else {
+		state->zchild.add(String::FromCStr(key), Variant(obj));
+	}
 
 	return false;
 }
@@ -1012,6 +1108,24 @@ static void validateClass(String class_name)
 	}
 }
 
+static void validateTypeWrapperClass(String class_name)
+{
+	static Class* c_class;
+	static Class* c_unserializable_interface = Unit::lookupClass(s_MongoBSONTypeWrapper_className.get());
+
+	c_class = Unit::getClass(class_name.get(), true);
+
+	if (!c_class) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not exist");
+	}
+	if (c_class && (!isNormalClass(c_class) || isAbstract(c_class))) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " is not instantiatable");
+	}
+	if (c_class && !c_class->classof(c_unserializable_interface)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Class " + class_name + " does not implement MongoDB\\BSON\\TypeWrapper");
+	}
+}
+
 void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap)
 {
 	if (typemap.exists(s_root) && typemap[s_root].isString()) {
@@ -1062,6 +1176,64 @@ void parseTypeMap(hippo_bson_conversion_options_t *options, const Array &typemap
 
 			options->array_type = HIPPO_TYPEMAP_NAMEDCLASS;
 			options->array_class_name = array_type;
+		}
+	}
+
+	if (typemap.exists(s_types)) {
+		if (!typemap[s_types].isArray()) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("The 'types' key in the type map should be an array");
+		}
+
+		for (ArrayIter iter(typemap[s_types]); iter; ++iter) {
+			Variant key(iter.first());
+			String s_key = key.toString();
+
+			const Variant& data(iter.secondRef());
+			if (!data.isString()) {
+				throw MongoDriver::Utils::throwInvalidArgumentException("The typemap for type '" + s_key + "' should be a string");
+			}
+			String s_type_class = data.toString();
+
+			/* Depending on the key, set the right option (or throw an exception) */
+			if (CASECMP(s_key, s_MongoBsonBinary_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.binary_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonDecimal128_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.decimal128_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonJavascript_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.javascript_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonMaxKey_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.maxkey_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonMinKey_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.minkey_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonObjectID_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.objectid_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonRegex_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.regex_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonTimestamp_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.timestamp_class_name = s_type_class;
+
+			} else if (CASECMP(s_key, s_MongoBsonUTCDateTime_shortName)) {
+				validateTypeWrapperClass(s_type_class);
+				options->types.utcdatetime_class_name = s_type_class;
+
+			} else {
+				throw MongoDriver::Utils::throwInvalidArgumentException("The type '" + s_key + "' is not supported in the type map");
+			}
 		}
 	}
 }

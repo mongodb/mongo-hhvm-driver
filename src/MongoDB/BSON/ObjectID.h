@@ -22,6 +22,7 @@ extern "C" {
 }
 
 extern const StaticString s_MongoBsonObjectID_className;
+extern const StaticString s_MongoBsonObjectID_shortName;
 
 class MongoDBBsonObjectIDData
 {

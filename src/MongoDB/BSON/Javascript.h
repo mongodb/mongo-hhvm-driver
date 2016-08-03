@@ -18,6 +18,7 @@
 namespace HPHP {
 
 extern const StaticString s_MongoBsonJavascript_className;
+extern const StaticString s_MongoBsonJavascript_shortName;
 extern const StaticString s_MongoBsonJavascript_code;
 extern const StaticString s_MongoBsonJavascript_scope;
 

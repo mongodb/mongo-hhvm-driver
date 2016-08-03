@@ -620,6 +620,65 @@ abstract class WriteException extends RunTimeException
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;
 
+/* {{{ Interfaces */
+interface TypeWrapper
+{
+	static public function createFromBSONType(\MongoDB\BSON\Type $type) : \MongoDB\BSON\TypeWrapper;
+	public function toBSONType();
+}
+
+interface BinaryInterface
+{
+	public function getType() : int;
+	public function getData() : string;
+	public function __toString() : string;
+}
+
+interface Decimal128Interface
+{
+	public function __toString() : string;
+}
+
+interface JavascriptInterface
+{
+	public function getCode() : string;
+	public function getScope() : mixed;
+	public function __toString() : string;
+}
+
+interface MaxKeyInterface
+{
+}
+
+interface MinKeyInterface
+{
+}
+
+interface ObjectIDInterface
+{
+	public function getTimestamp() : int;
+	public function __toString() : string;
+}
+
+interface RegexInterface
+{
+	public function getPattern() : string;
+	public function getFlags() : string;
+	public function __toString() : string;
+}
+
+interface TimestampInterface
+{
+	public function __toString() : string;
+}
+
+interface UTCDateTimeInterface
+{
+	public function toDateTime() : \DateTime;
+	public function __toString() : string;
+}
+/* }}} */
+
 <<__Native>>
 function fromPHP(mixed $data) : string;
 
@@ -665,7 +724,8 @@ interface Persistable extends Serializable, Unserializable
 {
 }
 
-final class Binary implements Type, \Serializable
+
+final class Binary implements Type, \Serializable, BinaryInterface
 {
 	use DenySerialization;
 
@@ -677,7 +737,7 @@ final class Binary implements Type, \Serializable
 		}
 	}
 
-	public function getType()
+	public function getType() : int
 	{
 		$func_args = func_num_args();
 		if ($func_args != 0) {
@@ -698,25 +758,25 @@ final class Binary implements Type, \Serializable
 	}
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 <<__NativeData("MongoDBBsonDecimal128")>>
-final class Decimal128 implements Type, \Serializable
+final class Decimal128 implements Type, \Serializable, Decimal128Interface
 {
 	use DenySerialization;
 
 	<<__Native>>
-	function __construct(string $decimal);
+	public function __construct(string $decimal);
 
 	<<__Native>>
-	function __toString() : string;
+	public function __toString() : string;
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
-final class Javascript implements Type, \Serializable
+final class Javascript implements Type, \Serializable, JavascriptInterface
 {
 	use DenySerialization;
 
@@ -759,18 +819,18 @@ final class Javascript implements Type, \Serializable
 	}
 }
 
-final class MaxKey implements Type, \Serializable
+final class MaxKey implements Type, \Serializable, MaxKeyInterface
 {
 	use DenySerialization;
 }
 
-final class MinKey implements Type, \Serializable
+final class MinKey implements Type, \Serializable, MinKeyInterface
 {
 	use DenySerialization;
 }
 
 <<__NativeData("MongoDBBsonObjectID")>>
-final class ObjectID implements Type, \Serializable
+final class ObjectID implements Type, \Serializable, ObjectIDInterface
 {
 	use DenySerialization;
 
@@ -789,7 +849,7 @@ final class ObjectID implements Type, \Serializable
 	}
 }
 
-final class Regex implements Type, \Serializable
+final class Regex implements Type, \Serializable, RegexInterface
 {
 	use DenySerialization;
 
@@ -821,7 +881,7 @@ final class Regex implements Type, \Serializable
 	}
 }
 
-final class Timestamp implements Type, \Serializable
+final class Timestamp implements Type, \Serializable, TimestampInterface
 {
 	use DenySerialization;
 
@@ -851,7 +911,7 @@ final class Timestamp implements Type, \Serializable
 	}
 }
 
-final class UTCDateTime implements Type, \Serializable
+final class UTCDateTime implements Type, \Serializable, UTCDateTimeInterface
 {
 	use DenySerialization;
 
