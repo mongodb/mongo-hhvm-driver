@@ -861,7 +861,7 @@ final class UTCDateTime implements Type, \Serializable
 	{
 		if ($milliseconds === NULL) {
 			$this->milliseconds = floor( microtime( true ) * 1000 );
-		} elseif (is_object($milliseconds) && get_class($milliseconds) == 'DateTime') {
+		} elseif (is_object($milliseconds) && $milliseconds instanceof \DateTimeInterface) {
 			$this->milliseconds = floor( (string) $milliseconds->format('U.u') * 1000 );
 		} else {
 			$this->milliseconds = (int) $milliseconds;
