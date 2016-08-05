@@ -677,6 +677,19 @@ final class Binary implements Type, \Serializable
 		}
 	}
 
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'data', $state ) || !is_string( $state['data'] )
+			||
+			!array_key_exists( 'type', $state ) || !is_int( $state['type'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Binary initialization requires \"data\" string and \"type\" integer fields" );
+		}
+
+		return new self( $state['data'], $state['type'] );
+	}
+
 	public function getType()
 	{
 		$func_args = func_num_args();
@@ -709,6 +722,17 @@ final class Decimal128 implements Type, \Serializable
 	<<__Native>>
 	function __construct(string $decimal);
 
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'dec', $state ) || !is_string( $state['dec'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Decimal128 initialization requires \"dec\" string field" );
+		}
+
+		return new self( $state['dec'] );
+	}
+
 	<<__Native>>
 	function __toString() : string;
 
@@ -722,13 +746,41 @@ final class Javascript implements Type, \Serializable
 
 	private $code;
 
-	public function __construct(string $code, private ?mixed $scope = NULL)
+	public function __construct(string $code, ?mixed $scope = NULL)
 	{
 		if ( strstr( $code, "\0" ) !== false )
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Code cannot contain null bytes" );
 		}
+		if ( $scope !== NULL && ! ( is_object( $scope ) || is_array( $scope ) ) )
+		{
+			$valueType = gettype( $scope );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be array or object, {$valueType} given" );
+		}
+
 		$this->code = $code;
+		if ( $scope !== NULL )
+		{
+			$this->scope = (object) $scope;
+		}
+	}
+
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'code', $state ) || !is_string( $state['code'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Javascript initialization requires \"code\" string field" );
+		}
+
+		if ( array_key_exists( 'scope', $state ) )
+		{
+			return new self( $state['code'], $state['scope'] );
+		}
+		else
+		{
+			return new self( $state['code'] );
+		}
 	}
 
 	public function __debugInfo() : array
@@ -746,7 +798,7 @@ final class Javascript implements Type, \Serializable
 
 	public function getScope() : mixed
 	{
-		if ( $this->scope !== NULL )
+		if ( isset( $this->scope) && $this->scope !== NULL )
 		{
 			return (object) $this->scope;
 		}
@@ -762,11 +814,21 @@ final class Javascript implements Type, \Serializable
 final class MaxKey implements Type, \Serializable
 {
 	use DenySerialization;
+
+	static public function __set_state(array $state)
+	{
+		return new self();
+	}
 }
 
 final class MinKey implements Type, \Serializable
 {
 	use DenySerialization;
+
+	static public function __set_state(array $state)
+	{
+		return new self();
+	}
 }
 
 <<__NativeData("MongoDBBsonObjectID")>>
@@ -776,6 +838,17 @@ final class ObjectID implements Type, \Serializable
 
 	<<__Native>>
 	public function __construct(string $objectId = null);
+
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'oid', $state ) || !is_string( $state['oid'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\ObjectID initialization requires \"oid\" string field" );
+		}
+
+		return new self( $state['oid'] );
+	}
 
 	<<__Native>>
 	public function __toString() : string;
@@ -793,8 +866,35 @@ final class Regex implements Type, \Serializable
 {
 	use DenySerialization;
 
-	public function __construct(private string $pattern, private string $flags = '')
+	private $pattern;
+	private $flags;
+
+	public function __construct(string $pattern, string $flags = '')
 	{
+		if ( strstr( $pattern, "\0" ) !== false )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Pattern cannot contain null bytes" );
+		}
+		if ( strstr( $flags, "\0" ) !== false )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Flags cannot contain null bytes" );
+		}
+
+		$this->pattern = $pattern;
+		$this->flags = $flags;
+	}
+
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'pattern', $state ) || !is_string( $state['pattern'] )
+			||
+			!array_key_exists( 'flags', $state ) || !is_string( $state['flags'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Regex initialization requires \"pattern\" and \"flags\" string fields" );
+		}
+
+		return new self( $state['pattern'], $state['flags'] );
 	}
 
 	public function getPattern() : string
@@ -837,6 +937,19 @@ final class Timestamp implements Type, \Serializable
 		}
 	}
 
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'increment', $state ) || !is_int( $state['increment'] )
+			||
+			!array_key_exists( 'timestamp', $state ) || !is_int( $state['timestamp'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Timestamp initialization requires \"increment\" and \"timestamp\" integer fields" );
+		}
+
+		return new self( $state['increment'], $state['timestamp'] );
+	}
+
 	public function __toString() : string
 	{
 		return sprintf( "[%d:%d]", $this->increment, $this->timestamp );
@@ -861,11 +974,25 @@ final class UTCDateTime implements Type, \Serializable
 	{
 		if ($milliseconds === NULL) {
 			$this->milliseconds = floor( microtime( true ) * 1000 );
-		} elseif (is_object($milliseconds) && $milliseconds instanceof \DateTimeInterface) {
+		} elseif (is_object( $milliseconds) && $milliseconds instanceof \DateTimeInterface) {
 			$this->milliseconds = floor( (string) $milliseconds->format('U.u') * 1000 );
-		} else {
+		} elseif ( is_numeric( $milliseconds ) ) {
 			$this->milliseconds = (int) $milliseconds;
+		} else {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$milliseconds}\" as 64-bit integer for MongoDB\BSON\UTCDateTime initialization" );
 		}
+	}
+
+	static public function __set_state(array $state)
+	{
+		if (
+			!array_key_exists( 'milliseconds', $state ) ||
+			! ( is_int( $state['milliseconds'] ) || is_string( $state['milliseconds'] ) )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\UTCDateTime initialization requires \"milliseconds\" integer or numeric string field" );
+		}
+
+		return new self( $state['milliseconds'] );
 	}
 
 	public function __toString() : string

@@ -26,9 +26,23 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonObjectID_className("MongoDB\\BSON\\ObjectID");
+const StaticString s_MongoBsonObjectID_oid("oid");
 Class* MongoDBBsonObjectIDData::s_class = nullptr;
 const StaticString MongoDBBsonObjectIDData::s_className("MongoDBBsonObjectID");
 IMPLEMENT_GET_CLASS(MongoDBBsonObjectIDData);
+
+static String oidAsString(MongoDBBsonObjectIDData* data)
+{
+	String s;
+	char *data_s;
+
+	s = String(24, ReserveString);
+	data_s = s.bufferSlice().data();
+	bson_oid_to_string(&data->m_oid, data_s);
+	s.setSize(24);
+
+	return s;
+}
 
 void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 {
@@ -44,19 +58,8 @@ void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 	} else {
 		bson_oid_init(&data->m_oid, NULL);
 	}
-}
 
-static String oidAsString(MongoDBBsonObjectIDData* data)
-{
-	String s;
-	char *data_s;
-
-	s = String(24, ReserveString);
-	data_s = s.bufferSlice().data();
-	bson_oid_to_string(&data->m_oid, data_s);
-	s.setSize(24);
-
-	return s;
+	this_->o_set(s_MongoBsonObjectID_oid, Variant(oidAsString(data)), s_MongoBsonObjectID_className);
 }
 
 String HHVM_METHOD(MongoDBBsonObjectID, __toString)
