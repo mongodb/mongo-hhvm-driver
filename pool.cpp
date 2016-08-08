@@ -19,6 +19,7 @@
 #include "hphp/runtime/base/array-iterator.h"
 #include "hphp/runtime/ext/stream/ext_stream.h"
 #include "hphp/runtime/base/variable-serializer.h"
+#include "hphp/util/logger.h"
 
 #include "mongodb.h"
 #include "pool.h"
