@@ -11,4 +11,4 @@ echo throws(function() {
 ?>
 --EXPECT--
 OK: Got MongoDB\Driver\Exception\InvalidArgumentException
-Expected scope to be array or object, string given
+Expected scope to be an array or object, string given
