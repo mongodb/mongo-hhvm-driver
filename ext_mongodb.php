@@ -1138,7 +1138,7 @@ final class UTCDateTime implements Type, \Serializable
 
 	public function __debugInfo() : array
 	{
-		return [ 'milliseconds' => $this->milliseconds ];
+		return [ 'milliseconds' => (string) $this->milliseconds ];
 	}
 }
 
