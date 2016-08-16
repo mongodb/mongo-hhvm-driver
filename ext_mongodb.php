@@ -868,7 +868,7 @@ final class MaxKey implements Type, \Serializable
 {
 	public function serialize() : string
 	{
-		return serialize( [] );
+		return '';
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -885,7 +885,7 @@ final class MinKey implements Type, \Serializable
 {
 	public function serialize() : string
 	{
-		return serialize( [] );
+		return '';
 	}
 
 	public function unserialize(mixed $serialized) : void
