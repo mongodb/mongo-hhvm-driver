@@ -799,10 +799,7 @@ final class Javascript implements Type, \Serializable
 	{
 		$s = [];
 		$s['code'] = $this->code;
-		if ( isset( $this->scope ) )
-		{
-			$s['scope'] = $this->scope;
-		}
+		$s['scope'] = $this->scope ?? NULL;
 		return serialize( $s );
 	}
 
@@ -810,14 +807,7 @@ final class Javascript implements Type, \Serializable
 	{
 		$unserialized = unserialize( $serialized );
 		self::checkArray( $unserialized );
-		if ( array_key_exists( 'scope', $unserialized ) )
-		{
-			$this->__construct( $unserialized['code'], $unserialized['scope'] );
-		}
-		else
-		{
-			$this->__construct( $unserialized['code'] );
-		}
+		$this->__construct( $unserialized['code'], $unserialized['scope'] ?? NULL );
 	}
 
 	public function __construct(string $code, ?mixed $scope = NULL)
@@ -843,14 +833,7 @@ final class Javascript implements Type, \Serializable
 	{
 		self::checkArray( $state );
 
-		if ( array_key_exists( 'scope', $state ) )
-		{
-			return new self( $state['code'], $state['scope'] );
-		}
-		else
-		{
-			return new self( $state['code'] );
-		}
+		return new self( $state['code'], $state['scope'] ?? NULL );
 	}
 
 	public function __debugInfo() : array
@@ -1043,9 +1026,9 @@ final class Timestamp implements Type, \Serializable
 	static private function checkArray( array $state )
 	{
 		if (
-			!array_key_exists( 'increment', $state ) || !is_int( $state['increment'] )
+			!array_key_exists( 'increment', $state ) || ( !is_int( $state['increment'] ) && !is_string( $state['increment'] ) )
 			||
-			!array_key_exists( 'timestamp', $state ) || !is_int( $state['timestamp'] )
+			!array_key_exists( 'timestamp', $state ) || ( !is_int( $state['timestamp'] ) && !is_string( $state['timestamp'] ) )
 		) {
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Timestamp initialization requires \"increment\" and \"timestamp\" integer fields" );
 		}
