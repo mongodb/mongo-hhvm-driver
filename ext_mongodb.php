@@ -674,7 +674,7 @@ final class Binary implements Type, \Serializable
 			||
 			!array_key_exists( 'type', $state ) || !is_int( $state['type'] )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Binary initialization requires \"data\" string and \"type\" integer fields" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Binary initialization requires "data" string and "type" integer fields' );
 		}
 	}
 
@@ -739,7 +739,7 @@ final class Decimal128 implements Type, \Serializable
 		if (
 			!array_key_exists( 'dec', $state ) || !is_string( $state['dec'] )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Decimal128 initialization requires \"dec\" string field" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Decimal128 initialization requires "dec" string field' );
 		}
 	}
 
@@ -782,7 +782,7 @@ final class Javascript implements Type, \Serializable
 		if (
 			!array_key_exists( 'code', $state ) || !is_string( $state['code'] )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Javascript initialization requires \"code\" string field" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Javascript initialization requires "code" string field' );
 		}
 
 		if ( array_key_exists( 'scope', $state ) && ( $state['scope'] !== NULL ) )
@@ -906,7 +906,7 @@ final class ObjectID implements Type, \Serializable
 		if (
 			!array_key_exists( 'oid', $state ) || !is_string( $state['oid'] )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\ObjectID initialization requires \"oid\" string field" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\ObjectID initialization requires "oid" string field' );
 		}
 	}
 
@@ -957,7 +957,7 @@ final class Regex implements Type, \Serializable
 			||
 			!array_key_exists( 'flags', $state ) || !is_string( $state['flags'] )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Regex initialization requires \"pattern\" and \"flags\" string fields" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Regex initialization requires "pattern" and "flags" string fields' );
 		}
 	}
 
@@ -1030,7 +1030,7 @@ final class Timestamp implements Type, \Serializable
 			||
 			!array_key_exists( 'timestamp', $state ) || ( !is_int( $state['timestamp'] ) && !is_string( $state['timestamp'] ) )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\Timestamp initialization requires \"increment\" and \"timestamp\" integer fields" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields' );
 		}
 	}
 
@@ -1091,7 +1091,7 @@ final class UTCDateTime implements Type, \Serializable
 			!array_key_exists( 'milliseconds', $state ) ||
 			! ( is_int( $state['milliseconds'] ) || is_string( $state['milliseconds'] ) )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "MongoDB\BSON\UTCDateTime initialization requires \"milliseconds\" integer or numeric string field" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\UTCDateTime initialization requires "milliseconds" integer or numeric string field' );
 		}
 	}
 
@@ -1111,10 +1111,10 @@ final class UTCDateTime implements Type, \Serializable
 
 	public function __construct(mixed $milliseconds = NULL)
 	{
-		if ($milliseconds === NULL) {
+		if ( $milliseconds === NULL ) {
 			$this->milliseconds = floor( microtime( true ) * 1000 );
-		} elseif (is_object( $milliseconds) && $milliseconds instanceof \DateTimeInterface) {
-			$this->milliseconds = floor( (string) $milliseconds->format('U.u') * 1000 );
+		} elseif ( is_object( $milliseconds ) && $milliseconds instanceof \DateTimeInterface ) {
+			$this->milliseconds = floor( (string) $milliseconds->format( 'U.u' ) * 1000 );
 		} elseif ( is_numeric( $milliseconds ) ) {
 			$this->milliseconds = (int) $milliseconds;
 		} else {

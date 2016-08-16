@@ -21,7 +21,7 @@ foreach ($tests as $test) {
 }
 
 ?>
---EXPECT--
+--EXPECTF--
 MongoDB\BSON\Binary::__set_state(array(
   'data' => 'foobar',
   'type' => 0,
@@ -38,11 +38,11 @@ MongoDB\BSON\Binary::__set_state(array(
 ))
 
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => '>Egè›Ó¤VBfUD' . "\0" . '' . "\0" . '',
+  'data' => '%a' . "\0" . '' . "\0" . '',
   'type' => 4,
 ))
 
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => '8Xö"0¬<‘_0fCÆ?',
+  'data' => '%a',
   'type' => 5,
 ))
