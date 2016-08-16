@@ -36,7 +36,8 @@ $tests = [
 	'Timestamp' => [
 		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":30:{a:1:{s:9:"increment";i:1234;}}}',
 		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":30:{a:1:{s:9:"timestamp";i:5678;}}}',
-		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":61:{a:2:{s:9:"increment";s:4:"1234";s:9:"timestamp";s:4:"5678";}}}',
+		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":47:{a:2:{s:9:"increment";N;s:9:"timestamp";i:5678;}}}',
+		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":47:{a:2:{s:9:"increment";i:1234;s:9:"timestamp";N;}}}',
 		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":50:{a:2:{s:9:"increment";i:-1;s:9:"timestamp";i:5678;}}}',
 		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":60:{a:2:{s:9:"increment";i:-2147483647;s:9:"timestamp";i:5678;}}}',
 		'a:1:{s:5:"value";C:22:"MongoDB\BSON\Timestamp":51:{a:2:{s:9:"increment";i:1234;s:9:"timestamp";i:-1;}}}',
@@ -96,6 +97,7 @@ MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Regex initializa
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Regex initialization requires "pattern" and "flags" string fields
 
 Timestamp:
+MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields

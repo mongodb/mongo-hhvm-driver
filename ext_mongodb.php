@@ -1037,8 +1037,8 @@ final class Timestamp implements Type, \Serializable
 	public function serialize() : string
 	{
 		return serialize( [
-			'increment' => $this->increment,
-			'timestamp' => $this->timestamp,
+			'increment' => (string) $this->increment,
+			'timestamp' => (string) $this->timestamp,
 		] );
 	}
 
@@ -1064,7 +1064,7 @@ final class Timestamp implements Type, \Serializable
 	static public function __set_state(array $state)
 	{
 		self::checkArray( $state );
-		return new self( $state['increment'], $state['timestamp'] );
+		return new self( (int) $state['increment'], (int) $state['timestamp'] );
 	}
 
 	public function __toString() : string
@@ -1075,8 +1075,8 @@ final class Timestamp implements Type, \Serializable
 	public function __debugInfo() : array
 	{
 		return [
-			'increment' => $this->increment,
-			'timestamp' => $this->timestamp
+			'increment' => (string) $this->increment,
+			'timestamp' => (string) $this->timestamp
 		];
 	}
 }
