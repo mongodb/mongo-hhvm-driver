@@ -43,7 +43,7 @@ foreach($tests as $n => $test) {
 }
 ?>
 --EXPECTF--
-Test#0 { "stuff" : { "random" : "class", "0" : "data", "__pclass" : { "$type" : "80", "$binary" : "TXlDbGFzcw==" } } }
+Test#0 { "stuff" : { "random" : "class", "0" : "data", "__pclass" : { "$binary" : "TXlDbGFzcw==", "$type" : "80" } } }
      0 : 45 00 00 00 03 73 74 75 66 66 00 39 00 00 00 02  [E....stuff.9....]
     10 : 72 61 6e 64 6f 6d 00 06 00 00 00 63 6c 61 73 73  [random.....class]
     20 : 00 02 30 00 05 00 00 00 64 61 74 61 00 05 5f 5f  [..0.....data..__]
@@ -68,7 +68,7 @@ object(stdClass)#%d (1) {
     }
   }
 }
-Test#1 { "stuff" : { "0" : 1, "1" : 2, "2" : 3, "__pclass" : { "$type" : "80", "$binary" : "TXlDbGFzczI=" } } }
+Test#1 { "stuff" : { "0" : 1, "1" : 2, "2" : 3, "__pclass" : { "$binary" : "TXlDbGFzczI=", "$type" : "80" } } }
      0 : 3d 00 00 00 03 73 74 75 66 66 00 31 00 00 00 10  [=....stuff.1....]
     10 : 30 00 01 00 00 00 10 31 00 02 00 00 00 10 32 00  [0......1......2.]
     20 : 03 00 00 00 05 5f 5f 70 63 6c 61 73 73 00 08 00  [.....__pclass...]
@@ -94,7 +94,7 @@ object(stdClass)#%d (1) {
     }
   }
 }
-Test#2 { "stuff" : [ { "random" : "class", "0" : "data", "__pclass" : { "$type" : "80", "$binary" : "TXlDbGFzcw==" } }, { "0" : 1, "1" : 2, "2" : 3, "__pclass" : { "$type" : "80", "$binary" : "TXlDbGFzczI=" } } ] }
+Test#2 { "stuff" : [ { "random" : "class", "0" : "data", "__pclass" : { "$binary" : "TXlDbGFzcw==", "$type" : "80" } }, { "0" : 1, "1" : 2, "2" : 3, "__pclass" : { "$binary" : "TXlDbGFzczI=", "$type" : "80" } } ] }
      0 : 81 00 00 00 04 73 74 75 66 66 00 75 00 00 00 03  [.....stuff.u....]
     10 : 30 00 39 00 00 00 02 72 61 6e 64 6f 6d 00 06 00  [0.9....random...]
     20 : 00 00 63 6c 61 73 73 00 02 30 00 05 00 00 00 64  [..class..0.....d]
