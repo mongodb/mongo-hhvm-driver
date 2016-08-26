@@ -18,6 +18,8 @@
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/ext/string/ext_string.h"
 
+#undef TRACE
+
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 

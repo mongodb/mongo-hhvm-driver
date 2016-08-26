@@ -129,5 +129,5 @@ foreach ( $tests as $test )
 { "things" : { "0" : "foo", "2" : "bar" } }
 { "things" : [ "foo", "bar" ] }
 { "things" : { "0" : "foo", "1" : "bar" } }
-{ "foo" : 42, "prot" : "wine", "__pclass" : { "$type" : "80", "$binary" : "VXBwZXJDbGFzcw==" } }
+{ "foo" : 42, "prot" : "wine", "__pclass" : { "$binary" : "VXBwZXJDbGFzcw==", "$type" : "80" } }
 Expected AnotherClass2::bsonSerialize() to return an array or stdClass, AnotherClass2 given

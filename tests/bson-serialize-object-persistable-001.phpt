@@ -36,6 +36,6 @@ foreach ( $tests as $test )
 }
 ?>
 --EXPECT--
-{ "type" : "beer", "__pclass" : { "$type" : "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
-{ "type" : [ "beer", "wine" ], "__pclass" : { "$type" : "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
-{ "type" : { "type" : "whisky", "__pclass" : { "$type" : "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }, "__pclass" : { "$type" : "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
+{ "type" : "beer", "__pclass" : { "$binary" : "TGlxdWlkQ2xhc3M=", "$type" : "80" } }
+{ "type" : [ "beer", "wine" ], "__pclass" : { "$binary" : "TGlxdWlkQ2xhc3M=", "$type" : "80" } }
+{ "type" : { "type" : "whisky", "__pclass" : { "$binary" : "TGlxdWlkQ2xhc3M=", "$type" : "80" } }, "__pclass" : { "$binary" : "TGlxdWlkQ2xhc3M=", "$type" : "80" } }
