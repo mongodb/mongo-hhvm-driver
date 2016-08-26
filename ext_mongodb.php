@@ -1049,8 +1049,17 @@ final class Timestamp implements Type, \Serializable
 		$this->__construct( (int) $unserialized['increment'], (int) $unserialized['timestamp'] );
 	}
 
-	public function __construct(private int $increment, private int $timestamp)
+	public function __construct(mixed $increment, mixed $timestamp)
 	{
+		if ( !is_int( $increment ) && !is_string( $increment ) )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected increment to be an unsigned 32-bit integer or string" );
+		}
+		if ( !is_int( $timestamp ) && !is_string( $timestamp ) )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected timestamp to be an unsigned 32-bit integer or string" );
+		}
+
 		if ( $increment < 0 || $increment > 4294967295 )
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected increment to be an unsigned 32-bit integer, {$increment} given" );
@@ -1059,6 +1068,9 @@ final class Timestamp implements Type, \Serializable
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected timestamp to be an unsigned 32-bit integer, {$timestamp} given" );
 		}
+
+		$this->increment = (string) $increment;
+		$this->timestamp = (string) $timestamp;
 	}
 
 	static public function __set_state(array $state)
@@ -1083,7 +1095,7 @@ final class Timestamp implements Type, \Serializable
 
 final class UTCDateTime implements Type, \Serializable
 {
-	private int $milliseconds;
+	private string $milliseconds;
 
 	static private function checkArray( array $state )
 	{
@@ -1112,11 +1124,11 @@ final class UTCDateTime implements Type, \Serializable
 	public function __construct(mixed $milliseconds = NULL)
 	{
 		if ( $milliseconds === NULL ) {
-			$this->milliseconds = floor( microtime( true ) * 1000 );
+			$this->milliseconds = (string) floor( microtime( true ) * 1000 );
 		} elseif ( is_object( $milliseconds ) && $milliseconds instanceof \DateTimeInterface ) {
-			$this->milliseconds = floor( (string) $milliseconds->format( 'U.u' ) * 1000 );
-		} elseif ( is_numeric( $milliseconds ) ) {
-			$this->milliseconds = (int) $milliseconds;
+			$this->milliseconds = (string) floor( (string) $milliseconds->format( 'U.u' ) * 1000 );
+		} elseif ( ( is_string( $milliseconds ) || is_int( $milliseconds ) ) && is_numeric( $milliseconds ) ) {
+			$this->milliseconds = (string) (int) $milliseconds;
 		} else {
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$milliseconds}\" as 64-bit integer for MongoDB\BSON\UTCDateTime initialization" );
 		}
