@@ -31,11 +31,11 @@ MongoDB\BSON\Decimal128::__set_state(array(
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => 'Inf',
+  'dec' => 'Infinity',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => 'Inf',
+  'dec' => 'Infinity',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
