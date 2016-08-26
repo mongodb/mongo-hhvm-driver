@@ -727,7 +727,31 @@ interface Persistable extends Serializable, Unserializable
 
 final class Binary implements Type, \Serializable, BinaryInterface
 {
-	use DenySerialization;
+	static private function checkArray(array $state)
+	{
+		if (
+			!array_key_exists( 'data', $state ) || !is_string( $state['data'] )
+			||
+			!array_key_exists( 'type', $state ) || !is_int( $state['type'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Binary initialization requires "data" string and "type" integer fields' );
+		}
+	}
+
+	public function serialize() : string
+	{
+		return serialize( [
+			'data' => $this->data,
+			'type' => $this->type,
+		] );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( $unserialized['data'], $unserialized['type']);
+	}
 
 	public function __construct(private string $data, private int $type)
 	{
@@ -735,6 +759,12 @@ final class Binary implements Type, \Serializable, BinaryInterface
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected type to be an unsigned 8-bit integer, {$type} given" );
 		}
+	}
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+		return new self( $state['data'], $state['type'] );
 	}
 
 	public function getType() : int
@@ -764,10 +794,37 @@ final class Binary implements Type, \Serializable, BinaryInterface
 <<__NativeData("MongoDBBsonDecimal128")>>
 final class Decimal128 implements Type, \Serializable, Decimal128Interface
 {
-	use DenySerialization;
+	static private function checkArray(array $state)
+	{
+		if (
+			!array_key_exists( 'dec', $state ) || !is_string( $state['dec'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Decimal128 initialization requires "dec" string field' );
+		}
+	}
+
+	public function serialize() : string
+	{
+		return serialize( [
+			'dec' => $this->dec,
+		] );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( $unserialized['dec'] );
+	}
 
 	<<__Native>>
 	public function __construct(string $decimal);
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+		return new self( $state['dec'] );
+	}
 
 	<<__Native>>
 	public function __toString() : string;
@@ -778,17 +835,65 @@ final class Decimal128 implements Type, \Serializable, Decimal128Interface
 
 final class Javascript implements Type, \Serializable, JavascriptInterface
 {
-	use DenySerialization;
-
 	private $code;
 
-	public function __construct(string $code, private ?mixed $scope = NULL)
+	static private function checkArray(array $state)
+	{
+		if (
+			!array_key_exists( 'code', $state ) || !is_string( $state['code'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Javascript initialization requires "code" string field' );
+		}
+
+		if ( array_key_exists( 'scope', $state ) && ( $state['scope'] !== NULL ) )
+		{
+			if ( !is_array( $state['scope'] ) && !is_object( $state['scope'] ) )
+			{
+				$valueType = gettype( $state['scope'] );
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be an array or object, {$valueType} given" );
+			}
+		}
+	}
+
+	public function serialize() : string
+	{
+		$s = [];
+		$s['code'] = $this->code;
+		$s['scope'] = $this->scope ?? NULL;
+		return serialize( $s );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( $unserialized['code'], $unserialized['scope'] ?? NULL );
+	}
+
+	public function __construct(string $code, ?mixed $scope = NULL)
 	{
 		if ( strstr( $code, "\0" ) !== false )
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Code cannot contain null bytes" );
 		}
+		if ( $scope !== NULL && ! ( is_object( $scope ) || is_array( $scope ) ) )
+		{
+			$valueType = gettype( $scope );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be an array or object, {$valueType} given" );
+		}
+
 		$this->code = $code;
+		if ( $scope !== NULL )
+		{
+			$this->scope = (object) $scope;
+		}
+	}
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+
+		return new self( $state['code'], $state['scope'] ?? NULL );
 	}
 
 	public function __debugInfo() : array
@@ -806,7 +911,7 @@ final class Javascript implements Type, \Serializable, JavascriptInterface
 
 	public function getScope() : mixed
 	{
-		if ( $this->scope !== NULL )
+		if ( isset( $this->scope) && $this->scope !== NULL )
 		{
 			return (object) $this->scope;
 		}
@@ -821,21 +926,72 @@ final class Javascript implements Type, \Serializable, JavascriptInterface
 
 final class MaxKey implements Type, \Serializable, MaxKeyInterface
 {
-	use DenySerialization;
+	public function serialize() : string
+	{
+		return '';
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+	}
+
+	static public function __set_state(array $state)
+	{
+		return new self();
+	}
 }
 
 final class MinKey implements Type, \Serializable, MinKeyInterface
 {
-	use DenySerialization;
+	public function serialize() : string
+	{
+		return '';
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+	}
+
+	static public function __set_state(array $state)
+	{
+		return new self();
+	}
 }
 
 <<__NativeData("MongoDBBsonObjectID")>>
 final class ObjectID implements Type, \Serializable, ObjectIDInterface
 {
-	use DenySerialization;
+	static private function checkArray( array $state )
+	{
+		if (
+			!array_key_exists( 'oid', $state ) || !is_string( $state['oid'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\ObjectID initialization requires "oid" string field' );
+		}
+	}
+
+	public function serialize() : string
+	{
+		return serialize( [
+			'oid' => $this->oid,
+		] );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( $unserialized['oid'] );
+	}
 
 	<<__Native>>
 	public function __construct(string $objectId = null);
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+		return new self( $state['oid'] );
+	}
 
 	<<__Native>>
 	public function __toString() : string;
@@ -851,10 +1007,54 @@ final class ObjectID implements Type, \Serializable, ObjectIDInterface
 
 final class Regex implements Type, \Serializable, RegexInterface
 {
-	use DenySerialization;
+	private $pattern;
+	private $flags;
 
-	public function __construct(private string $pattern, private string $flags = '')
+	static private function checkArray( array $state )
 	{
+		if (
+			!array_key_exists( 'pattern', $state ) || !is_string( $state['pattern'] )
+			||
+			!array_key_exists( 'flags', $state ) || !is_string( $state['flags'] )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Regex initialization requires "pattern" and "flags" string fields' );
+		}
+	}
+
+	public function serialize() : string
+	{
+		return serialize( [
+			'pattern' => $this->pattern,
+			'flags' => $this->flags,
+		] );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( $unserialized['pattern'], $unserialized['flags'] );
+	}
+
+	public function __construct(string $pattern, string $flags = '')
+	{
+		if ( strstr( $pattern, "\0" ) !== false )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Pattern cannot contain null bytes" );
+		}
+		if ( strstr( $flags, "\0" ) !== false )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Flags cannot contain null bytes" );
+		}
+
+		$this->pattern = $pattern;
+		$this->flags = $flags;
+	}
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+		return new self( $state['pattern'], $state['flags'] );
 	}
 
 	public function getPattern() : string
@@ -883,10 +1083,43 @@ final class Regex implements Type, \Serializable, RegexInterface
 
 final class Timestamp implements Type, \Serializable, TimestampInterface
 {
-	use DenySerialization;
-
-	public function __construct(private int $increment, private int $timestamp)
+	static private function checkArray( array $state )
 	{
+		if (
+			!array_key_exists( 'increment', $state ) || ( !is_int( $state['increment'] ) && !is_string( $state['increment'] ) )
+			||
+			!array_key_exists( 'timestamp', $state ) || ( !is_int( $state['timestamp'] ) && !is_string( $state['timestamp'] ) )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields' );
+		}
+	}
+
+	public function serialize() : string
+	{
+		return serialize( [
+			'increment' => (string) $this->increment,
+			'timestamp' => (string) $this->timestamp,
+		] );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( (int) $unserialized['increment'], (int) $unserialized['timestamp'] );
+	}
+
+	public function __construct(mixed $increment, mixed $timestamp)
+	{
+		if ( !is_int( $increment ) && !is_string( $increment ) )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected increment to be an unsigned 32-bit integer or string" );
+		}
+		if ( !is_int( $timestamp ) && !is_string( $timestamp ) )
+		{
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected timestamp to be an unsigned 32-bit integer or string" );
+		}
+
 		if ( $increment < 0 || $increment > 4294967295 )
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected increment to be an unsigned 32-bit integer, {$increment} given" );
@@ -895,6 +1128,15 @@ final class Timestamp implements Type, \Serializable, TimestampInterface
 		{
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected timestamp to be an unsigned 32-bit integer, {$timestamp} given" );
 		}
+
+		$this->increment = (string) $increment;
+		$this->timestamp = (string) $timestamp;
+	}
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+		return new self( (int) $state['increment'], (int) $state['timestamp'] );
 	}
 
 	public function __toString() : string
@@ -905,27 +1147,57 @@ final class Timestamp implements Type, \Serializable, TimestampInterface
 	public function __debugInfo() : array
 	{
 		return [
-			'increment' => $this->increment,
-			'timestamp' => $this->timestamp
+			'increment' => (string) $this->increment,
+			'timestamp' => (string) $this->timestamp
 		];
 	}
 }
 
 final class UTCDateTime implements Type, \Serializable, UTCDateTimeInterface
 {
-	use DenySerialization;
+	private string $milliseconds;
 
-	private int $milliseconds;
+	static private function checkArray( array $state )
+	{
+		if (
+			!array_key_exists( 'milliseconds', $state ) ||
+			! ( is_int( $state['milliseconds'] ) || is_string( $state['milliseconds'] ) )
+		) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\UTCDateTime initialization requires "milliseconds" integer or numeric string field' );
+		}
+	}
+
+	public function serialize() : string
+	{
+		return serialize( [
+			'milliseconds' => (string) $this->milliseconds,
+		] );
+	}
+
+	public function unserialize(mixed $serialized) : void
+	{
+		$unserialized = unserialize( $serialized );
+		self::checkArray( $unserialized );
+		$this->__construct( $unserialized['milliseconds'] );
+	}
 
 	public function __construct(mixed $milliseconds = NULL)
 	{
-		if ($milliseconds === NULL) {
-			$this->milliseconds = floor( microtime( true ) * 1000 );
-		} elseif (is_object($milliseconds) && $milliseconds instanceof \DateTimeInterface) {
-			$this->milliseconds = floor( (string) $milliseconds->format('U.u') * 1000 );
+		if ( $milliseconds === NULL ) {
+			$this->milliseconds = (string) floor( microtime( true ) * 1000 );
+		} elseif ( is_object( $milliseconds ) && $milliseconds instanceof \DateTimeInterface ) {
+			$this->milliseconds = (string) floor( (string) $milliseconds->format( 'U.u' ) * 1000 );
+		} elseif ( ( is_string( $milliseconds ) || is_int( $milliseconds ) ) && is_numeric( $milliseconds ) ) {
+			$this->milliseconds = (string) (int) $milliseconds;
 		} else {
-			$this->milliseconds = (int) $milliseconds;
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$milliseconds}\" as 64-bit integer for MongoDB\BSON\UTCDateTime initialization" );
 		}
+	}
+
+	static public function __set_state(array $state)
+	{
+		self::checkArray( $state );
+		return new self( $state['milliseconds'] );
 	}
 
 	public function __toString() : string
@@ -938,7 +1210,7 @@ final class UTCDateTime implements Type, \Serializable, UTCDateTimeInterface
 
 	public function __debugInfo() : array
 	{
-		return [ 'milliseconds' => $this->milliseconds ];
+		return [ 'milliseconds' => (string) $this->milliseconds ];
 	}
 }
 

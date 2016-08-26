@@ -26,20 +26,12 @@ namespace HPHP {
 
 const StaticString s_MongoBsonDecimal128_className("MongoDB\\BSON\\Decimal128");
 const StaticString s_MongoBsonDecimal128_shortName("Decimal128");
+const StaticString s_MongoBsonDecimal128_dec("dec");
 Class* MongoDBBsonDecimal128Data::s_class = nullptr;
 const StaticString MongoDBBsonDecimal128Data::s_className("MongoDBBsonDecimal128");
 IMPLEMENT_GET_CLASS(MongoDBBsonDecimal128Data);
 
 const StaticString s_MongoDBBsonDecimal128_decimal("decimal");
-
-void HHVM_METHOD(MongoDBBsonDecimal128, __construct, const String &decimal)
-{
-	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
-
-	if (!bson_decimal128_from_string(decimal.c_str(), &data->m_decimal)) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("Error parsing Decimal128 string: " + decimal);
-	}
-}
 
 static String decimalAsString(MongoDBBsonDecimal128Data* data)
 {
@@ -52,6 +44,17 @@ static String decimalAsString(MongoDBBsonDecimal128Data* data)
 	s.setSize(strlen(data_s));
 
 	return s;
+}
+
+void HHVM_METHOD(MongoDBBsonDecimal128, __construct, const String &decimal)
+{
+	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
+
+	if (!bson_decimal128_from_string(decimal.c_str(), &data->m_decimal)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Error parsing Decimal128 string: " + decimal);
+	}
+
+	this_->o_set(s_MongoBsonDecimal128_dec, Variant(decimalAsString(data)), s_MongoBsonDecimal128_className);
 }
 
 String HHVM_METHOD(MongoDBBsonDecimal128, __toString)

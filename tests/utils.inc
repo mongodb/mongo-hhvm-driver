@@ -54,4 +54,30 @@ function hex_dump($data, $width = 16)
 		$offset += $width;
 	}
 }
+
+function throws($function, $exceptionname, $infunction = null)
+{
+    try {
+        $function();
+    } catch(Exception $e) {
+        $message = str_replace(array("\n", "\r"), ' ', $e->getMessage());
+        if ($e instanceof $exceptionname) {
+            if ($infunction) {
+                $trace = $e->getTrace();
+                $function = $trace[0]["function"];
+                if (strcasecmp($function, $infunction) == 0) {
+                    printf("OK: Got %s thrown from %s\n", $exceptionname, $infunction);
+                } else {
+                    printf("ALMOST: Got %s - but was thrown in %s, not %s (%s)\n", $exceptionname, $function, $infunction, $message);
+                }
+                return $e->getMessage();
+            }
+            printf("OK: Got %s\n", $exceptionname);
+        } else {
+            printf("ALMOST: Got %s (%s) - expected %s\n", get_class($e), $message, $exceptionname);
+        }
+        return $e->getMessage();
+    }
+    echo "FAILED: Expected $exceptionname thrown, but no exception thrown!\n";
+}
 ?>
