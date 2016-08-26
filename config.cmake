@@ -61,6 +61,7 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-list.c libmongoc/src/mongoc/mongoc-log.c
  libmongoc/src/mongoc/mongoc-matcher-op.c libmongoc/src/mongoc/mongoc-matcher.c
  libmongoc/src/mongoc/mongoc-memcmp.c
+ libmongoc/src/mongoc/mongoc-metadata.c
  libmongoc/src/mongoc/mongoc-opcode.c
  libmongoc/src/mongoc/mongoc-openssl.c
  libmongoc/src/mongoc/mongoc-queue.c

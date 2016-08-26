@@ -72,7 +72,7 @@ object(Person)#%d (5) {
   ["secret":protected]=>
   string(24) "Hannes confidential info"
 }
-Test { "0" : { "name" : "Hannes", "age" : 42, "addresses" : [ { "zip" : 94086, "country" : "USA", "__pclass" : { "$type" : "80", "$binary" : "QWRkcmVzcw==" } }, { "zip" : 200, "country" : "Iceland", "__pclass" : { "$type" : "80", "$binary" : "QWRkcmVzcw==" } } ], "friends" : [ { "name" : "Jeremy", "age" : 21, "addresses" : [  ], "friends" : [  ], "__pclass" : { "$type" : "80", "$binary" : "UGVyc29u" } } ], "__pclass" : { "$type" : "80", "$binary" : "UGVyc29u" } } }
+Test { "0" : { "name" : "Hannes", "age" : 42, "addresses" : [ { "zip" : 94086, "country" : "USA", "__pclass" : { "$binary" : "QWRkcmVzcw==", "$type" : "80" } }, { "zip" : 200, "country" : "Iceland", "__pclass" : { "$binary" : "QWRkcmVzcw==", "$type" : "80" } } ], "friends" : [ { "name" : "Jeremy", "age" : 21, "addresses" : [  ], "friends" : [  ], "__pclass" : { "$binary" : "UGVyc29u", "$type" : "80" } } ], "__pclass" : { "$binary" : "UGVyc29u", "$type" : "80" } } }
      0 : 23 01 00 00 03 30 00 1b 01 00 00 02 6e 61 6d 65  [#....0......name]
     10 : 00 07 00 00 00 48 61 6e 6e 65 73 00 10 61 67 65  [.....Hannes..age]
     20 : 00 2a 00 00 00 04 61 64 64 72 65 73 73 65 73 00  [.*....addresses.]

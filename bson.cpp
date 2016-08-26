@@ -21,6 +21,8 @@
 #include "hphp/runtime/base/type-string.h"
 #include "hphp/util/logger.h"
 
+#undef TRACE
+
 #include "bson.h"
 #include "utils.h"
 #include "mongodb.h"

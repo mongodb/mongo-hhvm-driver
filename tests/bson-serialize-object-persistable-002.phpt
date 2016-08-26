@@ -37,5 +37,5 @@ foreach ( $tests as $test )
 }
 ?>
 --EXPECT--
-{ "type" : "beer", "__pclass" : { "$type" : "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
-{ "type" : "beer", "__pclass" : { "$type" : "80", "$binary" : "TGlxdWlkQ2xhc3M=" } }
+{ "type" : "beer", "__pclass" : { "$binary" : "TGlxdWlkQ2xhc3M=", "$type" : "80" } }
+{ "type" : "beer", "__pclass" : { "$binary" : "TGlxdWlkQ2xhc3M=", "$type" : "80" } }

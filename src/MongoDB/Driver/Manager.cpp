@@ -19,6 +19,8 @@
 #include "hphp/runtime/base/array-iterator.h"
 #include "hphp/runtime/ext/stream/ext_stream.h"
 
+#undef TRACE
+
 #include "../../../bson.h"
 #include "../../../pool.h"
 #include "../../../utils.h"

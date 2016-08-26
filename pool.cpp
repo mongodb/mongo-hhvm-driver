@@ -21,6 +21,8 @@
 #include "hphp/runtime/base/variable-serializer.h"
 #include "hphp/util/logger.h"
 
+#undef TRACE
+
 #include "mongodb.h"
 #include "pool.h"
 

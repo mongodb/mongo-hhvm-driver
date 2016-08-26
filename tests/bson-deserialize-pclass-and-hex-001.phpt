@@ -49,7 +49,7 @@ var_dump(MongoDB\BSON\toPHP($bson, $typeMap));
 ===DONE===
 <?php exit(0); ?>
 --EXPECTF--
-Test { "list" : [ 1, 2, 3 ], "map" : { "foo" : "bar" }, "__pclass" : { "$type" : "80", "$binary" : "TXlEb2N1bWVudA==" } }
+Test { "list" : [ 1, 2, 3 ], "map" : { "foo" : "bar" }, "__pclass" : { "$binary" : "TXlEb2N1bWVudA==", "$type" : "80" } }
      0 : 55 00 00 00 04 6c 69 73 74 00 1a 00 00 00 10 30  [U....list......0]
     10 : 00 01 00 00 00 10 31 00 02 00 00 00 10 32 00 03  [......1......2..]
     20 : 00 00 00 00 03 6d 61 70 00 12 00 00 00 02 66 6f  [.....map......fo]
