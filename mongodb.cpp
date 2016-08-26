@@ -46,6 +46,7 @@ extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
 #include "libmongoc/src/mongoc/mongoc-log-private.h"
+#include "libmongoc/src/mongoc/mongoc-metadata.h"
 }
 
 namespace HPHP {
@@ -84,9 +85,11 @@ void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, con
 	}
 }
 
+#define HIPPO_VERSION "1.3.0-dev"
+
 static class MongoDBExtension : public Extension {
 	public:
-		MongoDBExtension() : Extension("mongodb", "1.3.0-dev") {}
+		MongoDBExtension() : Extension("mongodb", HIPPO_VERSION) {}
 
 		virtual void moduleInit() {
 			/* MongoDB\BSON functions */
@@ -252,6 +255,10 @@ static class MongoDBExtension : public Extension {
 
 			loadSystemlib("mongodb");
 			mongoc_init();
+
+			std::string s = "HHVM "; s += HHVM_VERSION;
+			mongoc_handshake_data_append("ext-mongodb:HHVM", HIPPO_VERSION, s.c_str());
+
 			mongoc_log_set_handler(hippo_log_handler, NULL);
 			mongoc_log_trace_enable();
 		}
