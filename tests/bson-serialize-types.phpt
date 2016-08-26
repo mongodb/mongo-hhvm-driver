@@ -85,7 +85,7 @@ Decimal128 Exponent (float)
 a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":35:{a:1:{s:3:"dec";s:11:"1.23456E-75";}}}: equal
 
 Decimal128 Infinity
-a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":26:{a:1:{s:3:"dec";s:3:"Inf";}}}: equal
+a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":31:{a:1:{s:3:"dec";s:8:"Infinity";}}}: equal
 
 Decimal128 NAN
 a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":26:{a:1:{s:3:"dec";s:3:"NaN";}}}: equal
