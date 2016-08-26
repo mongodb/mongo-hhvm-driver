@@ -1,0 +1,20 @@
+--TEST--
+MongoDB\BSON\ObjectID::__set_state() requires valid hex string
+--FILE--
+<?php
+require_once __DIR__ . "/utils.inc";
+
+echo throws(function() {
+    MongoDB\BSON\ObjectID::__set_state(['oid' => '0123456789abcdefghijklmn']);
+}, 'MongoDB\Driver\Exception\InvalidArgumentException'), "\n";
+
+echo throws(function() {
+    MongoDB\BSON\ObjectID::__set_state(['oid' => 'INVALID']);
+}, 'MongoDB\Driver\Exception\InvalidArgumentException'), "\n";
+
+?>
+--EXPECT--
+OK: Got MongoDB\Driver\Exception\InvalidArgumentException
+Error parsing ObjectID string: 0123456789abcdefghijklmn
+OK: Got MongoDB\Driver\Exception\InvalidArgumentException
+Error parsing ObjectID string: INVALID
