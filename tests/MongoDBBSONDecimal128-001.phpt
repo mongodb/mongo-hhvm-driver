@@ -66,11 +66,15 @@ object(MongoDB\BSON\Decimal128)#%d (1) {
 -234.567
 
 Testing 'NAN'
-Error parsing Decimal128 string: NAN
+object(MongoDB\BSON\Decimal128)#%d (1) {
+  ["decimal"]=>
+  string(3) "NaN"
+}
+NaN
 
 Testing 'INF'
 object(MongoDB\BSON\Decimal128)#%d (1) {
   ["decimal"]=>
-  string(3) "Inf"
+  string(8) "Infinity"
 }
-Inf
+Infinity
