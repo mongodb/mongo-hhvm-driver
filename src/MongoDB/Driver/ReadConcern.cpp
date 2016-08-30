@@ -29,6 +29,7 @@ namespace HPHP {
 const StaticString s_MongoDriverReadConcern_className("MongoDB\\Driver\\ReadConcern");
 const StaticString s_MongoDriverReadConcern_local(MONGOC_READ_CONCERN_LEVEL_LOCAL);
 const StaticString s_MongoDriverReadConcern_majority(MONGOC_READ_CONCERN_LEVEL_MAJORITY);
+const StaticString s_MongoDriverReadConcern_linearizable(MONGOC_READ_CONCERN_LEVEL_LINEARIZABLE);
 Class* MongoDBDriverReadConcernData::s_class = nullptr;
 const StaticString MongoDBDriverReadConcernData::s_className("MongoDBDriverReadConcern");
 IMPLEMENT_GET_CLASS(MongoDBDriverReadConcernData);
