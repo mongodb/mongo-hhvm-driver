@@ -34,7 +34,7 @@ array(2) {
       ["is_passive"]=>
       bool(false)
       ["last_is_master"]=>
-      array(8) {
+      array(9) {
         ["ismaster"]=>
         bool(true)
         ["maxBsonObjectSize"]=>
@@ -46,12 +46,14 @@ array(2) {
         ["localTime"]=>
         object(MongoDB\BSON\UTCDateTime)#%d (1) {
           ["milliseconds"]=>
-          int(%d)
+          string(%d) "%d"
         }
         ["maxWireVersion"]=>
         int(%d)
         ["minWireVersion"]=>
         int(%d)
+        ["readOnly"]=>
+        bool(false)
         ["ok"]=>
         float(1)
       }
