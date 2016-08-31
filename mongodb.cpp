@@ -191,6 +191,7 @@ static class MongoDBExtension : public Extension {
 
 			Native::registerClassConstant<KindOfString>(s_MongoDriverReadConcern_className.get(), makeStaticString("LOCAL"), s_MongoDriverReadConcern_local.get());
 			Native::registerClassConstant<KindOfString>(s_MongoDriverReadConcern_className.get(), makeStaticString("MAJORITY"), s_MongoDriverReadConcern_majority.get());
+			Native::registerClassConstant<KindOfString>(s_MongoDriverReadConcern_className.get(), makeStaticString("LINEARIZABLE"), s_MongoDriverReadConcern_linearizable.get());
 
 			/* MongoDb\Driver\ReadPreference */
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreference, MongoDBDriverReadPreference, _setReadPreference);

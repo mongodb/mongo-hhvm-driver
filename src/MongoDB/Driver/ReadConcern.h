@@ -30,6 +30,7 @@ namespace HPHP {
 extern const StaticString s_MongoDriverReadConcern_className;
 extern const StaticString s_MongoDriverReadConcern_local;
 extern const StaticString s_MongoDriverReadConcern_majority;
+extern const StaticString s_MongoDriverReadConcern_linearizable;
 
 class MongoDBDriverReadConcernData
 {
