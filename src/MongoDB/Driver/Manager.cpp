@@ -51,6 +51,7 @@ const StaticString
 	s_MongoDBDriverManager_slaveok("slaveok"),
 	s_MongoDBDriverManager_readpreference("readpreference"),
 	s_MongoDBDriverManager_readpreferencetags("readpreferencetags"),
+	s_MongoDBDriverManager_maxstalenessms("maxstalenessms"),
 	s_MongoDBDriverManager_readPreference("readPreference"),
 	s_MongoDBDriverManager_readPreferenceTags("readPreferenceTags"),
 	s_MongoDBDriverManager_maxStalenessMS("maxStalenessMS"),
@@ -135,6 +136,7 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 		!options.exists(s_MongoDBDriverManager_slaveok) &&
 		!options.exists(s_MongoDBDriverManager_readpreference) &&
 		!options.exists(s_MongoDBDriverManager_readpreferencetags) &&
+		!options.exists(s_MongoDBDriverManager_maxstalenessms) &&
 		!options.exists(s_MongoDBDriverManager_readPreference) &&
 		!options.exists(s_MongoDBDriverManager_readPreferenceTags) &&
 		!options.exists(s_MongoDBDriverManager_maxStalenessMS)
@@ -197,7 +199,11 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 	}
 
 	/* Handle maxStalenessMS, and make sure it is not combined with PRIMARY readPreference */
-	if (options.exists(s_MongoDBDriverManager_maxStalenessMS) && options[s_MongoDBDriverManager_maxStalenessMS].isInteger()) {
+	if (
+		(options.exists(s_MongoDBDriverManager_maxstalenessms) && options[s_MongoDBDriverManager_maxstalenessms].isInteger())
+		||
+		(options.exists(s_MongoDBDriverManager_maxStalenessMS) && options[s_MongoDBDriverManager_maxStalenessMS].isInteger())
+	) {
 		if (mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY) {
 			throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with maxStalenessMS");
 			mongoc_read_prefs_destroy(new_rp);
@@ -205,7 +211,11 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 			return false;
 		}
 
-		mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxStalenessMS].toInt64());
+		if (options.exists(s_MongoDBDriverManager_maxstalenessms)) {
+			mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxstalenessms].toInt64());
+		} else {
+			mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxStalenessMS].toInt64());
+		}
 	}
 
 	/* This may be redundant in light of the check for primary with tags,
