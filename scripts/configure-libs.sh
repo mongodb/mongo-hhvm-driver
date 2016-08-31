@@ -11,5 +11,5 @@ cd libmongoc
 if [ -f Makefile ]; then
 	make distclean
 fi
-./autogen.sh --enable-experimental-features
+./autogen.sh --enable-experimental-features --disable-automatic-init-and-cleanup
 cd -
