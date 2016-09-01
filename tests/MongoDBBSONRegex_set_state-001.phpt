@@ -9,8 +9,8 @@ var_export(MongoDB\BSON\Regex::__set_state([
 echo "\n";
 
 ?>
---EXPECT--
+--EXPECTF--
 MongoDB\BSON\Regex::__set_state(array(
-  'pattern' => 'regexp',
-  'flags' => 'i',
+%w'pattern' => 'regexp',
+%w'flags' => 'i',
 ))

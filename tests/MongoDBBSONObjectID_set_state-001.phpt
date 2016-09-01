@@ -8,7 +8,7 @@ var_export(MongoDB\BSON\ObjectID::__set_state([
 echo "\n";
 
 ?>
---EXPECT--
+--EXPECTF--
 MongoDB\BSON\ObjectID::__set_state(array(
-  'oid' => '576c25db6118fd406e6e6471',
+%w'oid' => '576c25db6118fd406e6e6471',
 ))

@@ -16,16 +16,16 @@ foreach ($tests as $milliseconds) {
 }
 
 ?>
---EXPECT--
+--EXPECTF--
 MongoDB\BSON\UTCDateTime::__set_state(array(
-  'milliseconds' => '0',
+%w'milliseconds' => '0',
 ))
 
 MongoDB\BSON\UTCDateTime::__set_state(array(
-  'milliseconds' => '-1416445411987',
+%w'milliseconds' => '-1416445411987',
 ))
 
 MongoDB\BSON\UTCDateTime::__set_state(array(
-  'milliseconds' => '1416445411987',
+%w'milliseconds' => '1416445411987',
 ))
 
