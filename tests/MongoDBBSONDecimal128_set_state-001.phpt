@@ -21,28 +21,28 @@ foreach ($tests as $value) {
 }
 
 ?>
---EXPECT--
+--EXPECTF--
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => '1234.5678',
+%w'dec' => '1234.5678',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => '-1234.5678',
+%w'dec' => '-1234.5678',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => 'Infinity',
+%w'dec' => 'Infinity',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => 'Infinity',
+%w'dec' => 'Infinity',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => 'NaN',
+%w'dec' => 'NaN',
 ))
 
 MongoDB\BSON\Decimal128::__set_state(array(
-  'dec' => 'NaN',
+%w'dec' => 'NaN',
 ))
 
