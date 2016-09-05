@@ -23,26 +23,26 @@ foreach ($tests as $test) {
 ?>
 --EXPECTF--
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => 'foobar',
-  'type' => 0,
+%w'data' => 'foobar',
+%w'type' => 0,
 ))
 
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => '',
-  'type' => 0,
+%w'data' => '',
+%w'type' => 0,
 ))
 
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => '' . "\0" . 'foo',
-  'type' => 0,
+%w'data' => '' . "\0" . 'foo',
+%w'type' => 0,
 ))
 
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => '%a' . "\0" . '' . "\0" . '',
-  'type' => 4,
+%w'data' => '%a' . "\0" . '' . "\0" . '',
+%w'type' => 4,
 ))
 
 MongoDB\BSON\Binary::__set_state(array(
-  'data' => '%a',
-  'type' => 5,
+%w'data' => '%a',
+%w'type' => 5,
 ))
