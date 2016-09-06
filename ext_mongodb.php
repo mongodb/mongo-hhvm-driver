@@ -776,6 +776,7 @@ final class Decimal128 implements Type, \Serializable
 final class Javascript implements Type, \Serializable
 {
 	private $code;
+	private $scope;
 
 	static private function checkArray(array $state)
 	{
@@ -840,7 +841,7 @@ final class Javascript implements Type, \Serializable
 	{
 		return [
 			'code' => $this->code,
-			'scope' => (object) $this->scope
+			'scope' => $this->scope
 		];
 	}
 

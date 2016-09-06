@@ -29,6 +29,7 @@ echo "\n\n";
 --EXPECTF--
 MongoDB\BSON\Javascript::__set_state(array(
 %w'code' => 'function foo(bar) { return bar; }',
+%w'scope' => NULL,
 ))
 
 MongoDB\BSON\Javascript::__set_state(array(
@@ -59,5 +60,6 @@ MongoDB\BSON\Javascript::__set_state(array(
 
 MongoDB\BSON\Javascript::__set_state(array(
 %w'code' => 'function foo(bar) { return bar; }',
+%w'scope' => NULL,
 ))
 
