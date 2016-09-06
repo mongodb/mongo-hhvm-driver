@@ -84,7 +84,7 @@ MongoDB\Driver\Exception\InvalidArgumentException: Error parsing Decimal128 stri
 
 Javascript:
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Javascript initialization requires "code" string field
-MongoDB\Driver\Exception\InvalidArgumentException: Expected scope to be an array or object, string given
+MongoDB\Driver\Exception\InvalidArgumentException: Expected scope to be array or object, string given
 
 ObjectID:
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\ObjectID initialization requires "oid" string field
@@ -97,10 +97,10 @@ MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Regex initializa
 MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Regex initialization requires "pattern" and "flags" string fields
 
 Timestamp:
-MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
-MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
-MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
-MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
+MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
+MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
+MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
+MongoDB\Driver\Exception\InvalidArgumentException: MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
 MongoDB\Driver\Exception\InvalidArgumentException: Expected increment to be an unsigned 32-bit integer, -1 given
 MongoDB\Driver\Exception\InvalidArgumentException: Expected increment to be an unsigned 32-bit integer, -2147483647 given
 MongoDB\Driver\Exception\InvalidArgumentException: Expected timestamp to be an unsigned 32-bit integer, -1 given

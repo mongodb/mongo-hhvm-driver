@@ -34,7 +34,7 @@ array(2) {
       ["is_passive"]=>
       bool(false)
       ["last_is_master"]=>
-      array(9) {
+      array(%d) {
         ["ismaster"]=>
         bool(true)
         ["maxBsonObjectSize"]=>
@@ -52,9 +52,7 @@ array(2) {
         int(%d)
         ["minWireVersion"]=>
         int(%d)
-        ["readOnly"]=>
-        bool(false)
-        ["ok"]=>
+        %a
         float(1)
       }
       ["round_trip_time"]=>

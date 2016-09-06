@@ -28,7 +28,7 @@ array(1) {
     }
     ["decimal"]=>
     object(MongoDB\BSON\Decimal128)#%d (1) {
-      ["decimal"]=>
+      ["dec"]=>
       string(9) "1234.5678"
     }
   }
