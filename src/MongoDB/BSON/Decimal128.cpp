@@ -32,8 +32,6 @@ Class* MongoDBBsonDecimal128Data::s_class = nullptr;
 const StaticString MongoDBBsonDecimal128Data::s_className("MongoDBBsonDecimal128");
 IMPLEMENT_GET_CLASS(MongoDBBsonDecimal128Data);
 
-const StaticString s_MongoDBBsonDecimal128_decimal("decimal");
-
 static String decimalAsString(MongoDBBsonDecimal128Data* data)
 {
 	String s;
@@ -70,7 +68,7 @@ Array HHVM_METHOD(MongoDBBsonDecimal128, __debugInfo)
 	MongoDBBsonDecimal128Data* data = Native::data<MongoDBBsonDecimal128Data>(this_);
 	Array retval = Array::Create();
 
-	retval.add(s_MongoDBBsonDecimal128_decimal, decimalAsString(data));
+	retval.add(s_MongoBsonDecimal128_dec, decimalAsString(data));
 
 	return retval;
 }
