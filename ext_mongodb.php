@@ -836,6 +836,7 @@ final class Decimal128 implements Type, \Serializable, Decimal128Interface
 final class Javascript implements Type, \Serializable, JavascriptInterface
 {
 	private $code;
+	private $scope;
 
 	static private function checkArray(array $state)
 	{
@@ -900,7 +901,7 @@ final class Javascript implements Type, \Serializable, JavascriptInterface
 	{
 		return [
 			'code' => $this->code,
-			'scope' => (object) $this->scope
+			'scope' => $this->scope
 		];
 	}
 
