@@ -851,7 +851,7 @@ final class Javascript implements Type, \Serializable, JavascriptInterface
 			if ( !is_array( $state['scope'] ) && !is_object( $state['scope'] ) )
 			{
 				$valueType = gettype( $state['scope'] );
-				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be an array or object, {$valueType} given" );
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be array or object, {$valueType} given" );
 			}
 		}
 	}
@@ -880,7 +880,7 @@ final class Javascript implements Type, \Serializable, JavascriptInterface
 		if ( $scope !== NULL && ! ( is_object( $scope ) || is_array( $scope ) ) )
 		{
 			$valueType = gettype( $scope );
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be an array or object, {$valueType} given" );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected scope to be array or object, {$valueType} given" );
 		}
 
 		$this->code = $code;
@@ -1091,7 +1091,7 @@ final class Timestamp implements Type, \Serializable, TimestampInterface
 			||
 			!array_key_exists( 'timestamp', $state ) || ( !is_int( $state['timestamp'] ) && !is_string( $state['timestamp'] ) )
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields' );
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields' );
 		}
 	}
 

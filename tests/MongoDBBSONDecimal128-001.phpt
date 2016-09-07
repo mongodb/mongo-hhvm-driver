@@ -32,49 +32,49 @@ foreach ( $tests as $test )
 --EXPECTF--
 Testing '1234.5678'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(9) "1234.5678"
 }
 1234.5678
 
 Testing '1234e5'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(8) "1.234E+8"
 }
 1.234E+8
 
 Testing '1234.56e-78'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(11) "1.23456E-75"
 }
 1.23456E-75
 
 Testing '-1234.5678'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(10) "-1234.5678"
 }
 -1234.5678
 
 Testing '-234.567'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(8) "-234.567"
 }
 -234.567
 
 Testing 'NAN'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(3) "NaN"
 }
 NaN
 
 Testing 'INF'
 object(MongoDB\BSON\Decimal128)#%d (1) {
-  ["decimal"]=>
+  ["dec"]=>
   string(8) "Infinity"
 }
 Infinity

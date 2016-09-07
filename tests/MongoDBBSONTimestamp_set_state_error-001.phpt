@@ -23,10 +23,10 @@ echo throws(function() {
 ?>
 --EXPECT--
 OK: Got MongoDB\Driver\Exception\InvalidArgumentException
-MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
+MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
 OK: Got MongoDB\Driver\Exception\InvalidArgumentException
-MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
+MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
 OK: Got MongoDB\Driver\Exception\InvalidArgumentException
-MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
+MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
 OK: Got MongoDB\Driver\Exception\InvalidArgumentException
-MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer fields
+MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields
