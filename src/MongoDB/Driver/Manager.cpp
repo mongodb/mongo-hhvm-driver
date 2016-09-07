@@ -51,8 +51,10 @@ const StaticString
 	s_MongoDBDriverManager_slaveok("slaveok"),
 	s_MongoDBDriverManager_readpreference("readpreference"),
 	s_MongoDBDriverManager_readpreferencetags("readpreferencetags"),
+	s_MongoDBDriverManager_maxstalenessms("maxstalenessms"),
 	s_MongoDBDriverManager_readPreference("readPreference"),
 	s_MongoDBDriverManager_readPreferenceTags("readPreferenceTags"),
+	s_MongoDBDriverManager_maxStalenessMS("maxStalenessMS"),
 	s_MongoDBDriverManager_readconcernlevel("readconcernlevel"),
 	s_MongoDBDriverManager_readConcernLevel("readConcernLevel"),
 	s_MongoDBDriverManager_mode("mode"),
@@ -134,8 +136,10 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 		!options.exists(s_MongoDBDriverManager_slaveok) &&
 		!options.exists(s_MongoDBDriverManager_readpreference) &&
 		!options.exists(s_MongoDBDriverManager_readpreferencetags) &&
+		!options.exists(s_MongoDBDriverManager_maxstalenessms) &&
 		!options.exists(s_MongoDBDriverManager_readPreference) &&
-		!options.exists(s_MongoDBDriverManager_readPreferenceTags)
+		!options.exists(s_MongoDBDriverManager_readPreferenceTags) &&
+		!options.exists(s_MongoDBDriverManager_maxStalenessMS)
 	) {
 		return true;
 	}
@@ -184,17 +188,37 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 		mongoc_read_prefs_set_tags(new_rp, b_tags);
 	}
 
+	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
 	if (
 		mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY &&
 		!bson_empty(mongoc_read_prefs_get_tags(new_rp))
 	) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with tags");
 		mongoc_read_prefs_destroy(new_rp);
-
 		return false;
 	}
 
-	/* This may be redundant in light of the last check (primary with tags),
+	/* Handle maxStalenessMS, and make sure it is not combined with PRIMARY readPreference */
+	if (
+		(options.exists(s_MongoDBDriverManager_maxstalenessms) && options[s_MongoDBDriverManager_maxstalenessms].isInteger())
+		||
+		(options.exists(s_MongoDBDriverManager_maxStalenessMS) && options[s_MongoDBDriverManager_maxStalenessMS].isInteger())
+	) {
+		if (mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with maxStalenessMS");
+			mongoc_read_prefs_destroy(new_rp);
+
+			return false;
+		}
+
+		if (options.exists(s_MongoDBDriverManager_maxstalenessms)) {
+			mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxstalenessms].toInt64());
+		} else {
+			mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxStalenessMS].toInt64());
+		}
+	}
+
+	/* This may be redundant in light of the check for primary with tags,
 	 * but we'll check anyway in case additional validation is implemented. */
 	if (!mongoc_read_prefs_is_valid(new_rp)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("Read preference is not valid");
@@ -337,7 +361,8 @@ static mongoc_uri_t *hippo_mongo_driver_manager_make_uri(const char *dsn, const 
 			!strcasecmp(s_key, "safe") ||
 			!strcasecmp(s_key, "slaveok") ||
 			!strcasecmp(s_key, "w") ||
-			!strcasecmp(s_key, "wtimeoutms")
+			!strcasecmp(s_key, "wtimeoutms") ||
+			!strcasecmp(s_key, "maxstalenessms")
 		) {
 			continue;
 		}
