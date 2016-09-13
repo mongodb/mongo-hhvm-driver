@@ -4,16 +4,16 @@ BSON Object Deserialization: Incomplete
 <?php
 $tests = [
 	'Binary' => [
-		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":31:{a:1:{s:4:"data";s:6:"foobar";}}}',
-		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":22:{a:1:{s:4:"type";i:0;}}}',
-		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":46:{a:2:{s:4:"data";i:0;s:4:"type";s:6:"foobar";}}}',
-		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":47:{a:2:{s:4:"data";s:6:"foobar";s:4:"type";i:-1;}}}',
-		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":48:{a:2:{s:4:"data";s:6:"foobar";s:4:"type";i:256;}}}',
+		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":30:{a:1:{s:4:"data";s:6:"foobar";}}}',
+		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":21:{a:1:{s:4:"type";i:0;}}}',
+		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":45:{a:2:{s:4:"data";i:0;s:4:"type";s:6:"foobar";}}}',
+		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":46:{a:2:{s:4:"data";s:6:"foobar";s:4:"type";i:-1;}}}',
+		'a:1:{s:5:"value";C:19:"MongoDB\BSON\Binary":47:{a:2:{s:4:"data";s:6:"foobar";s:4:"type";i:256;}}}',
 	],
 
 	'Decimal128' => [
 		'a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":20:{a:1:{s:3:"dec";i:0;}}}',
-		'a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":31:{a:1:{s:3:"dec";s:7:"INVALID";}}}',
+		'a:1:{s:5:"value";C:23:"MongoDB\BSON\Decimal128":30:{a:1:{s:3:"dec";s:7:"INVALID";}}}',
 	],
 
 	'Javascript' => [
