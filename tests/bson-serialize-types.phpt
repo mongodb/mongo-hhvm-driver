@@ -53,7 +53,7 @@ foreach ( $tests as $name => $test )
 	$u = unserialize( $s );
 
 	echo $s, ": ";
-	echo ( $doc == $u ) ? "equal" : "not equal", "\n\n";
+	echo ( var_export( $doc, true ) === var_export( $u, true ) ) ? "equal" : "not equal", "\n\n";
 }
 ?>
 --EXPECTF--
