@@ -36,7 +36,7 @@ const StaticString s_MongoDriverWriteConcern_majority("majority");
 const StaticString s_MongoDriverWriteConcern_w("w");
 const StaticString s_MongoDriverWriteConcern_wmajority("wmajority");
 const StaticString s_MongoDriverWriteConcern_wtimeout("wtimeout");
-const StaticString s_MongoDriverWriteConcern_journal("journal");
+const StaticString s_MongoDriverWriteConcern_j("j");
 Class* MongoDBDriverWriteConcernData::s_class = nullptr;
 const StaticString MongoDBDriverWriteConcernData::s_className("MongoDBDriverWriteConcern");
 IMPLEMENT_GET_CLASS(MongoDBDriverWriteConcernData);
@@ -117,6 +117,7 @@ bool mongodb_driver_add_write_concern_debug(const mongoc_write_concern_t *wc, Ar
 {
 	const char *wtag = mongoc_write_concern_get_wtag(wc);
 	const int32_t w = mongoc_write_concern_get_w(wc);
+	const int32_t wtimeout = mongoc_write_concern_get_wtimeout(wc);
 
 	if (wtag) {
 		retval->set(s_MongoDriverWriteConcern_w, (char*)wtag);
@@ -124,17 +125,14 @@ bool mongodb_driver_add_write_concern_debug(const mongoc_write_concern_t *wc, Ar
 		retval->set(s_MongoDriverWriteConcern_w, "majority");
 	} else if (w != MONGOC_WRITE_CONCERN_W_DEFAULT) {
 		retval->set(s_MongoDriverWriteConcern_w, w);
-	} else {
-		retval->set(s_MongoDriverWriteConcern_w, Variant());
 	}
 
-	retval->set(s_MongoDriverWriteConcern_wmajority, mongoc_write_concern_get_wmajority(wc));
-	retval->set(s_MongoDriverWriteConcern_wtimeout, mongoc_write_concern_get_wtimeout(wc));
-
 	if (mongoc_write_concern_journal_is_set(wc)) {
-		retval->set(s_MongoDriverWriteConcern_journal, mongoc_write_concern_get_journal(wc));
-	} else {
-		retval->set(s_MongoDriverWriteConcern_journal, Variant());
+		retval->set(s_MongoDriverWriteConcern_j, mongoc_write_concern_get_journal(wc));
+	}
+
+	if (wtimeout != 0) {
+		retval->set(s_MongoDriverWriteConcern_wtimeout, wtimeout);
 	}
 
 	return true;
@@ -188,5 +186,4 @@ Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo)
 
 	return retval;
 }
-
 }

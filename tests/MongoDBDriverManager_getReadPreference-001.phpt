@@ -15,17 +15,14 @@ foreach ($data as $item) {
 ?>
 --EXPECTF--
 mongodb://localhost/?readPreference=primary
-object(MongoDB\Driver\ReadPreference)#%d (2) {
+object(MongoDB\Driver\ReadPreference)#%d (%d) {
   ["mode"]=>
-  int(1)
-  ["tags"]=>
-  array(0) {
-  }
+  string(7) "primary"
 }
 mongodb://localhost/?readPreference=nearest&readPreferenceTags=dc:ny,use:ssd&readPreferenceTags=dc:sf&readPreferenceTags=
-object(MongoDB\Driver\ReadPreference)#%d (2) {
+object(MongoDB\Driver\ReadPreference)#%d (%d) {
   ["mode"]=>
-  int(10)
+  string(7) "nearest"
   ["tags"]=>
   array(3) {
     [0]=>

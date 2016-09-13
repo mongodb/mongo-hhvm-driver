@@ -69,12 +69,24 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 	Variant v_tags;
 	const bson_t *tags = mongoc_read_prefs_get_tags(data->m_read_preference);
 
-	retval.set(s_mode, mongoc_read_prefs_get_mode(data->m_read_preference));
+	mongoc_read_mode_t mode = mongoc_read_prefs_get_mode(data->m_read_preference);
 
-	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
-	BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
-	convertor.convert(&v_tags);
-	retval.set(s_tags, v_tags.toArray());
+	switch (mode) {
+		case MONGOC_READ_PRIMARY: retval.set(s_mode, "primary"); break;
+		case MONGOC_READ_PRIMARY_PREFERRED: retval.set(s_mode, "primaryPreferred"); break;
+		case MONGOC_READ_SECONDARY: retval.set(s_mode, "secondary"); break;
+		case MONGOC_READ_SECONDARY_PREFERRED: retval.set(s_mode, "secondaryPreferred"); break;
+		case MONGOC_READ_NEAREST: retval.set(s_mode, "nearest"); break;
+		default: /* Do nothing */
+			break;
+	}
+
+	if (!bson_empty(tags)) {
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+		BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
+		convertor.convert(&v_tags);
+		retval.set(s_tags, v_tags.toArray());
+	}
 
 	return retval;
 }
