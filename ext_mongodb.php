@@ -1,4 +1,24 @@
 <?hh
+namespace MongoDB\BSON;
+
+interface Type
+{
+}
+
+interface Serializable extends Type
+{
+	function bsonSerialize() : array;
+}
+
+interface Unserializable
+{
+	function bsonUnserialize(array $data) : void;
+}
+
+interface Persistable extends Serializable, Unserializable
+{
+}
+
 namespace MongoDB\Driver;
 
 final class WriteConcernError {
@@ -444,7 +464,7 @@ final class BulkWrite implements \Countable {
 
 
 <<__NativeData("MongoDBDriverReadConcern")>>
-final class ReadConcern {
+final class ReadConcern implements \MongoDB\BSON\Serializable {
 	<<__Native>>
 	public function __construct(?string $level = NULL) : void;
 
@@ -453,10 +473,13 @@ final class ReadConcern {
 
 	<<__Native>>
 	public function __debugInfo() : array;
+
+	<<__Native>>
+	function bsonSerialize() : array;
 }
 
 <<__NativeData("MongoDBDriverReadPreference")>>
-final class ReadPreference {
+final class ReadPreference implements \MongoDB\BSON\Serializable {
 	<<__Native>>
 	private function _setReadPreference(int $readPreference): void;
 
@@ -499,6 +522,9 @@ final class ReadPreference {
 
 	<<__Native>>
 	public function __debugInfo() : array;
+
+	<<__Native>>
+	function bsonSerialize() : array;
 }
 
 <<__NativeData("MongoDBDriverServer")>>
@@ -557,7 +583,7 @@ final class Server {
 }
 
 <<__NativeData("MongoDBDriverWriteConcern")>>
-final class WriteConcern {
+final class WriteConcern implements \MongoDB\BSON\Serializable {
 	<<__Native>>
 	public function __construct(mixed $w, ?integer $wtimeout = 0, ?boolean $journal = NULL);
 
@@ -572,6 +598,9 @@ final class WriteConcern {
 
 	<<__Native>>
 	public function __debugInfo() : array;
+
+	<<__Native>>
+	function bsonSerialize() : array;
 }
 /* }}} */
 
@@ -704,24 +733,6 @@ trait DenySerialization
 		$name = get_class( $this );
 		throw new \Exception("Unserialization of '{$name}' is not allowed");
 	}
-}
-
-interface Type
-{
-}
-
-interface Serializable extends Type
-{
-	function bsonSerialize() : array;
-}
-
-interface Unserializable
-{
-	function bsonUnserialize(array $data) : void;
-}
-
-interface Persistable extends Serializable, Unserializable
-{
 }
 
 

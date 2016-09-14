@@ -402,7 +402,6 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 {
 	Variant result;
 	Array   properties;
-	TypedValue args[1] = { *(Variant(v)).asCell() };
 	Class *cls;
 	Func *m;
 
@@ -413,8 +412,7 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 		result.asTypedValue(),
 		m,
 		v.get(),
-		nullptr,
-		1, args
+		nullptr
 	);
 
 	if ( ! (
