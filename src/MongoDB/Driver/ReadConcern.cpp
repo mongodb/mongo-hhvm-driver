@@ -57,7 +57,9 @@ Array HHVM_METHOD(MongoDBDriverReadConcern, __debugInfo)
 
 	level = mongoc_read_concern_get_level(data->m_read_concern);
 
-	retval.set(s_level, level ? Variant(level) : Variant());
+	if (level) {
+		retval.set(s_level, Variant(level));
+	}
 
 	return retval;
 }

@@ -16,35 +16,23 @@ foreach ($data as $item) {
 ?>
 --EXPECTF--
 mongodb://localhost/?w=1&journal=true
-object(MongoDB\Driver\WriteConcern)#%d (4) {
+object(MongoDB\Driver\WriteConcern)#%d (%d) {
   ["w"]=>
   int(1)
-  ["wmajority"]=>
-  bool(false)
-  ["wtimeout"]=>
-  int(0)
-  ["journal"]=>
+  ["j"]=>
   bool(true)
 }
 mongodb://localhost/?w=majority&wtimeoutms=500
-object(MongoDB\Driver\WriteConcern)#%d (4) {
+object(MongoDB\Driver\WriteConcern)#%d (%d) {
   ["w"]=>
   string(8) "majority"
-  ["wmajority"]=>
-  bool(true)
   ["wtimeout"]=>
   int(500)
-  ["journal"]=>
-  NULL
 }
 mongodb://localhost/?w=dc1&journal=true
-object(MongoDB\Driver\WriteConcern)#%d (4) {
+object(MongoDB\Driver\WriteConcern)#%d (%d) {
   ["w"]=>
   string(3) "dc1"
-  ["wmajority"]=>
-  bool(false)
-  ["wtimeout"]=>
-  int(0)
-  ["journal"]=>
+  ["j"]=>
   bool(true)
 }
