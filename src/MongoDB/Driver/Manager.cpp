@@ -66,6 +66,7 @@ const StaticString
 	s_MongoDBDriverManager_safe("safe"),
 	s_MongoDBDriverManager_journal("journal"),
 	s_MongoDBDriverManager_context("context"),
+	s_MongoDBDriverManager_appname("appname"),
 	s_MongoDBDriverManager_context_ssl("ssl"),
 	s_MongoDBDriverManager_context_ssl_allow_self_signed("allow_self_signed"),
 	s_MongoDBDriverManager_context_ssl_local_cert("local_cert"),
@@ -362,7 +363,8 @@ static mongoc_uri_t *hippo_mongo_driver_manager_make_uri(const char *dsn, const 
 			!strcasecmp(s_key, "slaveok") ||
 			!strcasecmp(s_key, "w") ||
 			!strcasecmp(s_key, "wtimeoutms") ||
-			!strcasecmp(s_key, "maxstalenessms")
+			!strcasecmp(s_key, "maxstalenessms") ||
+			!strcasecmp(s_key, "appname")
 		) {
 			continue;
 		}
@@ -475,6 +477,12 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	hippo_mongo_driver_manager_apply_rc(uri, options);
 	hippo_mongo_driver_manager_apply_rp(uri, options);
 	hippo_mongo_driver_manager_apply_wc(uri, options);
+
+	if (options.exists(s_MongoDBDriverManager_appname)) {
+		if (!mongoc_uri_set_appname(uri, options[s_MongoDBDriverManager_appname].toString().c_str())) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Invalid appname value: '" + options[s_MongoDBDriverManager_appname].toString() + "'");
+		}
+	}
 
 	client = Pool::GetClient(data->m_hash, uri);
 
