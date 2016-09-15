@@ -68,6 +68,14 @@ const StaticString
 	s_MongoDBDriverManager_context("context"),
 	s_MongoDBDriverManager_appname("appname"),
 	s_MongoDBDriverManager_context_ssl("ssl"),
+	s_MongoDBDriverManager_context_ssl_allow_invalid_hostname("allow_invalid_hostname"),
+	s_MongoDBDriverManager_context_ssl_weak_cert_validation("weak_cert_validation"),
+	s_MongoDBDriverManager_context_ssl_pem_file("pem_file"),
+	s_MongoDBDriverManager_context_ssl_pem_pwd("pem_pwd"),
+	s_MongoDBDriverManager_context_ssl_ca_file("ca_file"),
+	s_MongoDBDriverManager_context_ssl_ca_dir("ca_dir"),
+	s_MongoDBDriverManager_context_ssl_crl_file("crl_file"),
+	/* Deprecated names */
 	s_MongoDBDriverManager_context_ssl_allow_self_signed("allow_self_signed"),
 	s_MongoDBDriverManager_context_ssl_local_cert("local_cert"),
 	s_MongoDBDriverManager_context_ssl_passphrase("passphrase"),
@@ -429,25 +437,54 @@ static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, c
 		ssl = options;
 	}
 
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_allow_invalid_hostname) && ssl[s_MongoDBDriverManager_context_ssl_allow_invalid_hostname].isBoolean()) {
+		apply_ssl = true;
+		ssl_opt.allow_invalid_hostname = ssl[s_MongoDBDriverManager_context_ssl_allow_invalid_hostname].toBoolean();
+	}
+
 	if (ssl.exists(s_MongoDBDriverManager_context_ssl_allow_self_signed) && ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].isBoolean()) {
 		apply_ssl = true;
-		ssl_opt.weak_cert_validation = (bool)true;//ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].toBoolean();
+		ssl_opt.weak_cert_validation = ssl[s_MongoDBDriverManager_context_ssl_allow_self_signed].toBoolean();
+	} else if (ssl.exists(s_MongoDBDriverManager_context_ssl_weak_cert_validation) && ssl[s_MongoDBDriverManager_context_ssl_weak_cert_validation].isBoolean()) {
+		apply_ssl = true;
+		ssl_opt.weak_cert_validation = ssl[s_MongoDBDriverManager_context_ssl_weak_cert_validation].toBoolean();
 	}
-	if (ssl.exists(s_MongoDBDriverManager_context_ssl_local_cert) && ssl[s_MongoDBDriverManager_context_ssl_local_cert].isString()) {
+
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_pem_file) && ssl[s_MongoDBDriverManager_context_ssl_pem_file].isString()) {
+		apply_ssl = true;
+		ssl_opt.pem_file = ssl[s_MongoDBDriverManager_context_ssl_pem_file].toString().c_str();
+	} else if (ssl.exists(s_MongoDBDriverManager_context_ssl_local_cert) && ssl[s_MongoDBDriverManager_context_ssl_local_cert].isString()) {
 		apply_ssl = true;
 		ssl_opt.pem_file = ssl[s_MongoDBDriverManager_context_ssl_local_cert].toString().c_str();
 	}
-	if (ssl.exists(s_MongoDBDriverManager_context_ssl_passphrase) && ssl[s_MongoDBDriverManager_context_ssl_passphrase].isString()) {
+
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_pem_pwd) && ssl[s_MongoDBDriverManager_context_ssl_pem_pwd].isString()) {
+		apply_ssl = true;
+		ssl_opt.pem_pwd = ssl[s_MongoDBDriverManager_context_ssl_pem_pwd].toString().c_str();
+	}  else if (ssl.exists(s_MongoDBDriverManager_context_ssl_passphrase) && ssl[s_MongoDBDriverManager_context_ssl_passphrase].isString()) {
 		apply_ssl = true;
 		ssl_opt.pem_pwd = ssl[s_MongoDBDriverManager_context_ssl_passphrase].toString().c_str();
 	}
-	if (ssl.exists(s_MongoDBDriverManager_context_ssl_cafile) && ssl[s_MongoDBDriverManager_context_ssl_cafile].isString()) {
+
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_ca_file) && ssl[s_MongoDBDriverManager_context_ssl_ca_file].isString()) {
+		apply_ssl = true;
+		ssl_opt.ca_file = ssl[s_MongoDBDriverManager_context_ssl_ca_file].toString().c_str();
+	} else if (ssl.exists(s_MongoDBDriverManager_context_ssl_cafile) && ssl[s_MongoDBDriverManager_context_ssl_cafile].isString()) {
 		apply_ssl = true;
 		ssl_opt.ca_file = ssl[s_MongoDBDriverManager_context_ssl_cafile].toString().c_str();
 	}
-	if (ssl.exists(s_MongoDBDriverManager_context_ssl_capath) && ssl[s_MongoDBDriverManager_context_ssl_capath].isString()) {
+
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_ca_dir) && ssl[s_MongoDBDriverManager_context_ssl_ca_dir].isString()) {
+		apply_ssl = true;
+		ssl_opt.ca_dir = ssl[s_MongoDBDriverManager_context_ssl_ca_dir].toString().c_str();
+	} else if (ssl.exists(s_MongoDBDriverManager_context_ssl_capath) && ssl[s_MongoDBDriverManager_context_ssl_capath].isString()) {
 		apply_ssl = true;
 		ssl_opt.ca_dir = ssl[s_MongoDBDriverManager_context_ssl_capath].toString().c_str();
+	}
+
+	if (ssl.exists(s_MongoDBDriverManager_context_ssl_crl_file) && ssl[s_MongoDBDriverManager_context_ssl_crl_file].isString()) {
+		apply_ssl = true;
+		ssl_opt.crl_file = ssl[s_MongoDBDriverManager_context_ssl_crl_file].toString().c_str();
 	}
 
 	if (apply_ssl) {
