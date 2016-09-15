@@ -39,7 +39,6 @@ object(stdClass)#%d (%d) {
     ["code"]=>
     string(24) "function() { return 2; }"
     ["scope"]=>
-    object(stdClass)#5 (0) {
-    }
+    NULL
   }
 }

@@ -64,7 +64,7 @@ foreach ( $tests as $test )
 object(stdClass)#%d (%d) {
   ["decimal128"]=>
   object(MongoDB\BSON\Decimal128)#%d (%d) {
-    ["decimal"]=>
+    ["dec"]=>
     string(17) "123456.1469702464"
   }
 }
@@ -73,7 +73,7 @@ object(stdClass)#%d (%d) {
   object(MyDecimal128)#%d (%d) {
     ["intern"]=>
     object(MongoDB\BSON\Decimal128)#%d (%d) {
-      ["decimal"]=>
+      ["dec"]=>
       string(17) "123456.1469702464"
     }
   }
@@ -83,7 +83,7 @@ array(%d) {
   object(MyDecimal128)#%d (%d) {
     ["intern"]=>
     object(MongoDB\BSON\Decimal128)#%d (%d) {
-      ["decimal"]=>
+      ["dec"]=>
       string(17) "123456.1469702464"
     }
   }

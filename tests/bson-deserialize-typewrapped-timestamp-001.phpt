@@ -65,9 +65,9 @@ object(stdClass)#%d (%d) {
   ["timestamp"]=>
   object(MongoDB\BSON\Timestamp)#%d (%d) {
     ["increment"]=>
-    int(123456)
+    string(6) "123456"
     ["timestamp"]=>
-    int(1469702464)
+    string(10) "1469702464"
   }
 }
 object(stdClass)#%d (%d) {
@@ -76,9 +76,9 @@ object(stdClass)#%d (%d) {
     ["intern"]=>
     object(MongoDB\BSON\Timestamp)#%d (%d) {
       ["increment"]=>
-      int(123456)
+      string(6) "123456"
       ["timestamp"]=>
-      int(1469702464)
+      string(10) "1469702464"
     }
   }
 }
@@ -88,9 +88,9 @@ array(%d) {
     ["intern"]=>
     object(MongoDB\BSON\Timestamp)#%d (%d) {
       ["increment"]=>
-      int(123456)
+      string(6) "123456"
       ["timestamp"]=>
-      int(1469702464)
+      string(10) "1469702464"
     }
   }
 }

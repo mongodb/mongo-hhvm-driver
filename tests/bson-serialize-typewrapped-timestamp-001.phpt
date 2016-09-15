@@ -37,8 +37,8 @@ object(stdClass)#%d (%d) {
   ["timestamp"]=>
   object(MongoDB\BSON\Timestamp)#%d (%d) {
     ["increment"]=>
-    int(5678)
+    string(4) "5678"
     ["timestamp"]=>
-    int(1234)
+    string(4) "1234"
   }
 }

@@ -36,7 +36,7 @@ var_dump( $result );
 object(stdClass)#%d (%d) {
   ["decimal128"]=>
   object(MongoDB\BSON\Decimal128)#%d (%d) {
-    ["decimal"]=>
+    ["dec"]=>
     string(11) "5.678E+1237"
   }
 }

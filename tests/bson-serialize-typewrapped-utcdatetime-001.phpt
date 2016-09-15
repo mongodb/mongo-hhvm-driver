@@ -39,6 +39,6 @@ object(stdClass)#%d (%d) {
   ["utcdatetime"]=>
   object(MongoDB\BSON\UTCDateTime)#%d (%d) {
     ["milliseconds"]=>
-    int(1470229627000)
+    string(13) "1470229627000"
   }
 }

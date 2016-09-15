@@ -65,7 +65,7 @@ object(stdClass)#%d (%d) {
   ["utcdatetime"]=>
   object(MongoDB\BSON\UTCDateTime)#%d (%d) {
     ["milliseconds"]=>
-    int(1469702464000)
+    string(13) "1469702464000"
   }
 }
 object(stdClass)#%d (%d) {
@@ -74,7 +74,7 @@ object(stdClass)#%d (%d) {
     ["intern"]=>
     object(MongoDB\BSON\UTCDateTime)#%d (%d) {
       ["milliseconds"]=>
-      int(1469702464000)
+      string(13) "1469702464000"
     }
   }
 }
@@ -84,7 +84,7 @@ array(%d) {
     ["intern"]=>
     object(MongoDB\BSON\UTCDateTime)#%d (%d) {
       ["milliseconds"]=>
-      int(1469702464000)
+      string(13) "1469702464000"
     }
   }
 }

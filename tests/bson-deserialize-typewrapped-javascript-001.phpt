@@ -70,8 +70,7 @@ object(stdClass)#%d (%d) {
     ["code"]=>
     string(26) "function() { return foo; }"
     ["scope"]=>
-    object(stdClass)#%d (0) {
-    }
+    NULL
   }
 }
 object(stdClass)#%d (%d) {
@@ -94,8 +93,7 @@ object(stdClass)#%d (%d) {
       ["code"]=>
       string(26) "function() { return foo; }"
       ["scope"]=>
-      object(stdClass)#%d (%d) {
-      }
+      NULL
     }
   }
 }
@@ -122,8 +120,7 @@ array(%d) {
       ["code"]=>
       string(26) "function() { return foo; }"
       ["scope"]=>
-      object(stdClass)#%d (%d) {
-      }
+      NULL
     }
   }
 }
@@ -135,7 +132,7 @@ array(%d) {
       ["code"]=>
       string(26) "function() { return foo; }"
       ["scope"]=>
-      object(stdClass)#%d (%d) {
+      array(%d) {
         ["foo"]=>
         string(3) "bar"
       }
