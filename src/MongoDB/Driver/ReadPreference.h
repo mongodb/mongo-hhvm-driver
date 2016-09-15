@@ -27,6 +27,7 @@ extern "C" {
 namespace HPHP {
 
 extern const StaticString s_MongoDriverReadPreference_className;
+bool hippo_mongo_driver_readpreference_are_valid(const Variant tags);
 
 class MongoDBDriverReadPreferenceData
 {
