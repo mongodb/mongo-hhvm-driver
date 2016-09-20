@@ -186,11 +186,21 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 	}
 
 	if (options.exists(s_MongoDBDriverManager_readpreferencetags) && options[s_MongoDBDriverManager_readpreferencetags].isArray()) {
+		if (!hippo_mongo_driver_readpreference_are_valid(options[s_MongoDBDriverManager_readpreferencetags])) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Read preference tags must be an array of zero or more documents");
+			mongoc_read_prefs_destroy(new_rp);
+			return false;
+		}
 		VariantToBsonConverter converter(options[s_MongoDBDriverManager_readpreferencetags].toArray(), HIPPO_BSON_NO_FLAGS);
 		b_tags = bson_new();
 		converter.convert(b_tags);
 		mongoc_read_prefs_set_tags(new_rp, b_tags);
 	} else if (options.exists(s_MongoDBDriverManager_readPreferenceTags) && options[s_MongoDBDriverManager_readPreferenceTags].isArray()) {
+		if (!hippo_mongo_driver_readpreference_are_valid(options[s_MongoDBDriverManager_readPreferenceTags])) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Read preference tags must be an array of zero or more documents");
+			mongoc_read_prefs_destroy(new_rp);
+			return false;
+		}
 		VariantToBsonConverter converter(options[s_MongoDBDriverManager_readPreferenceTags].toArray(), HIPPO_BSON_NO_FLAGS);
 		b_tags = bson_new();
 		converter.convert(b_tags);
