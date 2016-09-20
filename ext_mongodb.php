@@ -210,7 +210,7 @@ final class WriteResult {
 <<__NativeData("MongoDBDriverManager")>>
 class Manager {
 	<<__Native>>
-	public function __construct(string $dsn = "mongodb://127.0.0.1/", array $options = array(), array $driverOptions = array());
+	public function __construct(string $dsn = "", array $options = array(), array $driverOptions = array());
 
 	<<__Native>>
 	public function __debugInfo() : array;
@@ -237,7 +237,7 @@ class Manager {
 	public function getWriteConcern() : MongoDB\Driver\WriteConcern;
 
 	<<__Native>>
-	public function __wakeUp() : void;
+	public function __wakeup() : void;
 
 	<<__Native>>
 	public function selectServer(ReadPreference $readPreference): Server;
@@ -1038,12 +1038,27 @@ final class Timestamp implements Type, \Serializable
 	static private function checkArray( array $state )
 	{
 		if (
-			!array_key_exists( 'increment', $state ) || ( !is_int( $state['increment'] ) && !is_string( $state['increment'] ) )
-			||
-			!array_key_exists( 'timestamp', $state ) || ( !is_int( $state['timestamp'] ) && !is_string( $state['timestamp'] ) )
+			( array_key_exists( 'increment', $state ) && array_key_exists( 'timestamp', $state ) )
+			&&
+			(
+				( is_int( $state['increment'] ) && is_int( $state['timestamp'] ) )
+				||
+				( is_string( $state['increment'] ) && is_string( $state['timestamp'] ) )
+			)
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields' );
+			if ( is_string( $state['increment'] ) && !is_numeric( $state['increment'] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$state['increment']}\" as 64-bit integer increment for MongoDB\BSON\Timestamp initialization" );
+			}
+			if ( is_string( $state['timestamp'] ) && !is_numeric( $state['timestamp'] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$state['timestamp']}\" as 64-bit integer timestamp for MongoDB\BSON\Timestamp initialization" );
+			}
+
+			return;
 		}
+
+		throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields' );
 	}
 
 	public function serialize() : string
@@ -1139,6 +1154,8 @@ final class UTCDateTime implements Type, \Serializable
 			$this->milliseconds = (string) floor( microtime( true ) * 1000 );
 		} elseif ( is_object( $milliseconds ) && $milliseconds instanceof \DateTimeInterface ) {
 			$this->milliseconds = (string) floor( (string) $milliseconds->format( 'U.u' ) * 1000 );
+		} elseif ( is_object( $milliseconds ) ) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected instance of DateTimeInterface, " . get_class( $milliseconds ) . " given" );
 		} elseif ( ( is_string( $milliseconds ) || is_int( $milliseconds ) ) && is_numeric( $milliseconds ) ) {
 			$this->milliseconds = (string) (int) $milliseconds;
 		} else {

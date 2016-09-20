@@ -520,7 +520,11 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	mongoc_uri_t *uri;
 	mongoc_client_t *client;
 
-	uri = hippo_mongo_driver_manager_make_uri(dsn.c_str(), options);
+	if (strcmp(dsn.c_str(), "") == 0) {
+		uri = hippo_mongo_driver_manager_make_uri("mongodb://127.0.0.1/", options);
+	} else {
+		uri = hippo_mongo_driver_manager_make_uri(dsn.c_str(), options);
+	}
 
 	data->m_hash = Pool::CreateHash(uri, options, driverOptions);
 
