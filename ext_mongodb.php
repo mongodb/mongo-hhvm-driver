@@ -237,7 +237,7 @@ class Manager {
 	public function getWriteConcern() : MongoDB\Driver\WriteConcern;
 
 	<<__Native>>
-	public function __wakeUp() : void;
+	public function __wakeup() : void;
 
 	<<__Native>>
 	public function selectServer(ReadPreference $readPreference): Server;
