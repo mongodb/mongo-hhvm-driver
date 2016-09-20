@@ -1154,6 +1154,8 @@ final class UTCDateTime implements Type, \Serializable
 			$this->milliseconds = (string) floor( microtime( true ) * 1000 );
 		} elseif ( is_object( $milliseconds ) && $milliseconds instanceof \DateTimeInterface ) {
 			$this->milliseconds = (string) floor( (string) $milliseconds->format( 'U.u' ) * 1000 );
+		} elseif ( is_object( $milliseconds ) ) {
+			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Expected instance of DateTimeInterface, " . get_class( $milliseconds ) . " given" );
 		} elseif ( ( is_string( $milliseconds ) || is_int( $milliseconds ) ) && is_numeric( $milliseconds ) ) {
 			$this->milliseconds = (string) (int) $milliseconds;
 		} else {
