@@ -1038,12 +1038,27 @@ final class Timestamp implements Type, \Serializable
 	static private function checkArray( array $state )
 	{
 		if (
-			!array_key_exists( 'increment', $state ) || ( !is_int( $state['increment'] ) && !is_string( $state['increment'] ) )
-			||
-			!array_key_exists( 'timestamp', $state ) || ( !is_int( $state['timestamp'] ) && !is_string( $state['timestamp'] ) )
+			( array_key_exists( 'increment', $state ) && array_key_exists( 'timestamp', $state ) )
+			&&
+			(
+				( is_int( $state['increment'] ) && is_int( $state['timestamp'] ) )
+				||
+				( is_string( $state['increment'] ) && is_string( $state['timestamp'] ) )
+			)
 		) {
-			throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields' );
+			if ( is_string( $state['increment'] ) && !is_numeric( $state['increment'] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$state['increment']}\" as 64-bit integer increment for MongoDB\BSON\Timestamp initialization" );
+			}
+			if ( is_string( $state['timestamp'] ) && !is_numeric( $state['timestamp'] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Error parsing \"{$state['timestamp']}\" as 64-bit integer timestamp for MongoDB\BSON\Timestamp initialization" );
+			}
+
+			return;
 		}
+
+		throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'MongoDB\BSON\Timestamp initialization requires "increment" and "timestamp" integer or numeric string fields' );
 	}
 
 	public function serialize() : string
