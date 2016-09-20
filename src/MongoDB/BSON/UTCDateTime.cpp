@@ -33,23 +33,16 @@ const StaticString s_DateTime("DateTime");
 Object HHVM_METHOD(MongoDBBsonUTCDateTime, toDateTime)
 {
 	int64_t milliseconds = this_->o_get(s_MongoBsonUTCDateTime_milliseconds, false, s_MongoBsonUTCDateTime_className).toInt64();
+	auto tmp_dt = req::make<DateTime>(milliseconds / 1000, true);
+	tmp_dt->setTimezone(req::make<TimeZone>(String("UTC")));
+	String tmp_str = tmp_dt->toString("Y-m-d H:i:s");
 
 	/* Prepare result */
 	HPHP::Object obj{DateTimeData::getClass()};
-
 	DateTimeData* data = Native::data<DateTimeData>(obj.get());
-#if HIPPO_HHVM_VERSION >= 30900
-	data->m_dt = req::make<DateTime>(milliseconds / 1000, true);
-#else
-	data->m_dt = makeSmartPtr<DateTime>(milliseconds / 1000, true);
-#endif
 
-	/* It would be nice to do this, but HHVM doesn't export this yet
-	 *
-	 * data->m_dt->fraction( ( (double)(milliseconds % 1000) ) / 1000);
-	 */
-
-	data->m_dt->setTimezone(req::make<TimeZone>(String("UTC")));
+	data->m_dt = req::make<DateTime>();
+	data->m_dt->fromString(tmp_str + "." + String((int) (milliseconds % 1000) * 1000), req::make<TimeZone>(String("UTC")));
 
 	return obj;
 }
