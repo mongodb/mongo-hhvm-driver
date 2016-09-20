@@ -16,6 +16,7 @@
 
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
+#include "hphp/runtime/base/array-iterator.h"
 
 #undef TRACE
 
@@ -31,6 +32,23 @@ Class* MongoDBDriverReadPreferenceData::s_class = nullptr;
 const StaticString MongoDBDriverReadPreferenceData::s_className("MongoDBDriverReadPreference");
 IMPLEMENT_GET_CLASS(MongoDBDriverReadPreferenceData);
 
+bool hippo_mongo_driver_readpreference_are_valid(const Variant tags)
+{
+	if (!tags.isArray()) {
+		return false;
+	}
+
+	for (ArrayIter iter(tags.toArray()); iter; ++iter) {
+		const Variant& data(iter.secondRef());
+
+		if (!data.isArray() && !data.isObject()) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPreference)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
@@ -43,6 +61,16 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 	bson_t *bson;
 
+	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
+	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets may not be used with primary mode");
+	}
+
+	/* Check validity */
+	if (!hippo_mongo_driver_readpreference_are_valid(tagSets)) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets must be an array of zero or more documents");
+	}
+
 	/* Convert argument */
 	VariantToBsonConverter converter(tagSets, HIPPO_BSON_NO_FLAGS);
 	bson = bson_new();
@@ -53,7 +81,7 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	bson_destroy(bson);
 	if (!mongoc_read_prefs_is_valid(data->m_read_preference)) {
 		/* Throw exception */
-		throw MongoDriver::Utils::throwInvalidArgumentException("Invalid tagSets");
+		throw MongoDriver::Utils::throwInvalidArgumentException("Read preference is not valid");
 	}
 }
 

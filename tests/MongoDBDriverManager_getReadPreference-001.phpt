@@ -1,5 +1,5 @@
 --TEST--
-MongoDB\Driver\Manager::getReadPreference()
+MongoDB\Driver\Manager::getReadPreference() - URI only
 --FILE--
 <?php
 $data = [

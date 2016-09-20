@@ -185,26 +185,39 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 		}
 	}
 
+	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
+	if (
+		mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY &&
+		(
+			options.exists(s_MongoDBDriverManager_readpreferencetags) ||
+			options.exists(s_MongoDBDriverManager_readPreferenceTags)
+		)
+	) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with tags");
+		mongoc_read_prefs_destroy(new_rp);
+		return false;
+	}
+
 	if (options.exists(s_MongoDBDriverManager_readpreferencetags) && options[s_MongoDBDriverManager_readpreferencetags].isArray()) {
+		if (!hippo_mongo_driver_readpreference_are_valid(options[s_MongoDBDriverManager_readpreferencetags])) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Read preference tags must be an array of zero or more documents");
+			mongoc_read_prefs_destroy(new_rp);
+			return false;
+		}
 		VariantToBsonConverter converter(options[s_MongoDBDriverManager_readpreferencetags].toArray(), HIPPO_BSON_NO_FLAGS);
 		b_tags = bson_new();
 		converter.convert(b_tags);
 		mongoc_read_prefs_set_tags(new_rp, b_tags);
 	} else if (options.exists(s_MongoDBDriverManager_readPreferenceTags) && options[s_MongoDBDriverManager_readPreferenceTags].isArray()) {
+		if (!hippo_mongo_driver_readpreference_are_valid(options[s_MongoDBDriverManager_readPreferenceTags])) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Read preference tags must be an array of zero or more documents");
+			mongoc_read_prefs_destroy(new_rp);
+			return false;
+		}
 		VariantToBsonConverter converter(options[s_MongoDBDriverManager_readPreferenceTags].toArray(), HIPPO_BSON_NO_FLAGS);
 		b_tags = bson_new();
 		converter.convert(b_tags);
 		mongoc_read_prefs_set_tags(new_rp, b_tags);
-	}
-
-	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
-	if (
-		mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY &&
-		!bson_empty(mongoc_read_prefs_get_tags(new_rp))
-	) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with tags");
-		mongoc_read_prefs_destroy(new_rp);
-		return false;
 	}
 
 	/* Handle maxStalenessMS, and make sure it is not combined with PRIMARY readPreference */
