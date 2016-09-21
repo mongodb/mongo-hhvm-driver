@@ -61,14 +61,14 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 	bson_t *bson;
 
-	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
-	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets may not be used with primary mode");
-	}
-
 	/* Check validity */
 	if (!hippo_mongo_driver_readpreference_are_valid(tagSets)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets must be an array of zero or more documents");
+	}
+
+	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
+	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets may not be used with primary mode");
 	}
 
 	/* Convert argument */
@@ -85,9 +85,27 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	}
 }
 
+void HHVM_METHOD(MongoDBDriverReadPreference, _setMaxStalenessMS, int maxStalenessMS)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+
+	/* Validate that maxStalenessMS is not used with PRIMARY readPreference */
+	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("maxStalenessMS may not be used with primary mode");
+	}
+
+	mongoc_read_prefs_set_max_staleness_ms(data->m_read_preference, maxStalenessMS);
+
+	if (!mongoc_read_prefs_is_valid(data->m_read_preference)) {
+		/* Throw exception */
+		throw MongoDriver::Utils::throwInvalidArgumentException("Read preference is not valid");
+	}
+}
+
 const StaticString
 	s_mode("mode"),
-	s_tags("tags");
+	s_tags("tags"),
+	s_maxStalenessMS("maxStalenessMS");
 
 
 Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
@@ -116,6 +134,10 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 		retval.set(s_tags, v_tags.toArray());
 	}
 
+	if (mongoc_read_prefs_get_max_staleness_ms(data->m_read_preference) != 0) {
+		retval.set(s_maxStalenessMS, mongoc_read_prefs_get_max_staleness_ms(data->m_read_preference));
+	}
+
 	return retval;
 }
 
@@ -137,6 +159,13 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, getTagSets)
 	convertor.convert(&v_tags);
 
 	return v_tags.toArray();
+}
+
+int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMaxStalenessMS)
+{
+	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
+
+	return mongoc_read_prefs_get_max_staleness_ms(data->m_read_preference);
 }
 
 }
