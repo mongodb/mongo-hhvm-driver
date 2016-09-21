@@ -486,7 +486,10 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 	<<__Native>>
 	private function _setReadPreferenceTags(array $tagSets): void;
 
-	public function __construct(int $readPreference, array $tagSets = null)
+	<<__Native>>
+	private function _setMaxStalenessMS(int $maxStalenessMS): void;
+
+	public function __construct(int $readPreference, array $tagSets = null, array $options = [] )
 	{
 		if ($tagSets !== NULL && gettype($tagSets) != 'array') {
 			return;
@@ -501,16 +504,34 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 				// calling into Native
 				$this->_setReadPreference($readPreference);
 
-				if ($tagSets) {
-					// calling into Native, might throw exception
-					$this->_setReadPreferenceTags($tagSets);
-				}
-
 				break;
 
 			default:
 				Utils::throwHippoException(Utils::ERROR_INVALID_ARGUMENT, "Invalid mode: " . $readPreference);
 				break;
+		}
+
+		if ( $tagSets )
+		{
+			// calling into Native, might throw exception
+			$this->_setReadPreferenceTags($tagSets);
+		}
+
+		if ( array_key_exists( 'maxStalenessMS', $options ) )
+		{
+			$maxStalenessMS = (int) $options['maxStalenessMS'];
+
+			if ( $maxStalenessMS < 0 )
+			{
+				Utils::throwHippoException( Utils::ERROR_INVALID_ARGUMENT, "Expected maxStalenessMS to be >= 0, {$maxStalenessMS} given" );
+			}
+
+			if ( $maxStalenessMS > 2147483647 )
+			{
+				Utils::throwHippoException( Utils::ERROR_INVALID_ARGUMENT, "Expected maxStalenessMS to be <= 2147483647, {$maxStalenessMS} given" );
+			}
+
+			$this->_setMaxStalenessMS( $maxStalenessMS );
 		}
 	}
 
@@ -519,6 +540,9 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 
 	<<__Native>>
 	public function getTagSets() : array;
+
+	<<__Native>>
+	public function getMaxStalenessMS() : int;
 
 	<<__Native>>
 	public function __debugInfo() : array;

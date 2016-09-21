@@ -226,6 +226,8 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 		||
 		(options.exists(s_MongoDBDriverManager_maxStalenessMS) && options[s_MongoDBDriverManager_maxStalenessMS].isInteger())
 	) {
+		int64_t maxStalenessMS = 0;
+
 		if (mongoc_read_prefs_get_mode(new_rp) == MONGOC_READ_PRIMARY) {
 			throw MongoDriver::Utils::throwInvalidArgumentException("Primary read preference mode conflicts with maxStalenessMS");
 			mongoc_read_prefs_destroy(new_rp);
@@ -234,10 +236,18 @@ static bool hippo_mongo_driver_manager_apply_rp(mongoc_uri_t *uri, const Array o
 		}
 
 		if (options.exists(s_MongoDBDriverManager_maxstalenessms)) {
-			mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxstalenessms].toInt64());
+			maxStalenessMS = options[s_MongoDBDriverManager_maxstalenessms].toInt64();
 		} else {
-			mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) options[s_MongoDBDriverManager_maxStalenessMS].toInt64());
+			maxStalenessMS = options[s_MongoDBDriverManager_maxStalenessMS].toInt64();
 		}
+
+		if (maxStalenessMS < 0) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Expected maxStalenessMS to be >= 0, " + Variant(maxStalenessMS).toString() + " given");
+		}
+		if (maxStalenessMS >= 2147483647) {
+			throw MongoDriver::Utils::throwInvalidArgumentException("Expected maxStalenessMS to be <= 2147483647, " + Variant(maxStalenessMS).toString() + " given");
+		}
+		mongoc_read_prefs_set_max_staleness_ms(new_rp, (int32_t) maxStalenessMS);
 	}
 
 	/* This may be redundant in light of the check for primary with tags,
