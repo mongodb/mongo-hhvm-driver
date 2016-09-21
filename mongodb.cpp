@@ -46,7 +46,7 @@ extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
 #include "libmongoc/src/mongoc/mongoc-log-private.h"
-#include "libmongoc/src/mongoc/mongoc-metadata.h"
+#include "libmongoc/src/mongoc/mongoc-handshake.h"
 }
 
 namespace HPHP {

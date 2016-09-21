@@ -56,6 +56,7 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-gridfs-file-list.c
  libmongoc/src/mongoc/mongoc-gridfs-file-page.c
  libmongoc/src/mongoc/mongoc-gridfs-file.c libmongoc/src/mongoc/mongoc-gridfs.c
+ libmongoc/src/mongoc/mongoc-handshake.c
  libmongoc/src/mongoc/mongoc-host-list.c
  libmongoc/src/mongoc/mongoc-index.c libmongoc/src/mongoc/mongoc-init.c
  libmongoc/src/mongoc/mongoc-list.c
@@ -63,7 +64,6 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-log.c
  libmongoc/src/mongoc/mongoc-matcher-op.c libmongoc/src/mongoc/mongoc-matcher.c
  libmongoc/src/mongoc/mongoc-memcmp.c
- libmongoc/src/mongoc/mongoc-metadata.c
  libmongoc/src/mongoc/mongoc-opcode.c
  libmongoc/src/mongoc/mongoc-openssl.c
  libmongoc/src/mongoc/mongoc-queue.c
@@ -88,6 +88,7 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-stream.c
  libmongoc/src/mongoc/mongoc-topology.c
  libmongoc/src/mongoc/mongoc-topology-description.c
+ libmongoc/src/mongoc/mongoc-topology-description-apm.c
  libmongoc/src/mongoc/mongoc-topology-scanner.c
  libmongoc/src/mongoc/mongoc-uri.c libmongoc/src/mongoc/mongoc-util.c
  libmongoc/src/mongoc/mongoc-version-functions.c
