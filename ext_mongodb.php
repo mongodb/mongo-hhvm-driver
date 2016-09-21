@@ -494,7 +494,7 @@ final class Query {
 	{
 		if ( array_key_exists( 'limit', $options ) && $options['limit'] < 0 )
 		{
-			$this->opts['limit'] = 0 - $options['limit'];
+			$this->opts['limit'] = 0 - (int) $options['limit'];
 
 			if ( array_key_exists( 'singleBatch', $options ) && !$options['singleBatch'] )
 			{
@@ -562,6 +562,7 @@ final class Query {
 		$this->_queryOptBool( 'allowPartialResults', $options, 'allowPartialResults' );
 		$this->_queryOptBool( 'awaitData', $options, 'awaitData' );
 		$this->_queryOptInt64( 'batchSize', $options, 'batchSize' );
+		$this->_queryOptDocument( 'collation', $options, 'collation' );
 		$this->_queryOptString( 'comment', $options, 'comment' )
 			|| $this->_queryOptString( 'comment', $modifiers, '$comment' );
 		$this->_queryOptBool( 'exhaust', $options, 'exhaust' );
