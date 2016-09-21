@@ -36,13 +36,13 @@ foreach ($data as $item) {
 array (  0 => 1,  1 => 42,):
 Catchable fatal error: Argument 2 passed to MongoDB\Driver\ReadPreference::__construct() must be an instance of array, int given
 array (  0 => 1,  1 =>   array (    0 => 42,  ),):
-tagSets may not be used with primary mode
+tagSets must be an array of zero or more documents
 array (  0 => 1,  1 =>   array (    'dcs' => 'east',  ),):
-tagSets may not be used with primary mode
+tagSets must be an array of zero or more documents
 array (  0 => 1,  1 =>   array (    0 =>     array (      'dcs' => 'east',    ),  ),):
 tagSets may not be used with primary mode
 array (  0 => 1,  1 =>   array (    0 => 'invalid',  ),):
-tagSets may not be used with primary mode
+tagSets must be an array of zero or more documents
 array (  0 => 99,  1 => 42,):
 Catchable fatal error: Argument 2 passed to MongoDB\Driver\ReadPreference::__construct() must be an instance of array, int given
 array (  0 => 99,  1 =>   array (    0 => 42,  ),):

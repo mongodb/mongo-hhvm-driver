@@ -61,14 +61,14 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 	bson_t *bson;
 
-	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
-	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets may not be used with primary mode");
-	}
-
 	/* Check validity */
 	if (!hippo_mongo_driver_readpreference_are_valid(tagSets)) {
 		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets must be an array of zero or more documents");
+	}
+
+	/* Validate that readPreferenceTags are not used with PRIMARY readPreference */
+	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("tagSets may not be used with primary mode");
 	}
 
 	/* Convert argument */
