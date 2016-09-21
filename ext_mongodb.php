@@ -378,65 +378,228 @@ final class Command {
 }
 
 final class Query {
-	private array $query;
+	private mixed $filter = NULL;
+	private array $opts = [];
+	private string $readConcernLevel = NULL;
+
+	/* Helpers for setting / validating scalar options */
+	private function _queryOptBool( string $optName, array $options, string $key )
+	{
+		if ( array_key_exists( $key, $options ) )
+		{
+			$this->opts[$optName] = (bool) $options[$key];
+			return true;
+		}
+
+		return false;
+	}
+	
+	private function _queryOptDocument( string $optName, array $options, string $key )
+	{
+		if ( array_key_exists( $key, $options ) )
+		{
+			if ( !is_array( $options[$key] ) && !is_object( $options[$key] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "%s" %s to be array or object, %s given',
+						$key, $key[0] == '$' ? 'modifier' : 'option', gettype( $options[$key] )
+					)
+				);
+			}
+			$this->opts[$optName] = (object) $options[$key];
+			return true;
+		}
+
+		return false;
+	}
+
+	private function _queryOptInt64( string $optName, array $options, string $key )
+	{
+		if ( array_key_exists( $key, $options ) )
+		{
+			$this->opts[$optName] = (int) $options[$key];
+			return true;
+		}
+
+		return false;
+	}
+
+	private function _queryOptString( string $optName, array $options, string $key )
+	{
+		if ( array_key_exists( $key, $options ) )
+		{
+			if ( !is_string( $options[$key] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "%s" %s to be string, %s given',
+						$key, $key[0] == '$' ? 'modifier' : 'option', gettype( $options[$key] )
+					)
+				);
+			}
+			$this->opts[$optName] = $options[$key];
+			return true;
+		}
+
+		return false;
+	}
+
+	/* Helpers for setting / validating complex options */
+	private function _queryInitHint( array $options, array $modifiers )
+	{
+		if ( array_key_exists( 'hint', $options ) )
+		{
+			if ( is_string( $options['hint'] ) )
+			{
+				$this->_queryOptString( 'hint', $options, 'hint' );
+			}
+			else if ( is_object( $options['hint'] ) || is_array( $options['hint'] ) )
+			{
+				$this->_queryOptDocument( 'hint', $options, 'hint' );
+			}
+			else
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "hint" option to be string, array, or object, %s given',
+						gettype( $options['hint'] )
+					)
+				);
+			}
+		}
+		else if ( array_key_exists( '$hint', $modifiers ) )
+		{
+			if ( is_string( $modifiers['$hint'] ) )
+			{
+				$this->_queryOptString( 'hint', $modifiers, '$hint' );
+			}
+			else if ( is_object( $modifiers['$hint'] ) || is_array( $modifiers['$hint'] ) )
+			{
+				$this->_queryOptDocument( 'hint', $modifiers, '$hint' );
+			}
+			else
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "$hint" modifier to be string, array, or object, %s given',
+						gettype( $modifiers['$hint'] )
+					)
+				);
+			}
+		}
+	}
+
+	private function _queryInitLimitAndSingleBatch( array $options )
+	{
+		if ( array_key_exists( 'limit', $options ) && $options['limit'] < 0 )
+		{
+			$this->opts['limit'] = 0 - $options['limit'];
+
+			if ( array_key_exists( 'singleBatch', $options ) && !$options['singleBatch'] )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException( 'Negative "limit" option conflicts with false "singleBatch" option' );
+			}
+			else
+			{
+				$this->opts['singleBatch'] = true;
+			}
+		}
+		else
+		{
+			$this->_queryOptInt64( 'limit', $options, 'limit' );
+			$this->_queryOptBool( 'singleBatch', $options, 'singleBatch' );
+		}
+	}
+
+	private function _queryInitReadConcern( array $options )
+	{
+		if ( array_key_exists( 'readConcern', $options ) )
+		{
+			if ( !is_object( $options['readConcern'] ) || ! $options['readConcern'] instanceof \MongoDB\Driver\ReadConcern )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "readConcern" option to be %s, %s given',
+						'MongoDB\Driver\ReadConcern',
+						gettype( $options['readConcern'] )
+					)
+				);
+			}
+
+			$this->readConcernLevel = $options['readConcern']->getLevel();
+		}
+	}
 
 	public function __construct(mixed $filter, array $options = array())
 	{
-		$zquery = [];
+		$modifiers = [];
 
-		/* phongo_query_init */
 		Utils::mustBeArrayOrObject('parameter 1', $filter, "MongoDB\Driver\Query::__construct");
 
-		if ($options) {
-			$this->query['batchSize'] = array_key_exists('batchSize', $options ) ? (int) $options['batchSize'] : 0;
-			$this->query['flags'] = array_key_exists('flags', $options ) ? (int) $options['flags'] : 0;
-			$this->query['limit'] = array_key_exists('limit', $options ) ? (int) $options['limit'] : 0;
-			$this->query['skip'] = array_key_exists('skip', $options ) ? (int) $options['skip'] : 0;
+		$this->filter = $filter;
 
-			if (array_key_exists('readConcern', $options)) {
-				if (!($options['readConcern'] instanceof \MongoDB\Driver\readConcern)) {
-					throw new \MongoDB\Driver\Exception\InvalidArgumentException(
-						'Expected "readConcern" option to be MongoDB\Driver\ReadConcern, ' .
-						gettype($options['readConcern']) . ' given'
-					);
-				} else {
-					if ($options['readConcern']->getLevel() != NULL) {
-						$this->query['readConcern'] = $options['readConcern']->getLevel();
-					}
-				}
-			}
+		if ( count( $options ) == 0 )
+		{
+			return;
+		}
 
-			if (array_key_exists('modifiers', $options)) {
-				Utils::mustBeArrayOrObject('modifiers', $options['modifiers']);
-				foreach ($options['modifiers'] as $key => $value) {
-					$this->query['query'][$key] = $value;
-				}
-			}
+		if ( array_key_exists( 'modifiers', $options ) )
+		{
+			$modifiers = $options['modifiers'];
 
-			if (array_key_exists('projection', $options)) {
-				Utils::mustBeArrayOrObject('projection', $options['projection']);
-				$this->query['fields'] = (array) $options['projection'];
-			}
-
-			if (array_key_exists('sort', $options)) {
-				Utils::mustBeArrayOrObject('sort', $options['sort']);
-				$this->query['query']['$orderby'] = (object) $options['sort'];
+			if ( !is_array( $modifiers ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "modifiers" option to be array, %s given',
+						gettype( $options['modifiers'] )
+					)
+				);
 			}
 		}
 
-		$this->query['query']['$query'] = (object) $filter;
+		$this->_queryOptBool( 'allowPartialResults', $options, 'allowPartialResults' );
+		$this->_queryOptBool( 'awaitData', $options, 'awaitData' );
+		$this->_queryOptInt64( 'batchSize', $options, 'batchSize' );
+		$this->_queryOptString( 'comment', $options, 'comment' )
+			|| $this->_queryOptString( 'comment', $modifiers, '$comment' );
+		$this->_queryOptBool( 'exhaust', $options, 'exhaust' );
+		$this->_queryOptDocument( 'max', $options, 'max' )
+			|| $this->_queryOptDocument( 'max', $modifiers, '$max' );
+		$this->_queryOptInt64( 'maxScan', $options, 'maxScan' )
+			|| $this->_queryOptInt64( 'maxScan', $modifiers, '$maxScan' );
+		$this->_queryOptInt64( 'maxTimeMS', $options, 'maxTimeMS' )
+			|| $this->_queryOptInt64( 'maxTimeMS', $modifiers, '$maxTimeMS' );
+		$this->_queryOptDocument( 'min', $options, 'min' )
+			|| $this->_queryOptDocument( 'min', $modifiers, '$min' );
+		$this->_queryOptBool( 'noCursorTimeout', $options, 'noCursorTimeout' );
+		$this->_queryOptBool( 'oplogReplay', $options, 'oplogReplay' );
+		$this->_queryOptDocument( 'projection', $options, 'projection' );
+		$this->_queryOptBool( 'returnKey', $options, 'returnKey' )
+			|| $this->_queryOptBool( 'returnKey', $modifiers, '$returnKey' );
+		$this->_queryOptBool( 'showRecordId', $options, 'showRecordId' )
+			|| $this->_queryOptBool( 'showRecordId', $modifiers, '$showDiskLoc' );
+		$this->_queryOptInt64( 'skip', $options, 'skip' );
+		$this->_queryOptDocument( 'sort', $options, 'sort' )
+			|| $this->_queryOptDocument( 'sort', $modifiers, '$orderby' );
+		$this->_queryOptBool( 'snapshot', $options, 'snapshot' )
+			|| $this->_queryOptBool( 'snapshot', $modifiers, '$snapshot' );
+		$this->_queryOptBool( 'tailable', $options, 'tailable' );
+
+		$this->_queryOptBool( 'explain', $modifiers, '$explain' );
+
+		$this->_queryInitHint( $options, $modifiers );
+		$this->_queryInitLimitAndSingleBatch( $options );
+		$this->_queryInitReadConcern( $options );
 	}
 
 	public function __debugInfo() : Array
 	{
 		return [
-			'query' => (object) $this->query['query'],
-			'selector' => array_key_exists('fields', $this->query) ? (object) $this->query['fields'] : NULL,
-			'flags' => array_key_exists('flags', $this->query) ? $this->query['flags'] : 0,
-			'skip' => array_key_exists('skip', $this->query) ? $this->query['skip'] : 0,
-			'limit' => array_key_exists('limit', $this->query) ? $this->query['limit'] : 0,
-			'batch_size' => array_key_exists('batchSize', $this->query) ? $this->query['batchSize'] : 0,
-			'readConcern' => array_key_exists('readConcern', $this->query) ? [ 'level' => $this->query['readConcern'] ] : NULL,
+			'filter' => (object) $this->filter,
+			'options' => (object) $this->opts,
+			'readConcern' => $this->readConcernLevel ? [ 'level' => $this->readConcernLevel ] : NULL,
 		];
 	}
 }
