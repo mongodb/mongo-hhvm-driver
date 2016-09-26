@@ -635,7 +635,7 @@ final class BulkWrite implements \Countable {
 				);
 			}
 
-			$transformedOptions[$key] = $options[$key];
+			$transformedOptions[$key] = (object) $options[$key];
 		}
 	}
 
@@ -645,6 +645,7 @@ final class BulkWrite implements \Countable {
 
 		$this->_queryOptBool( $transformedOptions, $options, 'multi' );
 		$this->_queryOptBool( $transformedOptions, $options, 'upsert' );
+		$this->_queryOptDocument( $transformedOptions, $options, 'collation' );
 
 		return $transformedOptions;
 	}
@@ -683,6 +684,7 @@ final class BulkWrite implements \Countable {
 		{
 			$transformedOptions['limit'] = (int) ($options['limit'] ? 1 : 0);
 		}
+		$this->_queryOptDocument( $transformedOptions, $options, 'collation' );
 
 		return $transformedOptions;
 	}
