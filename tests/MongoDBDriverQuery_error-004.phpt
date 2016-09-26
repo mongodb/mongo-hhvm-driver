@@ -15,7 +15,7 @@ foreach ($data as $item) {
 }
 ?>
 --EXPECTF--
-Expected sort to be array or object, integer given
-Expected sort to be array or object, double given
-Expected sort to be array or object, boolean given
-Expected sort to be array or object, %r(null|NULL)%r given
+Expected "sort" option to be array or object, integer given
+Expected "sort" option to be array or object, double given
+Expected "sort" option to be array or object, boolean given
+Expected "sort" option to be array or object, %r(null|NULL)%r given

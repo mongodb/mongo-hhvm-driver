@@ -580,10 +580,6 @@ Array HHVM_METHOD(MongoDBDriverManager, __debugInfo)
 
 	sds = mongoc_client_get_server_descriptions(data->m_client, &n);
 	for (i = 0; i < n; i++) {
-		if (sds[i]->type == MONGOC_SERVER_UNKNOWN) {
-			continue;
-		}
-
 		mongodb_driver_add_server_debug_wrapper(sds[i], &servers);
 	}
 	mongoc_server_descriptions_destroy_all(sds, n);
@@ -683,13 +679,9 @@ Array HHVM_METHOD(MongoDBDriverManager, getServers)
 
 	sds = mongoc_client_get_server_descriptions(data->m_client, &n);
 	for (i = 0; i < n; i++) {
-		if (sds[i]->type == MONGOC_SERVER_UNKNOWN) {
-			continue;
-		}
-
 		retval.add(
 			(int64_t) i,
-			hippo_mongo_driver_server_create_from_id(data->m_client, sds[i]->id)
+			hippo_mongo_driver_server_create_from_id(data->m_client, mongoc_server_description_id(sds[i]))
 		);
 
 	}

@@ -15,7 +15,7 @@ foreach ($data as $item) {
 }
 ?>
 --EXPECTF--
-Expected modifiers to be array or object, integer given
-Expected modifiers to be array or object, double given
-Expected modifiers to be array or object, boolean given
-Expected modifiers to be array or object, %r(null|NULL)%r given
+Expected "modifiers" option to be array, integer given
+Expected "modifiers" option to be array, double given
+Expected "modifiers" option to be array, boolean given
+Expected "modifiers" option to be array, %r(null|NULL)%r given
