@@ -255,13 +255,9 @@ static void hippo_advance_cursor_and_check_for_error(mongoc_cursor_t *cursor)
 }
 
 const HPHP::StaticString
-	s_query("query"),
-	s_skip("skip"),
-	s_limit("limit"),
-	s_batchSize("batchSize"),
-	s_flags("flags"),
-	s_fields("fields"),
-	s_readConcern("readConcern");
+	s_filter("filter"),
+	s_opts("opts"),
+	s_readConcernLevel("readConcernLevel");
 
 
 HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, int server_id, const HPHP::Object &command, const HPHP::Variant &readPreference)
@@ -320,15 +316,11 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 
 HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *client, int server_id, const HPHP::Object &query, const HPHP::Variant &readPreference)
 {
-	bson_t *bson_query = NULL, *bson_fields = NULL;
+	bson_t *bfilter = NULL, *bopts = NULL;
 	mongoc_collection_t *collection;
 	mongoc_cursor_t *cursor;
-
-	uint32_t skip, limit, batch_size;
-	mongoc_query_flags_t flags;
 	char *dbname;
 	char *collname;
-
 	mongoc_read_prefs_t *read_preference = NULL;
 
 	/* Prepare */
@@ -337,34 +329,25 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	}
 
 	/* Get query properties */
-	auto zquery = query->o_get(s_query, false, HPHP::s_MongoDriverQuery_className);
+	auto zfilter = query->o_get(s_filter, false, HPHP::s_MongoDriverQuery_className);
+	auto zopts   = query->o_get(s_opts, false, HPHP::s_MongoDriverQuery_className);
+	auto zrc     = query->o_get(s_readConcernLevel, false, HPHP::s_MongoDriverQuery_className);
 
-	if (zquery.getType() == HPHP::KindOfArray) {
-		const HPHP::Array& aquery = zquery.toArray();
+	HPHP::VariantToBsonConverter filter_converter(zfilter, HIPPO_BSON_NO_FLAGS);
+	bfilter = bson_new();
+	filter_converter.convert(bfilter);
+	
+	HPHP::VariantToBsonConverter opts_converter(zopts, HIPPO_BSON_NO_FLAGS);
+	bopts = bson_new();
+	opts_converter.convert(bopts);
 
-		skip = aquery[s_skip].toInt32();
-		limit = aquery[s_limit].toInt32();
-		batch_size = aquery[s_batchSize].toInt32();
-		flags = (mongoc_query_flags_t) aquery[s_flags].toInt32();
+	if (!zrc.isNull()) {
+		mongoc_read_concern_t *rc;
 
-		HPHP::VariantToBsonConverter converter(aquery[s_query], HIPPO_BSON_NO_FLAGS);
-		bson_query = bson_new();
-		converter.convert(bson_query);
+		rc = mongoc_read_concern_new();
+		mongoc_read_concern_set_level(rc, zrc.toString().c_str());
 
-		if (aquery.exists(s_fields)) {
-			HPHP::VariantToBsonConverter converter(aquery[s_fields], HIPPO_BSON_NO_FLAGS);
-			bson_fields = bson_new();
-			converter.convert(bson_fields);
-		}
-
-		if (aquery.exists(s_readConcern)) {
-			mongoc_read_concern_t *rc;
-
-			rc = mongoc_read_concern_new();
-			mongoc_read_concern_set_level(rc, aquery[s_readConcern].toString().c_str());
-
-			mongoc_client_set_read_concern(client, rc);
-		}
+		mongoc_client_set_read_concern(client, rc);
 	}
 
 	if (!readPreference.isNull()) {
@@ -376,7 +359,7 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 
 	/* Run query and get cursor */
 	collection = mongoc_client_get_collection(client, dbname, collname);
-	cursor = mongoc_collection_find(collection, flags, skip, limit, batch_size, bson_query, bson_fields, read_preference);
+	cursor = mongoc_collection_find_with_opts(collection, bfilter, bopts, read_preference);
 	mongoc_collection_destroy(collection);
 
 	/* Handle server hint */
