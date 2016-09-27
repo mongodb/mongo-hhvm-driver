@@ -1,6 +1,25 @@
 ChangeLog
 =========
 
+1.1.3
+-----
+
+** Bug
+    * [HHVM-238] - Driver does not compile with HHVM 3.14
+
+
+1.1.2
+-----
+
+** Bug
+    * [HHVM-209] - Driver fails to build due to "Logger" with HHVM 3.9-3.11
+
+** Task
+    * [HHVM-161] - WriteResult should encapsulate BSON instead of mongoc_write_result_t
+    * [HHVM-191] - Use bson_error_t message for BulkWriteException message
+    * [HHVM-193] - executeBulkWrite() should throw InvalidArgumentException for empty BulkWrite
+
+
 1.1.1
 -----
 
@@ -11,6 +30,7 @@ ChangeLog
 
 ** Task
     * [HHVM-194] - Upgrade bundled libbson and libmongoc to 1.3.4
+
 
 1.1.0
 -----
