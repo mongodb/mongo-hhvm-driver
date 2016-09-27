@@ -144,8 +144,8 @@ static class MongoDBExtension : public Extension {
 			/* MongoDB\Driver\BulkWrite */
 			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, __construct, MongoDBDriverBulkWrite, __construct);
 			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, insert, MongoDBDriverBulkWrite, insert);
-			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, update, MongoDBDriverBulkWrite, update);
-			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, delete, MongoDBDriverBulkWrite, delete);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, _update, MongoDBDriverBulkWrite, _update);
+			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, _delete, MongoDBDriverBulkWrite, _delete);
 			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, count, MongoDBDriverBulkWrite, count);
 			HHVM_MALIAS(MongoDB\\Driver\\BulkWrite, __debugInfo, MongoDBDriverBulkWrite, __debugInfo);
 
