@@ -84,13 +84,13 @@ const StaticString
 	s_upsert("upsert");
 
 
-void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Variant &update, const Variant &updateOptions)
+void HHVM_METHOD(MongoDBDriverBulkWrite, _update, int hasOperators, const Variant &query, const Variant &update, const Array &options)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 	bson_t *bquery;
 	bson_t *bupdate;
-	auto options = updateOptions.isNull() ? null_array : updateOptions.toArray();
-	int flags = MONGOC_UPDATE_NONE;
+	bson_t *boptions;
+	bson_error_t error = { 0 };
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
 	bquery = bson_new();
@@ -100,44 +100,41 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 	bupdate = bson_new();
 	update_converter.convert(bupdate);
 
-	if (!updateOptions.isNull()) {
-		if (options.exists(s_multi)) {
-			Variant v_multi = options[s_multi];
-			bool multi = v_multi.toBoolean();
+	VariantToBsonConverter options_converter(options, HIPPO_BSON_NO_FLAGS);
+	boptions = bson_new();
+	options_converter.convert(boptions);
 
-			if (multi) {
-				flags |= MONGOC_UPDATE_MULTI_UPDATE;
-			}
+	if (hasOperators) {
+		if (!mongoc_bulk_operation_update_with_opts(data->m_bulk, bquery, bupdate, boptions, &error)) {
+			bson_clear(&bquery);
+			bson_clear(&bupdate);
+			bson_clear(&boptions);
+
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
 		}
-
-		if (options.exists(s_upsert)) {
-			Variant v_upsert = options[s_upsert];
-			bool upsert = v_upsert.toBoolean();
-
-			if (upsert) {
-				flags |= MONGOC_UPDATE_UPSERT;
-			}
-		}
-	}
-
-	if (flags & MONGOC_UPDATE_MULTI_UPDATE) {
-		mongoc_bulk_operation_update(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
 	} else {
-		bson_iter_t iter;
-		bool   replaced = 0;
+		if (!bson_validate(bupdate, (bson_validate_flags_t) (BSON_VALIDATE_DOT_KEYS | BSON_VALIDATE_DOLLAR_KEYS), NULL)) {
+			bson_clear(&bquery);
+			bson_clear(&bupdate);
+			bson_clear(&boptions);
 
-		if (bson_iter_init(&iter, bupdate)) {
-			while (bson_iter_next(&iter)) {
-				if (!strchr(bson_iter_key (&iter), '$')) {
-					mongoc_bulk_operation_replace_one(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
-					replaced = 1;
-					break;
-				}
-			}
+			throw MongoDriver::Utils::throwInvalidArgumentException("Replacement document may not contain \"$\" or \".\" in keys");
 		}
 
-		if (!replaced) {
-			mongoc_bulk_operation_update_one(data->m_bulk, bquery, bupdate, !!(flags & MONGOC_UPDATE_UPSERT));
+		if (options.exists(s_multi) && options[s_multi].toBoolean()) {
+			bson_clear(&bquery);
+			bson_clear(&bupdate);
+			bson_clear(&boptions);
+
+			throw MongoDriver::Utils::throwInvalidArgumentException("Replacement document conflicts with true \"multi\" option");
+		}
+
+		if (!mongoc_bulk_operation_replace_one_with_opts(data->m_bulk, bquery, bupdate, boptions, &error)) {
+			bson_clear(&bquery);
+			bson_clear(&bupdate);
+			bson_clear(&boptions);
+
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
 		}
 	}
 
@@ -145,37 +142,38 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, update, const Variant &query, const Var
 
 	bson_clear(&bquery);
 	bson_clear(&bupdate);
+	bson_clear(&boptions);
 }
 
 const StaticString
 	s_limit("limit");
 
-void HHVM_METHOD(MongoDBDriverBulkWrite, delete, const Variant &query, const Variant &deleteOptions)
+void HHVM_METHOD(MongoDBDriverBulkWrite, _delete, const Variant &query, const Array &options)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 	bson_t *bquery;
-	auto options = deleteOptions.isNull() ? null_array : deleteOptions.toArray();
+	bson_t *boptions;
+	bson_error_t error = { 0 };
 
 	VariantToBsonConverter query_converter(query, HIPPO_BSON_NO_FLAGS);
 	bquery = bson_new();
 	query_converter.convert(bquery);
 
-	if ((!deleteOptions.isNull()) && (options.exists(s_limit))) {
-		Variant v_limit = options[s_limit];
-		bool limit = v_limit.toBoolean();
+	VariantToBsonConverter options_converter(options, HIPPO_BSON_NO_FLAGS);
+	boptions = bson_new();
+	options_converter.convert(boptions);
 
-		if (limit) {
-			mongoc_bulk_operation_remove_one(data->m_bulk, bquery);
-		} else {
-			mongoc_bulk_operation_remove(data->m_bulk, bquery);
-		}
-	} else {
-		mongoc_bulk_operation_remove(data->m_bulk, bquery);
+	if (!mongoc_bulk_operation_remove_with_opts(data->m_bulk, bquery, boptions, &error)) {
+		bson_clear(&bquery);
+		bson_clear(&boptions);
+
+		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
 	}
 
 	data->m_num_ops++;
 
 	bson_clear(&bquery);
+	bson_clear(&boptions);
 }
 
 int64_t HHVM_METHOD(MongoDBDriverBulkWrite, count)

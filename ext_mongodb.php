@@ -613,11 +613,92 @@ final class BulkWrite implements \Countable {
 	<<__Native>>
 	public function insert(mixed $document) : mixed;
 
-	<<__Native>>
-	public function update(mixed $query, mixed $newObj, ?array $updateOptions = array()) : void;
+	private function _queryOptBool( array &$transformedOptions, array $options, string $key )
+	{
+		if ( array_key_exists( $key, $options ) )
+		{
+			$transformedOptions[$key] = (bool) $options[$key];
+		}
+	}
+
+	private function _queryOptDocument( array &$transformedOptions, array $options, string $key )
+	{
+		if ( array_key_exists( $key, $options ) )
+		{
+			if ( !is_array( $options[$key] ) && !is_object( $options[$key] ) )
+			{
+				throw new \MongoDB\Driver\Exception\InvalidArgumentException(
+					sprintf(
+						'Expected "%s" option to be array or object, %s given',
+						$key, gettype( $options[$key] )
+					)
+				);
+			}
+
+			$transformedOptions[$key] = (object) $options[$key];
+		}
+	}
+
+	private function _transformUpdateOptions( array $options = [] ) : array
+	{
+		$transformedOptions = [];
+
+		$this->_queryOptBool( $transformedOptions, $options, 'multi' );
+		$this->_queryOptBool( $transformedOptions, $options, 'upsert' );
+		$this->_queryOptDocument( $transformedOptions, $options, 'collation' );
+
+		return $transformedOptions;
+	}
+
+	private function _updateHasOperators( array $update )
+	{
+		foreach ( $update as $key => $value )
+		{
+			if ( $key[0] == '$' )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function update(mixed $query, mixed $update, array $options = []) : void
+	{
+		/* Can throw an exception */
+		$updateOptions = $this->_transformUpdateOptions( $options );
+
+		$hasOperators = $this->_updateHasOperators( (array) $update );
+
+		return $this->_update( $hasOperators, $query, $update, $updateOptions );
+	}
 
 	<<__Native>>
-	public function delete(mixed $query, ?array $deleteOptions = array()) : void;
+	private function _update(int $hasOperators, mixed $query, mixed $update, array $options = []) : void;
+
+	private function _transformDeleteOptions( array $options = [] ) : array
+	{
+		$transformedOptions = [ 'limit' => 0 ];
+
+		if ( array_key_exists( 'limit', $options ) )
+		{
+			$transformedOptions['limit'] = (int) ($options['limit'] ? 1 : 0);
+		}
+		$this->_queryOptDocument( $transformedOptions, $options, 'collation' );
+
+		return $transformedOptions;
+	}
+
+	public function delete(mixed $query, array $options = []) : void
+	{
+		/* Can throw an exception */
+		$deleteOptions = $this->_transformDeleteOptions( $options );
+
+		return $this->_delete( $query, $deleteOptions );
+	}
+
+	<<__Native>>
+	public function _delete(mixed $query, array $options = []) : void;
 
 	<<__Native>>
 	public function count() : int;
