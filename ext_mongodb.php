@@ -758,8 +758,22 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 
 		if ( $tagSets )
 		{
+			$newTagSets = [];
+
+			foreach ( $tagSets as $tagSet )
+			{
+				if ( is_array( $tagSet ) )
+				{
+					$newTagSets[] = (object) $tagSet;
+				}
+				else
+				{
+					$newTagSets[] = $tagSet;
+				}
+			}
+
 			// calling into Native, might throw exception
-			$this->_setReadPreferenceTags($tagSets);
+			$this->_setReadPreferenceTags( $newTagSets );
 		}
 
 		if ( array_key_exists( 'maxStalenessMS', $options ) )

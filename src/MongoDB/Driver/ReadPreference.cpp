@@ -49,6 +49,24 @@ bool hippo_mongo_driver_readpreference_are_valid(const Variant tags)
 	return true;
 }
 
+Array hippo_mongo_driver_readpreference_prep_tagsets(const Array &tags)
+{
+	Array newTags = Array::Create();
+
+	for (ArrayIter iter(tags); iter; ++iter) {
+		const Variant& key = iter.first();
+		const Variant& data(iter.secondRef());
+
+		if (data.isArray()) {
+			newTags.add(key, data.toObject());
+		} else {
+			newTags.add(key, data);
+		}
+	}
+
+	return newTags;
+}
+
 void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPreference)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
@@ -128,7 +146,7 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 	}
 
 	if (!bson_empty(tags)) {
-		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_DEBUG_INITIALIZER;
+		hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
 		BsonToVariantConverter convertor(bson_get_data(tags), tags->len, options);
 		convertor.convert(&v_tags);
 		retval.set(s_tags, v_tags.toArray());
