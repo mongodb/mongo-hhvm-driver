@@ -159,6 +159,12 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 	return retval;
 }
 
+Variant HHVM_METHOD(MongoDBDriverReadPreference, bsonSerialize)
+{
+	Array retval = HHVM_MN(MongoDBDriverReadPreference, __debugInfo)(this_);
+	return Variant(Variant(retval).toObject());
+}
+
 int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMode)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);

@@ -7,7 +7,7 @@ interface Type
 
 interface Serializable extends Type
 {
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 
 interface Unserializable
@@ -706,7 +706,7 @@ final class ReadConcern implements \MongoDB\BSON\Serializable {
 	public function __debugInfo() : array;
 
 	<<__Native>>
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 
 <<__NativeData("MongoDBDriverReadPreference")>>
@@ -793,7 +793,7 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 	public function __debugInfo() : array;
 
 	<<__Native>>
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 
 <<__NativeData("MongoDBDriverServer")>>
@@ -869,7 +869,7 @@ final class WriteConcern implements \MongoDB\BSON\Serializable {
 	public function __debugInfo() : array;
 
 	<<__Native>>
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 /* }}} */
 

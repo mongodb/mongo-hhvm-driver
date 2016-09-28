@@ -46,6 +46,7 @@ bool mongodb_driver_add_write_concern_debug(const mongoc_write_concern_t *wc, Ar
 
 void HHVM_METHOD(MongoDBDriverWriteConcern, __construct, const Variant &w, const Variant &w_timeout, const Variant &journal);
 Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo);
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, bsonSerialize);
 Variant HHVM_METHOD(MongoDBDriverWriteConcern, getJournal);
 Variant HHVM_METHOD(MongoDBDriverWriteConcern, getW);
 int64_t HHVM_METHOD(MongoDBDriverWriteConcern, getWtimeout);

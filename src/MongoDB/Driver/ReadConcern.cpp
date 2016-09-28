@@ -64,6 +64,12 @@ Array HHVM_METHOD(MongoDBDriverReadConcern, __debugInfo)
 	return retval;
 }
 
+Variant HHVM_METHOD(MongoDBDriverReadConcern, bsonSerialize)
+{
+	Array retval = HHVM_MN(MongoDBDriverReadConcern, __debugInfo)(this_);
+	return Variant(Variant(retval).toObject());
+}
+
 Variant HHVM_METHOD(MongoDBDriverReadConcern, getLevel)
 {
 	MongoDBDriverReadConcernData* data = Native::data<MongoDBDriverReadConcernData>(this_);
