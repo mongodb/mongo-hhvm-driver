@@ -636,7 +636,7 @@ final class BulkWrite implements \Countable {
 		return $transformedOptions;
 	}
 
-	private function _updateHasOperators( array $update )
+	private function _updateHasOperators( array $update ) : bool
 	{
 		foreach ( $update as $key => $value )
 		{
@@ -660,7 +660,7 @@ final class BulkWrite implements \Countable {
 	}
 
 	<<__Native>>
-	private function _update(int $hasOperators, mixed $query, mixed $update, array $options = []) : void;
+	private function _update(bool $hasOperators, mixed $query, mixed $update, array $options = []) : void;
 
 	private function _transformDeleteOptions( array $options = [] ) : array
 	{
