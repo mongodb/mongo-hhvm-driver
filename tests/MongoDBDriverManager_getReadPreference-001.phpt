@@ -26,19 +26,19 @@ object(MongoDB\Driver\ReadPreference)#%d (%d) {
   ["tags"]=>
   array(3) {
     [0]=>
-    array(2) {
+    object(stdClass)#%d (2) {
       ["dc"]=>
       string(2) "ny"
       ["use"]=>
       string(3) "ssd"
     }
     [1]=>
-    array(1) {
+    object(stdClass)#%d (1) {
       ["dc"]=>
       string(2) "sf"
     }
     [2]=>
-    array(0) {
+    object(stdClass)#%d (0) {
     }
   }
 }

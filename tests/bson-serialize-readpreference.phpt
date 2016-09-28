@@ -16,4 +16,4 @@ foreach ( $tests as $test )
 --EXPECTF--
 string(33) "{ "rp" : { "mode" : "primary" } }"
 string(67) "{ "rp" : { "mode" : "secondary", "tags" : [ { "foo" : "bar" } ] } }"
-string(82) "{ "rp" : { "mode" : "secondaryPreferred", "tags" : [ { "foo" : "bar" }, [  ] ] } }"
+string(82) "{ "rp" : { "mode" : "secondaryPreferred", "tags" : [ { "foo" : "bar" }, {  } ] } }"
