@@ -341,13 +341,17 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	bopts = bson_new();
 	opts_converter.convert(bopts);
 
+	/* Get collection */
+	collection = mongoc_client_get_collection(client, dbname, collname);
+
+	/* Process options to set on collection */
 	if (!zrc.isNull()) {
 		mongoc_read_concern_t *rc;
 
 		rc = mongoc_read_concern_new();
 		mongoc_read_concern_set_level(rc, zrc.toString().c_str());
 
-		mongoc_client_set_read_concern(client, rc);
+		mongoc_collection_set_read_concern(collection, rc);
 	}
 
 	if (!readPreference.isNull()) {
@@ -358,7 +362,6 @@ HPHP::Object Utils::doExecuteQuery(const HPHP::String ns, mongoc_client_t *clien
 	}
 
 	/* Run query and get cursor */
-	collection = mongoc_client_get_collection(client, dbname, collname);
 	cursor = mongoc_collection_find_with_opts(collection, bfilter, bopts, read_preference);
 	mongoc_collection_destroy(collection);
 
