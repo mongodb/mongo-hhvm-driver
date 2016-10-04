@@ -53,7 +53,7 @@ class MongoDBDriverReadConcernData
 
 void HHVM_METHOD(MongoDBDriverReadConcern, __construct, const Variant &level);
 Array HHVM_METHOD(MongoDBDriverReadConcern, __debugInfo);
-Array HHVM_METHOD(MongoDBDriverReadConcern, bsonSerialize);
+Variant HHVM_METHOD(MongoDBDriverReadConcern, bsonSerialize);
 Variant HHVM_METHOD(MongoDBDriverReadConcern, getLevel);
 
 }
