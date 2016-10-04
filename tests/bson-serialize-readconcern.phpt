@@ -15,7 +15,7 @@ foreach ( $tests as $test )
 }
 ?>
 --EXPECTF--
-string(15) "{ "rc" : [  ] }"
+string(15) "{ "rc" : {  } }"
 string(32) "{ "rc" : { "level" : "local" } }"
 string(35) "{ "rc" : { "level" : "majority" } }"
 string(39) "{ "rc" : { "level" : "linearizable" } }"

@@ -186,4 +186,10 @@ Array HHVM_METHOD(MongoDBDriverWriteConcern, __debugInfo)
 
 	return retval;
 }
+
+Variant HHVM_METHOD(MongoDBDriverWriteConcern, bsonSerialize)
+{
+	Array retval = HHVM_MN(MongoDBDriverWriteConcern, __debugInfo)(this_);
+	return Variant(Variant(retval).toObject());
+}
 }

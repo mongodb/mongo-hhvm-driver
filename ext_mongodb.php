@@ -7,7 +7,7 @@ interface Type
 
 interface Serializable extends Type
 {
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 
 interface Unserializable
@@ -636,7 +636,7 @@ final class BulkWrite implements \Countable {
 		return $transformedOptions;
 	}
 
-	private function _updateHasOperators( array $update )
+	private function _updateHasOperators( array $update ) : bool
 	{
 		foreach ( $update as $key => $value )
 		{
@@ -660,7 +660,7 @@ final class BulkWrite implements \Countable {
 	}
 
 	<<__Native>>
-	private function _update(int $hasOperators, mixed $query, mixed $update, array $options = []) : void;
+	private function _update(bool $hasOperators, mixed $query, mixed $update, array $options = []) : void;
 
 	private function _transformDeleteOptions( array $options = [] ) : array
 	{
@@ -706,7 +706,7 @@ final class ReadConcern implements \MongoDB\BSON\Serializable {
 	public function __debugInfo() : array;
 
 	<<__Native>>
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 
 <<__NativeData("MongoDBDriverReadPreference")>>
@@ -793,7 +793,7 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 	public function __debugInfo() : array;
 
 	<<__Native>>
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 
 <<__NativeData("MongoDBDriverServer")>>
@@ -869,7 +869,7 @@ final class WriteConcern implements \MongoDB\BSON\Serializable {
 	public function __debugInfo() : array;
 
 	<<__Native>>
-	function bsonSerialize() : array;
+	function bsonSerialize() : mixed;
 }
 /* }}} */
 
