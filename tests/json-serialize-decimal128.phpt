@@ -7,8 +7,18 @@ $doc = [
 ];
 
 echo MongoDB\BSON\toJSON( \MongoDB\BSON\fromPHP( $doc ) ), "\n";
-echo json_encode( $doc ), "\n";
+$d = json_encode( $doc );
+echo $d, "\n";
+
+var_dump( \MongoDB\BSON\toPHP( \MongoDB\BSON\fromJSON( $d ) ) );
 ?>
---EXPECT--
+--EXPECTF--
 { "foo" : { "$numberDecimal" : "12389719287312" } }
 {"foo":{"$numberDecimal":"12389719287312"}}
+object(stdClass)#%d (%d) {
+  ["foo"]=>
+  object(MongoDB\BSON\Decimal128)#%d (%d) {
+    ["dec"]=>
+    string(14) "12389719287312"
+  }
+}

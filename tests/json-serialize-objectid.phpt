@@ -7,9 +7,18 @@ $doc = [
 ];
 
 echo MongoDB\BSON\toJSON( \MongoDB\BSON\fromPHP( $doc ) ), "\n";
-echo json_encode( $doc ), "\n";
+$d = json_encode( $doc );
+echo $d, "\n";
+
+var_dump( \MongoDB\BSON\toPHP( \MongoDB\BSON\fromJSON( $d ) ) );
 ?>
 --EXPECTF--
 { "foo" : { "$oid" : "%s" } }
 {"foo":{"$oid":"%s"}}
-
+object(stdClass)#%d (%d) {
+  ["foo"]=>
+  object(MongoDB\BSON\ObjectID)#%d (%d) {
+    ["oid"]=>
+    string(24) "%s"
+  }
+}

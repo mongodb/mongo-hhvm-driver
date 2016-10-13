@@ -7,8 +7,15 @@ $doc = [
 ];
 
 echo MongoDB\BSON\toJSON( \MongoDB\BSON\fromPHP( $doc ) ), "\n";
-echo json_encode( $doc ), "\n";
+$d = json_encode( $doc );
+echo $d, "\n";
+
+var_dump( \MongoDB\BSON\toPHP( \MongoDB\BSON\fromJSON( $d ) ) );
 ?>
---EXPECT--
+--EXPECTF--
 { "foo" : "function foo(bar) { return bar; }" }
 {"foo":"function foo(bar) { return bar; }"}
+object(stdClass)#%d (%d) {
+  ["foo"]=>
+  string(33) "function foo(bar) { return bar; }"
+}

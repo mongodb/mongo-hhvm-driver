@@ -7,8 +7,16 @@ $doc = [
 ];
 
 echo MongoDB\BSON\toJSON( \MongoDB\BSON\fromPHP( $doc ) ), "\n";
-echo json_encode( $doc ), "\n";
+$d = json_encode( $doc );
+echo $d, "\n";
+
+var_dump( \MongoDB\BSON\toPHP( \MongoDB\BSON\fromJSON( $d ) ) );
 ?>
---EXPECT--
+--EXPECTF--
 { "foo" : { "$maxKey" : 1 } }
 {"foo":{"$maxKey":1}}
+object(stdClass)#%d (%d) {
+  ["foo"]=>
+  object(MongoDB\BSON\MaxKey)#%d (%d) {
+  }
+}
