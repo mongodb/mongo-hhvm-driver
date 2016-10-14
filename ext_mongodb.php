@@ -945,7 +945,7 @@ trait DenySerialization
 	}
 }
 
-final class Binary implements Type, \Serializable
+final class Binary implements Type, \Serializable, \JsonSerializable
 {
 	static private function checkArray(array $state)
 	{
@@ -964,6 +964,14 @@ final class Binary implements Type, \Serializable
 			'data' => $this->data,
 			'type' => $this->type,
 		] );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$binary' => base64_encode( $this->data ),
+			'$type' => sprintf( "%02x", $this->type )
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1012,7 +1020,7 @@ final class Binary implements Type, \Serializable
 }
 
 <<__NativeData("MongoDBBsonDecimal128")>>
-final class Decimal128 implements Type, \Serializable
+final class Decimal128 implements Type, \Serializable, \JsonSerializable
 {
 	static private function checkArray(array $state)
 	{
@@ -1028,6 +1036,13 @@ final class Decimal128 implements Type, \Serializable
 		return serialize( [
 			'dec' => $this->dec,
 		] );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$numberDecimal' => (string) $this->dec
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1053,7 +1068,7 @@ final class Decimal128 implements Type, \Serializable
 	function __debugInfo() : array;
 }
 
-final class Javascript implements Type, \Serializable
+final class Javascript implements Type, \Serializable, \JsonSerializable
 {
 	private $code;
 	private $scope;
@@ -1082,6 +1097,11 @@ final class Javascript implements Type, \Serializable
 		$s['code'] = $this->code;
 		$s['scope'] = $this->scope ?? NULL;
 		return serialize( $s );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return $this->code;
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1145,11 +1165,18 @@ final class Javascript implements Type, \Serializable
 	}
 }
 
-final class MaxKey implements Type, \Serializable
+final class MaxKey implements Type, \Serializable, \JsonSerializable
 {
 	public function serialize() : string
 	{
 		return '';
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$maxKey' => 1
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1162,11 +1189,18 @@ final class MaxKey implements Type, \Serializable
 	}
 }
 
-final class MinKey implements Type, \Serializable
+final class MinKey implements Type, \Serializable, \JsonSerializable
 {
 	public function serialize() : string
 	{
 		return '';
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$minKey' => 1
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1180,7 +1214,7 @@ final class MinKey implements Type, \Serializable
 }
 
 <<__NativeData("MongoDBBsonObjectID")>>
-final class ObjectID implements Type, \Serializable
+final class ObjectID implements Type, \Serializable, \JsonSerializable
 {
 	static private function checkArray( array $state )
 	{
@@ -1196,6 +1230,13 @@ final class ObjectID implements Type, \Serializable
 		return serialize( [
 			'oid' => $this->oid,
 		] );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$oid' => $this->__toString()
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1226,7 +1267,7 @@ final class ObjectID implements Type, \Serializable
 	}
 }
 
-final class Regex implements Type, \Serializable
+final class Regex implements Type, \Serializable, \JsonSerializable
 {
 	private $pattern;
 	private $flags;
@@ -1248,6 +1289,14 @@ final class Regex implements Type, \Serializable
 			'pattern' => $this->pattern,
 			'flags' => $this->flags,
 		] );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$regex' => $this->pattern,
+			'$options' => $this->flags,
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1302,7 +1351,7 @@ final class Regex implements Type, \Serializable
 	}
 }
 
-final class Timestamp implements Type, \Serializable
+final class Timestamp implements Type, \Serializable, \JsonSerializable
 {
 	static private function checkArray( array $state )
 	{
@@ -1336,6 +1385,16 @@ final class Timestamp implements Type, \Serializable
 			'increment' => (string) $this->increment,
 			'timestamp' => (string) $this->timestamp,
 		] );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		return [
+			'$timestamp' => [
+				't' => (int) $this->timestamp,
+				'i' => (int) $this->increment,
+			]
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1389,7 +1448,7 @@ final class Timestamp implements Type, \Serializable
 	}
 }
 
-final class UTCDateTime implements Type, \Serializable
+final class UTCDateTime implements Type, \Serializable, \JsonSerializable
 {
 	private string $milliseconds;
 
@@ -1408,6 +1467,18 @@ final class UTCDateTime implements Type, \Serializable
 		return serialize( [
 			'milliseconds' => (string) $this->milliseconds,
 		] );
+	}
+
+	public function jsonSerialize() : mixed
+	{
+		$seconds = (int) ( $this->milliseconds / 1000 );
+		$millis =  (int) ( $this->milliseconds % 1000 );
+
+		$d = date_create( "@" . (string) $seconds );
+
+		return [
+			'$date' => sprintf( "%s.%03d+0000", $d->format( 'Y-m-d\TH:i:s' ), $millis )
+		];
 	}
 
 	public function unserialize(mixed $serialized) : void
