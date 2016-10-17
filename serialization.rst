@@ -250,13 +250,13 @@ As an example, a wrapped UTCDateTime class, could look like::
             $this->intern = $type->toDateTime();
         }
 
-        static function createFromBSONType(\MongoDB\BSON\Type $type)
+        static function createFromBSONType( \MongoDB\BSON\Type $type )
         {
             if (! $type instanceof \MongoDB\BSON\UTCDateTime) {
                 throw new UnexpectedValueException;
             }
 
-            return new UTCDateTimeWrapper( $type );
+            return new self( $type );
         }
 
         function toBSONType()
@@ -278,15 +278,17 @@ For example, a user-defined ``UTCDateTimeWrapper`` class needs to implement the
 ``MongoDB\BSON\UTCDateTimeInterface`` and ``MongoDB\BSON\TypeWrapper``
 interfaces.
 
-It is not necessary to return an object from the ``createFromBSONType()``
-"factory" method. You may return anything that can be serialized to BSON,
-including an object that implements ``MongoDB\BSON\Serializable``, but you MAY NOT
-return an object that implements ``MongoDB\BSON\TypeWrapper``. Returning a
-different type from the original one could be used as a way to migrate
-Decimal128 values to plain strings, or downgrade them to floating points or
-integers. Likewise, you could implement a UTCDateTime wrapper that converts
-dates to a formatted string; however, that would prevent round-tripping of the
-original date value.
+The ``toBSONType()`` method must return a value that can be serialized to
+BSON, e.g. a scalar value, or an object that implements
+``MongoDB\BSON\Serializable``. If you return an object that implements
+``MongoDB\BSON\TypeWrapper``, the driver will not call the ``toBSONType()``
+method on this new object.
+
+Returning a different type from the original one could be used as a way to
+migrate Decimal128 values to plain strings, or downgrade them to floating
+points or integers. Likewise, you could implement a UTCDateTime wrapper that
+converts dates to a formatted string; however, that would prevent
+round-tripping of the original date value.
 
 
 TypeMaps
