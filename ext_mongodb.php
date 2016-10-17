@@ -1004,7 +1004,6 @@ trait DenySerialization
 	}
 }
 
-
 final class Binary implements Type, \Serializable, \JsonSerializable, BinaryInterface
 {
 	static private function checkArray(array $state)
