@@ -1,7 +1,5 @@
 --TEST--
 APM: commandSucceeded callback (requestId and operationId match)
---SKIPIF--
-skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';
@@ -33,7 +31,7 @@ class MySubscriber implements MongoDB\Driver\Monitoring\CommandSubscriber
 $query = new MongoDB\Driver\Query( [] );
 $subscriber = new MySubscriber;
 
-$m->addSubscriber( $subscriber );
+MongoDB\Monitoring\addSubscriber( $subscriber );
 
 cleanup( $m );
 ?>

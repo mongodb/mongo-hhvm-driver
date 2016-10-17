@@ -1,7 +1,5 @@
 --TEST--
 APM: Manager::removeSubscriber() (with multiple present)
---SKIPIF--
-skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';
@@ -40,17 +38,17 @@ $subscriber2 = new MySubscriber( "TWO" );
 echo "Before addSubscriber\n";
 $cursor = $m->executeQuery( "demo.test", $query );
 
-$m->addSubscriber( $subscriber1 );
+MongoDB\Monitoring\addSubscriber( $subscriber1 );
 
 echo "After addSubscriber (ONE)\n";
 $cursor = $m->executeQuery( "demo.test", $query );
 
-$m->addSubscriber( $subscriber2 );
+MongoDB\Monitoring\addSubscriber( $subscriber2 );
 
 echo "After addSubscriber (TWO)\n";
 $cursor = $m->executeQuery( "demo.test", $query );
 
-$m->removeSubscriber( $subscriber2 );
+MongoDB\Monitoring\removeSubscriber( $subscriber2 );
 
 echo "After removeSubscriber (TWO)\n";
 $cursor = $m->executeQuery( "demo.test", $query );

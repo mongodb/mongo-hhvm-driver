@@ -88,6 +88,18 @@ final class CommandStartedEvent extends _CommandEvent
 	{
 		return $this->databaseName;
 	}
+
+	public function __debugInfo() : array
+	{
+		return [
+			'command' => $this->getCommand(),
+			'commandName' => $this->getCommandName(),
+			'databaseName' => $this->getDatabaseName(),
+			'operationId' => $this->getOperationId(),
+			'requestId' => $this->getRequestId(),
+			'server' => $this->getServer(),
+		];
+	}
 }
 
 final class CommandSucceededEvent extends _CommandResultEvent
@@ -97,6 +109,18 @@ final class CommandSucceededEvent extends _CommandResultEvent
 	public function getReply() : mixed
 	{
 		return $this->reply;
+	}
+
+	public function __debugInfo() : array
+	{
+		return [
+			'commandName' => $this->getCommandName(),
+			'durationMicros' => $this->getDurationMicros(),
+			'operationId' => $this->getOperationId(),
+			'reply' => $this->getReply(),
+			'requestId' => $this->getRequestId(),
+			'server' => $this->getServer(),
+		];
 	}
 }
 
@@ -108,6 +132,18 @@ final class CommandFailedEvent extends _CommandResultEvent
 	public function getError() : \MongoDB\Driver\Exception\Exception
 	{
 		return $this->error;
+	}
+
+	public function __debugInfo() : array
+	{
+		return [
+			'commandName' => $this->getCommandName(),
+			'durationMicros' => $this->getDurationMicros(),
+			'error' => $this->getError(),
+			'operationId' => $this->getOperationId(),
+			'requestId' => $this->getRequestId(),
+			'server' => $this->getServer(),
+		];
 	}
 }
 
@@ -299,10 +335,6 @@ final class WriteResult {
 
 <<__NativeData("MongoDBDriverManager")>>
 final class Manager {
-#ifdef APM_0
-	private array $subscribers = [];
-#endif
-
 	<<__Native>>
 	public function __construct(string $dsn = "", array $options = array(), array $driverOptions = array());
 
@@ -335,68 +367,6 @@ final class Manager {
 
 	<<__Native>>
 	public function selectServer(ReadPreference $readPreference): Server;
-
-#ifdef APM_0
-/* {{{ APM */
-	public function addSubscriber( Monitoring\Subscriber $subscriber ) : void
-	{
-		/* Don't add the same subscriber twice */
-		foreach ( $this->subscribers as $key => $item )
-		{
-			if ( $item === $subscriber )
-			{
-				return;
-			}
-		}
-
-		$this->subscribers[] = $subscriber;
-	}
-
-	public function removeSubscriber( Monitoring\Subscriber $subscriber ) : void
-	{
-		foreach ( $this->subscribers as $key => $item )
-		{
-			if ( $item === $subscriber )
-			{
-				unset( $this->subscribers[ $key ] );
-			}
-		}
-	}
-
-	private function _dispatchCommandStarted( Monitoring\CommandStartedEvent $event )
-	{
-		foreach ( $this->subscribers as $subscriber )
-		{
-			if ( $subscriber instanceof Monitoring\CommandSubscriber )
-			{
-				$subscriber->commandStarted( $event );
-			}
-		}
-	}
-
-	private function _dispatchCommandSucceeded( Monitoring\CommandSucceededEvent $event )
-	{
-		foreach ( $this->subscribers as $subscriber )
-		{
-			if ( $subscriber instanceof Monitoring\CommandSubscriber )
-			{
-				$subscriber->commandSucceeded( $event );
-			}
-		}
-	}
-
-	private function _dispatchCommandFailed( Monitoring\CommandFailedEvent $event )
-	{
-		foreach ( $this->subscribers as $subscriber )
-		{
-			if ( $subscriber instanceof Monitoring\CommandSubscriber )
-			{
-				$subscriber->commandFailed( $event );
-			}
-		}
-	}
-/* }}} */
-#endif
 }
 
 class Utils {
@@ -1088,6 +1058,72 @@ abstract class WriteException extends RunTimeException
 
 /* }}} */
 
+/* {{{ APM */
+namespace MongoDB\Monitoring;
+
+class _Dispatcher
+{
+	static public array $subscribers = [];
+
+	private static function _dispatchCommandStarted( \MongoDB\Driver\Monitoring\CommandStartedEvent $event )
+	{
+		foreach ( self::$subscribers as $subscriber )
+		{
+			if ( $subscriber instanceof \MongoDB\Driver\Monitoring\CommandSubscriber )
+			{
+				$subscriber->commandStarted( $event );
+			}
+		}
+	}
+
+	private static function _dispatchCommandSucceeded( \MongoDB\Driver\Monitoring\CommandSucceededEvent $event )
+	{
+		foreach ( self::$subscribers as $subscriber )
+		{
+			if ( $subscriber instanceof \MongoDB\Driver\Monitoring\CommandSubscriber )
+			{
+				$subscriber->commandSucceeded( $event );
+			}
+		}
+	}
+
+	private static function _dispatchCommandFailed( \MongoDB\Driver\Monitoring\CommandFailedEvent $event )
+	{
+		foreach ( self::$subscribers as $subscriber )
+		{
+			if ( $subscriber instanceof \MongoDB\Driver\Monitoring\CommandSubscriber )
+			{
+				$subscriber->commandFailed( $event );
+			}
+		}
+	}
+}
+
+function addSubscriber( \MongoDB\Driver\Monitoring\Subscriber $subscriber ) : void
+{
+	/* Don't add the same subscriber twice */
+	foreach ( _Dispatcher::$subscribers as $key => $item )
+	{
+		if ( $item === $subscriber )
+		{
+			return;
+		}
+	}
+
+	_Dispatcher::$subscribers[] = $subscriber;
+}
+
+function removeSubscriber( \MongoDB\Driver\Monitoring\Subscriber $subscriber ) : void
+{
+	foreach ( _Dispatcher::$subscribers as $key => $item )
+	{
+		if ( $item === $subscriber )
+		{
+			unset( _Dispatcher::$subscribers[ $key ] );
+		}
+	}
+}
+/* }}} */
 
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;

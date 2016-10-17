@@ -1,7 +1,5 @@
 --TEST--
 APM: Manager::addSubscriber() (single)
---SKIPIF--
-skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';
@@ -32,7 +30,7 @@ $subscriber = new MySubscriber;
 echo "Before addSubscriber\n";
 $cursor = $m->executeQuery( "demo.test", $query );
 
-$m->addSubscriber( $subscriber );
+MongoDB\Monitoring\addSubscriber( $subscriber );
 
 echo "After addSubscriber\n";
 $cursor = $m->executeQuery( "demo.test", $query );
