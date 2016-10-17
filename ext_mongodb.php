@@ -19,6 +19,110 @@ interface Persistable extends Serializable, Unserializable
 {
 }
 
+/* == MONITORING ============================================================= */
+namespace MongoDB\Driver\Monitoring;
+
+/* ------ Building blocks for value obejcts */
+abstract class _CommandEvent
+{
+	private string                 $commandName;
+	private \MongoDB\Driver\Server $server;
+	private integer                $operationId;
+	private integer                $requestId;
+
+	private function __construct()
+	{
+		throw new \MongoDB\Driver\Exception\RunTimeException("Accessing private constructor");
+	}
+
+	public function getCommandName() : string
+	{
+		return $this->commandName;
+	}
+
+	// libmongoc use getHost, and the spec uses "connectionId".
+	public function getServer() : \MongoDB\Driver\Server
+	{
+		return $this->server;
+	}
+
+	// technically int64_t
+	public function getOperationId() : string
+	{
+		return (string) $this->operationId;
+	}
+
+	// technically int64_t
+	public function getRequestId() : string
+	{
+		return (string) $this->requestId;
+	}
+}
+
+abstract class _CommandResultEvent extends _CommandEvent
+{
+	private integer $durationMicros;
+
+	// spec is unitless, libmongoc does microseconds. Spec suggests "Nanos" as
+	// another alternative. (technically int64_t, but 2147 sec on 32bit platforms
+	// ought to be enough)
+	public function getDurationMicros() : integer
+	{
+		return $this->durationMicros;
+	}
+}
+
+/* ------ Value Objects ------------------- */
+final class CommandStartedEvent extends _CommandEvent
+{
+	private mixed $command;
+	private string $databaseName;
+
+	// raw command document, with default BSON conversion rules
+	public function getCommand() : mixed
+	{
+		return $this->command;
+	}
+
+	public function getDatabaseName() : string
+	{
+		return $this->databaseName;
+	}
+}
+
+final class CommandSucceededEvent extends _CommandResultEvent
+{
+	private mixed $reply;
+
+	public function getReply() : mixed
+	{
+		return $this->reply;
+	}
+}
+
+final class CommandFailedEvent extends _CommandResultEvent
+{
+	private object $error;
+
+	// Spec calls it failure, libmongoc returns a bson_error_t.
+	public function getError() : \MongoDB\Driver\Exception\Exception
+	{
+		return $this->error;
+	}
+}
+
+/* ------ Subscriber Interface ------------ */
+interface Subscriber {}
+
+interface CommandSubscriber extends Subscriber
+{
+	public function commandStarted( \MongoDB\Driver\Monitoring\CommandStartedEvent $event );
+	public function commandSucceeded( \MongoDB\Driver\Monitoring\CommandSucceededEvent $event );
+	public function commandFailed( \MongoDB\Driver\Monitoring\CommandFailedEvent $event );
+}
+
+/* =========================================================================== */
+
 namespace MongoDB\Driver;
 
 final class WriteConcernError {
@@ -195,6 +299,8 @@ final class WriteResult {
 
 <<__NativeData("MongoDBDriverManager")>>
 class Manager {
+	private array $subscribers = [];
+
 	<<__Native>>
 	public function __construct(string $dsn = "", array $options = array(), array $driverOptions = array());
 
@@ -227,6 +333,66 @@ class Manager {
 
 	<<__Native>>
 	public function selectServer(ReadPreference $readPreference): Server;
+
+/* {{{ APM */
+	public function addSubscriber( Monitoring\Subscriber $subscriber ) : void
+	{
+		/* Don't add the same subscriber twice */
+		foreach ( $this->subscribers as $key => $item )
+		{
+			if ( $item === $subscriber )
+			{
+				return;
+			}
+		}
+
+		$this->subscribers[] = $subscriber;
+	}
+
+	public function removeSubscriber( Monitoring\Subscriber $subscriber ) : void
+	{
+		foreach ( $this->subscribers as $key => $item )
+		{
+			if ( $item === $subscriber )
+			{
+				unset( $this->subscribers[ $key ] );
+			}
+		}
+	}
+
+	private function _dispatchCommandStarted( Monitoring\CommandStartedEvent $event )
+	{
+		foreach ( $this->subscribers as $subscriber )
+		{
+			if ( $subscriber instanceof Monitoring\CommandSubscriber )
+			{
+				$subscriber->commandStarted( $event );
+			}
+		}
+	}
+
+	private function _dispatchCommandSucceeded( Monitoring\CommandSucceededEvent $event )
+	{
+		foreach ( $this->subscribers as $subscriber )
+		{
+			if ( $subscriber instanceof Monitoring\CommandSubscriber )
+			{
+				$subscriber->commandSucceeded( $event );
+			}
+		}
+	}
+
+	private function _dispatchCommandFailed( Monitoring\CommandFailedEvent $event )
+	{
+		foreach ( $this->subscribers as $subscriber )
+		{
+			if ( $subscriber instanceof Monitoring\CommandSubscriber )
+			{
+				$subscriber->commandFailed( $event );
+			}
+		}
+	}
+/* }}} */
 }
 
 class Utils {
