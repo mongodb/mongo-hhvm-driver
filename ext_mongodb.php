@@ -918,6 +918,65 @@ abstract class WriteException extends RunTimeException
 /* {{{ BSON and Serialization Classes */
 namespace MongoDB\BSON;
 
+/* {{{ Interfaces */
+interface TypeWrapper
+{
+	static public function createFromBSONType(\MongoDB\BSON\Type $type) : \MongoDB\BSON\TypeWrapper;
+	public function toBSONType();
+}
+
+interface BinaryInterface
+{
+	public function getType() : int;
+	public function getData() : string;
+	public function __toString() : string;
+}
+
+interface Decimal128Interface
+{
+	public function __toString() : string;
+}
+
+interface JavascriptInterface
+{
+	public function getCode() : string;
+	public function getScope() : mixed;
+	public function __toString() : string;
+}
+
+interface MaxKeyInterface
+{
+}
+
+interface MinKeyInterface
+{
+}
+
+interface ObjectIDInterface
+{
+	public function getTimestamp() : int;
+	public function __toString() : string;
+}
+
+interface RegexInterface
+{
+	public function getPattern() : string;
+	public function getFlags() : string;
+	public function __toString() : string;
+}
+
+interface TimestampInterface
+{
+	public function __toString() : string;
+}
+
+interface UTCDateTimeInterface
+{
+	public function toDateTime() : \DateTime;
+	public function __toString() : string;
+}
+/* }}} */
+
 <<__Native>>
 function fromPHP(mixed $data) : string;
 
@@ -945,7 +1004,7 @@ trait DenySerialization
 	}
 }
 
-final class Binary implements Type, \Serializable, \JsonSerializable
+final class Binary implements Type, \Serializable, \JsonSerializable, BinaryInterface
 {
 	static private function checkArray(array $state)
 	{
@@ -995,7 +1054,7 @@ final class Binary implements Type, \Serializable, \JsonSerializable
 		return new self( $state['data'], $state['type'] );
 	}
 
-	public function getType()
+	public function getType() : int
 	{
 		$func_args = func_num_args();
 		if ($func_args != 0) {
@@ -1016,11 +1075,11 @@ final class Binary implements Type, \Serializable, \JsonSerializable
 	}
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
 <<__NativeData("MongoDBBsonDecimal128")>>
-final class Decimal128 implements Type, \Serializable, \JsonSerializable
+final class Decimal128 implements Type, \Serializable, \JsonSerializable, Decimal128Interface
 {
 	static private function checkArray(array $state)
 	{
@@ -1053,7 +1112,7 @@ final class Decimal128 implements Type, \Serializable, \JsonSerializable
 	}
 
 	<<__Native>>
-	function __construct(string $decimal);
+	public function __construct(string $decimal);
 
 	static public function __set_state(array $state)
 	{
@@ -1062,13 +1121,13 @@ final class Decimal128 implements Type, \Serializable, \JsonSerializable
 	}
 
 	<<__Native>>
-	function __toString() : string;
+	public function __toString() : string;
 
 	<<__Native>>
-	function __debugInfo() : array;
+	public function __debugInfo() : array;
 }
 
-final class Javascript implements Type, \Serializable, \JsonSerializable
+final class Javascript implements Type, \Serializable, \JsonSerializable, JavascriptInterface
 {
 	private $code;
 	private $scope;
@@ -1165,7 +1224,7 @@ final class Javascript implements Type, \Serializable, \JsonSerializable
 	}
 }
 
-final class MaxKey implements Type, \Serializable, \JsonSerializable
+final class MaxKey implements Type, \Serializable, \JsonSerializable, MaxKeyInterface
 {
 	public function serialize() : string
 	{
@@ -1189,7 +1248,7 @@ final class MaxKey implements Type, \Serializable, \JsonSerializable
 	}
 }
 
-final class MinKey implements Type, \Serializable, \JsonSerializable
+final class MinKey implements Type, \Serializable, \JsonSerializable, MinKeyInterface
 {
 	public function serialize() : string
 	{
@@ -1214,7 +1273,7 @@ final class MinKey implements Type, \Serializable, \JsonSerializable
 }
 
 <<__NativeData("MongoDBBsonObjectID")>>
-final class ObjectID implements Type, \Serializable, \JsonSerializable
+final class ObjectID implements Type, \Serializable, \JsonSerializable, ObjectIDInterface
 {
 	static private function checkArray( array $state )
 	{
@@ -1267,7 +1326,7 @@ final class ObjectID implements Type, \Serializable, \JsonSerializable
 	}
 }
 
-final class Regex implements Type, \Serializable, \JsonSerializable
+final class Regex implements Type, \Serializable, \JsonSerializable, RegexInterface
 {
 	private $pattern;
 	private $flags;
@@ -1351,7 +1410,7 @@ final class Regex implements Type, \Serializable, \JsonSerializable
 	}
 }
 
-final class Timestamp implements Type, \Serializable, \JsonSerializable
+final class Timestamp implements Type, \Serializable, \JsonSerializable, TimestampInterface
 {
 	static private function checkArray( array $state )
 	{
@@ -1448,7 +1507,7 @@ final class Timestamp implements Type, \Serializable, \JsonSerializable
 	}
 }
 
-final class UTCDateTime implements Type, \Serializable, \JsonSerializable
+final class UTCDateTime implements Type, \Serializable, \JsonSerializable, UTCDateTimeInterface
 {
 	private string $milliseconds;
 

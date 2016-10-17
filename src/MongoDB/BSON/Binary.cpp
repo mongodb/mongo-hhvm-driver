@@ -22,6 +22,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonBinary_className("MongoDB\\BSON\\Binary");
+const StaticString s_MongoBsonBinary_shortName("Binary");
 const StaticString s_MongoBsonBinary_data("data");
 const StaticString s_MongoBsonBinary_type("type");
 

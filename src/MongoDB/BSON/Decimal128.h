@@ -22,6 +22,7 @@ extern "C" {
 }
 
 extern const StaticString s_MongoBsonDecimal128_className;
+extern const StaticString s_MongoBsonDecimal128_shortName;
 
 class MongoDBBsonDecimal128Data
 {

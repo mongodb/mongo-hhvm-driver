@@ -22,6 +22,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonTimestamp_className("MongoDB\\BSON\\Timestamp");
+const StaticString s_MongoBsonTimestamp_shortName("Timestamp");
 const StaticString s_MongoBsonTimestamp_timestamp("timestamp");
 const StaticString s_MongoBsonTimestamp_increment("increment");
 

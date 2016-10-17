@@ -22,6 +22,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonJavascript_className("MongoDB\\BSON\\Javascript");
+const StaticString s_MongoBsonJavascript_shortName("Javascript");
 const StaticString s_MongoBsonJavascript_code("code");
 const StaticString s_MongoBsonJavascript_scope("scope");
 
