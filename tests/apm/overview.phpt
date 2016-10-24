@@ -2,7 +2,7 @@
 HHVM-190: APM Specification
 --FILE--
 <?php
-include dirname(__FILE__) . '/utils.inc';
+include dirname(__FILE__) . '/../utils.inc';
 
 $m = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 cleanup( $m );
@@ -85,7 +85,7 @@ object(MongoDB\Driver\Monitoring\CommandFailedEvent)#%d (%d) {
       [0]=>
       array(%d) {
         ["file"]=>
-        string(62) "%stests/utils.inc"
+        string(%d) "%stests/utils.inc"
         ["line"]=>
         int(18)
         ["function"]=>
@@ -111,7 +111,7 @@ object(MongoDB\Driver\Monitoring\CommandFailedEvent)#%d (%d) {
       [1]=>
       array(%d) {
         ["file"]=>
-        string(%d) "%stests/MongoDBDriver_APM-001.php"
+        string(%d) "%stests/apm/overview.php"
         ["line"]=>
         int(29)
         ["function"]=>
