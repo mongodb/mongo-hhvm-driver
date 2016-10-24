@@ -17,6 +17,7 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/array-iterator.h"
+#include "hphp/runtime/base/execution-context.h"
 #include "hphp/runtime/ext/stream/ext_stream.h"
 
 #undef TRACE
@@ -40,9 +41,15 @@ extern "C" {
 #include "Server.h"
 #include "WriteConcern.h"
 #include "WriteResult.h"
+#include "Monitoring/_CommandEvent.h"
+#include "Monitoring/_CommandResultEvent.h"
+#include "Monitoring/CommandStartedEvent.h"
+#include "Monitoring/CommandSucceededEvent.h"
+#include "Monitoring/CommandFailedEvent.h"
 
 namespace HPHP {
 
+const StaticString s_MongoDriverManager_className("MongoDB\\Driver\\Manager");
 Class* MongoDBDriverManagerData::s_class = nullptr;
 const StaticString MongoDBDriverManagerData::s_className("MongoDBDriverManager");
 IMPLEMENT_GET_CLASS(MongoDBDriverManagerData);
@@ -80,7 +87,12 @@ const StaticString
 	s_MongoDBDriverManager_context_ssl_local_cert("local_cert"),
 	s_MongoDBDriverManager_context_ssl_passphrase("passphrase"),
 	s_MongoDBDriverManager_context_ssl_cafile("cafile"),
-	s_MongoDBDriverManager_context_ssl_capath("capath");
+	s_MongoDBDriverManager_context_ssl_capath("capath"),
+	/* APM */
+	s_MongoDBDriverManager_subscribers("subscribers"),
+	s_MongoDBDriverManager_dispatchCommandStarted("_dispatchCommandStarted"),
+	s_MongoDBDriverManager_dispatchCommandSucceeded("_dispatchCommandSucceeded"),
+	s_MongoDBDriverManager_dispatchCommandFailed("_dispatchCommandFailed");
 
 static bool hippo_mongo_driver_manager_apply_rc(mongoc_uri_t *uri, const Array options)
 {
@@ -522,6 +534,137 @@ static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, c
 	return 1;
 }
 
+void command_started(const mongoc_apm_command_started_t *event)
+{
+	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_started_get_context(event);
+	Class *cls = obj_context->getVMClass();
+	static Class *c_event;
+	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandStarted.get());
+	Variant    result;
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
+
+	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
+
+	if (subscribers.size() < 1) {
+		return;
+	}
+
+	c_event = Unit::lookupClass(s_MongoDriverMonitoringCommandStartedEvent_className.get());
+	Object o_event = Object{c_event};
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_commandName, Variant(mongoc_apm_command_started_get_command_name(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_server, Variant(hippo_mongo_driver_server_create_from_id(data->m_client, mongoc_apm_command_started_get_server_id(event))), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_operationId, Variant(mongoc_apm_command_started_get_operation_id(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_requestId, Variant(mongoc_apm_command_started_get_request_id(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandStartedEvent_databaseName, Variant(mongoc_apm_command_started_get_database_name(event)), s_MongoDriverMonitoringCommandStartedEvent_className);
+
+	/* Add the command */
+	Variant v_command;
+	const bson_t *b_command = mongoc_apm_command_started_get_command(event);
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
+	BsonToVariantConverter convertor(bson_get_data(b_command), b_command->len, options);
+	convertor.convert(&v_command);
+	o_event->o_set(s_MongoDriverMonitoringCommandStartedEvent_command, v_command, s_MongoDriverMonitoringCommandStartedEvent_className);
+
+
+	TypedValue args[1] = { *(Variant(o_event)).asCell() };
+	
+	g_context->invokeFuncFew(
+		result.asTypedValue(),
+		m, obj_context,
+		nullptr, 1, args
+	);
+}
+
+
+static void command_succeeded(const mongoc_apm_command_succeeded_t *event)
+{
+	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_succeeded_get_context(event);
+	Class *cls = obj_context->getVMClass();
+	static Class *c_event;
+	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandSucceeded.get());
+	Variant    result;
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
+
+	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
+
+	if (subscribers.size() < 1) {
+		return;
+	}
+
+	c_event = Unit::lookupClass(s_MongoDriverMonitoringCommandSucceededEvent_className.get());
+	Object o_event = Object{c_event};
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_commandName, Variant(mongoc_apm_command_succeeded_get_command_name(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_server, Variant(hippo_mongo_driver_server_create_from_id(data->m_client, mongoc_apm_command_succeeded_get_server_id(event))), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_operationId, Variant(mongoc_apm_command_succeeded_get_operation_id(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_requestId, Variant(mongoc_apm_command_succeeded_get_request_id(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandResultEvent_durationMicros, Variant(mongoc_apm_command_succeeded_get_duration(event)), s_MongoDriverMonitoringCommandResultEvent_className);
+
+	/* Add the reply */
+	Variant v_reply;
+	const bson_t *b_reply = mongoc_apm_command_succeeded_get_reply(event);
+	hippo_bson_conversion_options_t options = HIPPO_TYPEMAP_INITIALIZER;
+	BsonToVariantConverter convertor(bson_get_data(b_reply), b_reply->len, options);
+	convertor.convert(&v_reply);
+	o_event->o_set(s_MongoDriverMonitoringCommandSucceededEvent_reply, v_reply, s_MongoDriverMonitoringCommandSucceededEvent_className);
+
+	TypedValue args[1] = { *(Variant(o_event)).asCell() };
+	
+	g_context->invokeFuncFew(
+		result.asTypedValue(),
+		m, obj_context,
+		nullptr, 1, args
+	);
+}
+
+
+static void command_failed(const mongoc_apm_command_failed_t *event)
+{
+	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_failed_get_context(event);
+	Class *cls = obj_context->getVMClass();
+	static Class *c_event;
+	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandFailed.get());
+	Variant    result;
+	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
+
+	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
+
+	if (subscribers.size() < 1) {
+		return;
+	}
+
+	c_event = Unit::lookupClass(s_MongoDriverMonitoringCommandFailedEvent_className.get());
+	Object o_event = Object{c_event};
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_commandName, Variant(mongoc_apm_command_failed_get_command_name(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_server, Variant(hippo_mongo_driver_server_create_from_id(data->m_client, mongoc_apm_command_failed_get_server_id(event))), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_operationId, Variant(mongoc_apm_command_failed_get_operation_id(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandEvent_requestId, Variant(mongoc_apm_command_failed_get_request_id(event)), s_MongoDriverMonitoringCommandEvent_className);
+	o_event->o_set(s_MongoDriverMonitoringCommandResultEvent_durationMicros, Variant(mongoc_apm_command_failed_get_duration(event)), s_MongoDriverMonitoringCommandResultEvent_className);
+
+	/* Add the error / exception */
+	bson_error_t b_error;
+	mongoc_apm_command_failed_get_error(event, &b_error);
+	o_event->o_set(s_MongoDriverMonitoringCommandFailedEvent_error, MongoDriver::Utils::throwExceptionFromBsonError(&b_error), s_MongoDriverMonitoringCommandFailedEvent_className);
+
+	TypedValue args[1] = { *(Variant(o_event)).asCell() };
+	
+	g_context->invokeFuncFew(
+		result.asTypedValue(),
+		m, obj_context,
+		nullptr, 1, args
+	);
+}
+
+static void hippo_mongo_driver_manager_set_monitoring_callbacks(mongoc_client_t *client, const ObjectData* this_)
+{
+	mongoc_apm_callbacks_t *callbacks = mongoc_apm_callbacks_new();
+
+	mongoc_apm_set_command_started_cb(callbacks, command_started);
+	mongoc_apm_set_command_succeeded_cb(callbacks, command_succeeded);
+	mongoc_apm_set_command_failed_cb(callbacks, command_failed);
+	mongoc_client_set_apm_callbacks(client, callbacks, (void *) this_);
+	mongoc_apm_callbacks_destroy(callbacks);
+}
+
 
 void MongoDBDriverManagerData::sweep()
 {
@@ -563,6 +706,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	data->m_client = client;
 
 	hippo_mongo_driver_manager_apply_ssl_opts(data->m_client, driverOptions);
+	hippo_mongo_driver_manager_set_monitoring_callbacks(data->m_client, this_);
 }
 
 const StaticString
