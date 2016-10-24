@@ -20,6 +20,11 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/Driver/Server.cpp
  src/MongoDB/Driver/WriteConcern.cpp
  src/MongoDB/Driver/WriteResult.cpp
+ src/MongoDB/Driver/Monitoring/_CommandEvent.cpp
+ src/MongoDB/Driver/Monitoring/_CommandResultEvent.cpp
+ src/MongoDB/Driver/Monitoring/CommandStartedEvent.cpp
+ src/MongoDB/Driver/Monitoring/CommandSucceededEvent.cpp
+ src/MongoDB/Driver/Monitoring/CommandFailedEvent.cpp
  libbson/src/yajl/yajl.c libbson/src/yajl/yajl_alloc.c
  libbson/src/yajl/yajl_buf.c libbson/src/yajl/yajl_encode.c
  libbson/src/yajl/yajl_gen.c libbson/src/yajl/yajl_lex.c
