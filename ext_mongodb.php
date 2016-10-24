@@ -711,7 +711,8 @@ final class Query {
 			}
 		}
 
-		$this->_queryOptBool( 'allowPartialResults', $options, 'allowPartialResults' );
+		$this->_queryOptBool( 'allowPartialResults', $options, 'allowPartialResults' )
+			|| $this->_queryOptBool( 'allowPartialResults', $options, 'partial' );
 		$this->_queryOptBool( 'awaitData', $options, 'awaitData' );
 		$this->_queryOptInt64( 'batchSize', $options, 'batchSize' );
 		$this->_queryOptDocument( 'collation', $options, 'collation' );
