@@ -31,7 +31,7 @@ class MySubscriber implements MongoDB\Driver\Monitoring\CommandSubscriber
 $m->addSubscriber( new MySubscriber() );
 cleanup( $m );
 
-$d = new \MongoDB\BSON\Decimal128("1234.5678");
+$d = 12345678;
 
 $bw = new MongoDB\Driver\BulkWrite( [ 'ordered' => false ] );
 $_id = $bw->insert( [ 'decimal' => $d ] );
@@ -164,10 +164,7 @@ object(MongoDB\Driver\Monitoring\CommandStartedEvent)#%d (%d) {
       [0]=>
       object(stdClass)#%d (%d) {
         ["decimal"]=>
-        object(MongoDB\BSON\Decimal128)#%d (%d) {
-          ["dec"]=>
-          string(9) "1234.5678"
-        }
+        int(12345678)
         ["_id"]=>
         object(MongoDB\BSON\ObjectID)#%d (%d) {
           ["oid"]=>
@@ -262,10 +259,7 @@ object(MongoDB\Driver\Monitoring\CommandSucceededEvent)#%d (%d) {
             string(24) "%s"
           }
           ["decimal"]=>
-          object(MongoDB\BSON\Decimal128)#%d (%d) {
-            ["dec"]=>
-            string(9) "1234.5678"
-          }
+          int(12345678)
         }
       }
       ["id"]=>
@@ -302,9 +296,6 @@ array(%d) {
       string(24) "%s"
     }
     ["decimal"]=>
-    object(MongoDB\BSON\Decimal128)#%d (%d) {
-      ["dec"]=>
-      string(9) "1234.5678"
-    }
+    int(12345678)
   }
 }
