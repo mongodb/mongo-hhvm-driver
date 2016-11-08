@@ -1704,13 +1704,10 @@ final class UTCDateTime implements Type, \Serializable, \JsonSerializable, UTCDa
 
 	public function jsonSerialize() : mixed
 	{
-		$seconds = (int) ( $this->milliseconds / 1000 );
-		$millis =  (int) ( $this->milliseconds % 1000 );
-
-		$d = date_create( "@" . (string) $seconds );
-
 		return [
-			'$date' => sprintf( "%s.%03d+0000", $d->format( 'Y-m-d\TH:i:s' ), $millis )
+			'$date' => [
+				'$numberLong' => (string) $this->milliseconds,
+			],
 		];
 	}
 
