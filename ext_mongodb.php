@@ -1327,7 +1327,14 @@ final class Javascript implements Type, \Serializable, \JsonSerializable, Javasc
 
 	public function jsonSerialize() : mixed
 	{
-		return $this->code;
+		$json = [ '$code' => $this->code ];
+
+		if ( isset( $this->scope ) )
+		{
+			$json['$scope'] = $this->scope;
+		}
+
+		return $json;
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1378,7 +1385,7 @@ final class Javascript implements Type, \Serializable, \JsonSerializable, Javasc
 
 	public function getScope() : mixed
 	{
-		if ( isset( $this->scope) && $this->scope !== NULL )
+		if ( isset( $this->scope ) )
 		{
 			return (object) $this->scope;
 		}
