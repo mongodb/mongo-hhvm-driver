@@ -1327,7 +1327,14 @@ final class Javascript implements Type, \Serializable, \JsonSerializable, Javasc
 
 	public function jsonSerialize() : mixed
 	{
-		return $this->code;
+		$json = [ '$code' => $this->code ];
+
+		if ( isset( $this->scope ) )
+		{
+			$json['$scope'] = $this->scope;
+		}
+
+		return $json;
 	}
 
 	public function unserialize(mixed $serialized) : void
@@ -1378,7 +1385,7 @@ final class Javascript implements Type, \Serializable, \JsonSerializable, Javasc
 
 	public function getScope() : mixed
 	{
-		if ( isset( $this->scope) && $this->scope !== NULL )
+		if ( isset( $this->scope ) )
 		{
 			return (object) $this->scope;
 		}
@@ -1697,13 +1704,10 @@ final class UTCDateTime implements Type, \Serializable, \JsonSerializable, UTCDa
 
 	public function jsonSerialize() : mixed
 	{
-		$seconds = (int) ( $this->milliseconds / 1000 );
-		$millis =  (int) ( $this->milliseconds % 1000 );
-
-		$d = date_create( "@" . (string) $seconds );
-
 		return [
-			'$date' => sprintf( "%s.%03d+0000", $d->format( 'Y-m-d\TH:i:s' ), $millis )
+			'$date' => [
+				'$numberLong' => (string) $this->milliseconds,
+			],
 		];
 	}
 

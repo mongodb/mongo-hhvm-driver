@@ -14,7 +14,7 @@ var_dump( \MongoDB\BSON\toPHP( \MongoDB\BSON\fromJSON( $d ) ) );
 ?>
 --EXPECTF--
 { "foo" : { "$date" : 1476192866817 } }
-{"foo":{"$date":"2016-10-11T13:34:26.817+0000"}}
+{"foo":{"$date":{"$numberLong":"1476192866817"}}}
 object(stdClass)#%d (%d) {
   ["foo"]=>
   object(MongoDB\BSON\UTCDateTime)#%d (%d) {
