@@ -64,7 +64,7 @@ Variant HHVM_FUNCTION(MongoDBBsonFromJson, const String &data)
 
 		return s;
 	} else {
-		throw MongoDriver::Utils::throwUnexpectedValueException(error.message ? error.message : "Error parsing JSON");
+		throw MongoDriver::Utils::throwUnexpectedValueException(error.domain == BSON_ERROR_JSON ? error.message : "Error parsing JSON");
 		return Variant();
 	}
 }
