@@ -13,7 +13,7 @@ echo $d, "\n";
 var_dump( \MongoDB\BSON\toPHP( \MongoDB\BSON\fromJSON( $d ) ) );
 ?>
 --EXPECTF--
-{ "foo" : "function foo(bar) { return bar; }" }
+{ "foo" : { "$code" : "function foo(bar) { return bar; }", "$scope" : { "foo" : 42 } } }
 {"foo":{"$code":"function foo(bar) { return bar; }","$scope":{"foo":42}}}
 object(stdClass)#%d (%d) {
   ["foo"]=>
