@@ -889,7 +889,7 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 	private function _setReadPreferenceTags(array $tagSets): void;
 
 	<<__Native>>
-	private function _setMaxStalenessMS(int $maxStalenessMS): void;
+	private function _setMaxStalenessSeconds(int $maxStalenessSeconds): void;
 
 	public function __construct(int $readPreference, array $tagSets = null, array $options = [] )
 	{
@@ -933,21 +933,24 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 			$this->_setReadPreferenceTags( $newTagSets );
 		}
 
-		if ( array_key_exists( 'maxStalenessMS', $options ) )
+		if ( array_key_exists( 'maxStalenessSeconds', $options ) )
 		{
-			$maxStalenessMS = (int) $options['maxStalenessMS'];
+			$maxStalenessSeconds = (int) $options['maxStalenessSeconds'];
 
-			if ( $maxStalenessMS < 0 )
+			if ( $maxStalenessSeconds != self::NO_MAX_STALENESS )
 			{
-				Utils::throwHippoException( Utils::ERROR_INVALID_ARGUMENT, "Expected maxStalenessMS to be >= 0, {$maxStalenessMS} given" );
+				if ( $maxStalenessSeconds < self::SMALLEST_MAX_STALENESS_SECONDS )
+				{
+					Utils::throwHippoException( Utils::ERROR_INVALID_ARGUMENT, "Expected maxStalenessSeconds to be >= " . self::SMALLEST_MAX_STALENESS_SECONDS . ", {$maxStalenessSeconds} given" );
+				}
+
+				if ( $maxStalenessSeconds > 2147483647 )
+				{
+					Utils::throwHippoException( Utils::ERROR_INVALID_ARGUMENT, "Expected maxStalenessSeconds to be <= 2147483647, {$maxStalenessSeconds} given" );
+				}
 			}
 
-			if ( $maxStalenessMS > 2147483647 )
-			{
-				Utils::throwHippoException( Utils::ERROR_INVALID_ARGUMENT, "Expected maxStalenessMS to be <= 2147483647, {$maxStalenessMS} given" );
-			}
-
-			$this->_setMaxStalenessMS( $maxStalenessMS );
+			$this->_setMaxStalenessSeconds( $maxStalenessSeconds );
 		}
 	}
 
@@ -958,7 +961,7 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 	public function getTagSets() : array;
 
 	<<__Native>>
-	public function getMaxStalenessMS() : int;
+	public function getMaxStalenessSeconds() : int;
 
 	<<__Native>>
 	public function __debugInfo() : array;
