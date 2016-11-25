@@ -1,5 +1,7 @@
 --TEST--
 APM: commandSucceeded callback (requestId and operationId match)
+--SKIPIF--
+skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';

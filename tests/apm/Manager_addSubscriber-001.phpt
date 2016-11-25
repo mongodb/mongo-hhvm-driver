@@ -1,5 +1,7 @@
 --TEST--
 APM: Manager::addSubscriber() (single)
+--SKIPIF--
+skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';
