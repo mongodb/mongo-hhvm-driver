@@ -1550,6 +1550,11 @@ final class Regex implements Type, \Serializable, \JsonSerializable, RegexInterf
 			throw new \MongoDB\Driver\Exception\InvalidArgumentException( "Flags cannot contain null bytes" );
 		}
 
+		/* Sort flags */
+		$flags = str_split( $flags );
+		sort( $flags );
+		$flags = implode( '', $flags );
+
 		$this->pattern = $pattern;
 		$this->flags = $flags;
 	}
