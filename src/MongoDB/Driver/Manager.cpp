@@ -534,6 +534,7 @@ static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, c
 	return 1;
 }
 
+#if APM_0
 void command_started(const mongoc_apm_command_started_t *event)
 {
 	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_started_get_context(event);
@@ -664,7 +665,7 @@ static void hippo_mongo_driver_manager_set_monitoring_callbacks(mongoc_client_t 
 	mongoc_client_set_apm_callbacks(client, callbacks, (void *) this_);
 	mongoc_apm_callbacks_destroy(callbacks);
 }
-
+#endif
 
 void MongoDBDriverManagerData::sweep()
 {
@@ -706,7 +707,9 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	data->m_client = client;
 
 	hippo_mongo_driver_manager_apply_ssl_opts(data->m_client, driverOptions);
+#ifdef APM_0
 	hippo_mongo_driver_manager_set_monitoring_callbacks(data->m_client, this_);
+#endif
 }
 
 const StaticString

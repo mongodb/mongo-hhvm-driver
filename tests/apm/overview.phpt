@@ -1,5 +1,7 @@
 --TEST--
 HHVM-190: APM Specification
+--SKIPIF--
+skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';
