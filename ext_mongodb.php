@@ -298,7 +298,7 @@ final class WriteResult {
 }
 
 <<__NativeData("MongoDBDriverManager")>>
-class Manager {
+final class Manager {
 	private array $subscribers = [];
 
 	<<__Native>>
