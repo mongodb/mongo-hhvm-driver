@@ -47,6 +47,21 @@ static String oidAsString(MongoDBBsonObjectIDData* data)
 	return s;
 }
 
+Object createMongoBsonObjectIDObject(const bson_oid_t *v_oid)
+{
+	static Class* c_objectId;
+
+	c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
+	assert(c_objectId);
+	Object obj = Object{c_objectId};
+
+	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
+	bson_oid_copy(v_oid, &obj_data->m_oid);
+	obj->o_set(s_MongoBsonObjectID_oid, Variant(oidAsString(obj_data)), s_MongoBsonObjectID_className);
+
+	return obj;
+}
+
 void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId)
 {
 	MongoDBBsonObjectIDData* data = Native::data<MongoDBBsonObjectIDData>(this_);

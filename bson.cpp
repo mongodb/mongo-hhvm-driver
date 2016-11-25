@@ -270,14 +270,7 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 		bson_append_oid(bson, "_id", strlen("_id"), &oid);
 
 		if (m_flags & HIPPO_BSON_RETURN_ID) {
-			static Class* c_objectId;
-			c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
-			assert(c_objectId);
-			Object obj = Object{c_objectId};
-
-			MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
-			bson_oid_copy(&oid, &obj_data->m_oid);
-
+			Object obj = createMongoBsonObjectIDObject(&oid);
 			m_out = obj;
 		}
 	}
@@ -598,14 +591,8 @@ bool hippo_bson_visit_binary(const bson_iter_t *iter __attribute__((unused)), co
 bool hippo_bson_visit_oid(const bson_iter_t *iter __attribute__((unused)), const char *key, const bson_oid_t *v_oid, void *data)
 {
 	hippo_bson_state *state = (hippo_bson_state*) data;
-	static Class* c_objectId;
 
-	c_objectId = Unit::lookupClass(s_MongoBsonObjectID_className.get());
-	assert(c_objectId);
-	Object obj = Object{c_objectId};
-
-	MongoDBBsonObjectIDData* obj_data = Native::data<MongoDBBsonObjectIDData>(obj.get());
-	bson_oid_copy(v_oid, &obj_data->m_oid);
+	Object obj = createMongoBsonObjectIDObject(v_oid);
 
 	if (! state->options.types.objectid_class_name.empty()) {
 		/* We have a type wrapped class, so wrap it */
