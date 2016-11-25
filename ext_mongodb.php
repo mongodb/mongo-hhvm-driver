@@ -299,7 +299,9 @@ final class WriteResult {
 
 <<__NativeData("MongoDBDriverManager")>>
 final class Manager {
+#ifdef APM_0
 	private array $subscribers = [];
+#endif
 
 	<<__Native>>
 	public function __construct(string $dsn = "", array $options = array(), array $driverOptions = array());
@@ -334,6 +336,7 @@ final class Manager {
 	<<__Native>>
 	public function selectServer(ReadPreference $readPreference): Server;
 
+#ifdef APM_0
 /* {{{ APM */
 	public function addSubscriber( Monitoring\Subscriber $subscriber ) : void
 	{
@@ -393,6 +396,7 @@ final class Manager {
 		}
 	}
 /* }}} */
+#endif
 }
 
 class Utils {
