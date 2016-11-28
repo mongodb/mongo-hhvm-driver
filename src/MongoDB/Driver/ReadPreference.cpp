@@ -103,16 +103,16 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Arra
 	}
 }
 
-void HHVM_METHOD(MongoDBDriverReadPreference, _setMaxStalenessMS, int maxStalenessMS)
+void HHVM_METHOD(MongoDBDriverReadPreference, _setMaxStalenessSeconds, int maxStalenessSeconds)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 
-	/* Validate that maxStalenessMS is not used with PRIMARY readPreference */
-	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY) {
-		throw MongoDriver::Utils::throwInvalidArgumentException("maxStalenessMS may not be used with primary mode");
+	/* Validate that maxStalenessSeconds is not used with PRIMARY readPreference */
+	if (mongoc_read_prefs_get_mode(data->m_read_preference) == MONGOC_READ_PRIMARY && maxStalenessSeconds != MONGOC_NO_MAX_STALENESS) {
+		throw MongoDriver::Utils::throwInvalidArgumentException("maxStalenessSeconds may not be used with primary mode");
 	}
 
-	mongoc_read_prefs_set_max_staleness_ms(data->m_read_preference, maxStalenessMS);
+	mongoc_read_prefs_set_max_staleness_seconds(data->m_read_preference, maxStalenessSeconds);
 
 	if (!mongoc_read_prefs_is_valid(data->m_read_preference)) {
 		/* Throw exception */
@@ -123,7 +123,7 @@ void HHVM_METHOD(MongoDBDriverReadPreference, _setMaxStalenessMS, int maxStalene
 const StaticString
 	s_mode("mode"),
 	s_tags("tags"),
-	s_maxStalenessMS("maxStalenessMS");
+	s_maxStalenessSeconds("maxStalenessSeconds");
 
 
 Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
@@ -152,8 +152,8 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo)
 		retval.set(s_tags, v_tags.toArray());
 	}
 
-	if (mongoc_read_prefs_get_max_staleness_ms(data->m_read_preference) != 0) {
-		retval.set(s_maxStalenessMS, mongoc_read_prefs_get_max_staleness_ms(data->m_read_preference));
+	if (mongoc_read_prefs_get_max_staleness_seconds(data->m_read_preference) != MONGOC_NO_MAX_STALENESS) {
+		retval.set(s_maxStalenessSeconds, mongoc_read_prefs_get_max_staleness_seconds(data->m_read_preference));
 	}
 
 	return retval;
@@ -185,11 +185,11 @@ Array HHVM_METHOD(MongoDBDriverReadPreference, getTagSets)
 	return v_tags.toArray();
 }
 
-int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMaxStalenessMS)
+int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMaxStalenessSeconds)
 {
 	MongoDBDriverReadPreferenceData* data = Native::data<MongoDBDriverReadPreferenceData>(this_);
 
-	return mongoc_read_prefs_get_max_staleness_ms(data->m_read_preference);
+	return mongoc_read_prefs_get_max_staleness_seconds(data->m_read_preference);
 }
 
 }

@@ -51,12 +51,12 @@ class MongoDBDriverReadPreferenceData
 
 void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreference, int readPreference);
 void HHVM_METHOD(MongoDBDriverReadPreference, _setReadPreferenceTags, const Array &tagSets);
-void HHVM_METHOD(MongoDBDriverReadPreference, _setMaxStalenessMS, int maxStalenessMS);
+void HHVM_METHOD(MongoDBDriverReadPreference, _setMaxStalenessSeconds, int maxStalenessSeconds);
 Array HHVM_METHOD(MongoDBDriverReadPreference, __debugInfo);
 Variant HHVM_METHOD(MongoDBDriverReadPreference, bsonSerialize);
 int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMode);
 Array HHVM_METHOD(MongoDBDriverReadPreference, getTagSets);
-int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMaxStalenessMS);
+int64_t HHVM_METHOD(MongoDBDriverReadPreference, getMaxStalenessSeconds);
 
 }
 #endif
