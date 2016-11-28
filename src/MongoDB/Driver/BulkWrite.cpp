@@ -105,12 +105,22 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, _update, int hasOperators, const Varian
 	options_converter.convert(boptions);
 
 	if (hasOperators) {
-		if (!mongoc_bulk_operation_update_with_opts(data->m_bulk, bquery, bupdate, boptions, &error)) {
-			bson_clear(&bquery);
-			bson_clear(&bupdate);
-			bson_clear(&boptions);
+		if (options.exists(s_multi) && options[s_multi].toBoolean()) {
+			if (!mongoc_bulk_operation_update_many_with_opts(data->m_bulk, bquery, bupdate, boptions, &error)) {
+				bson_clear(&bquery);
+				bson_clear(&bupdate);
+				bson_clear(&boptions);
 
-			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+				throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+			}
+		} else {
+			if (!mongoc_bulk_operation_update_one_with_opts(data->m_bulk, bquery, bupdate, boptions, &error)) {
+				bson_clear(&bquery);
+				bson_clear(&bupdate);
+				bson_clear(&boptions);
+
+				throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+			}
 		}
 	} else {
 		if (!bson_validate(bupdate, (bson_validate_flags_t) (BSON_VALIDATE_DOT_KEYS | BSON_VALIDATE_DOLLAR_KEYS), NULL)) {
@@ -163,11 +173,20 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, _delete, const Variant &query, const Ar
 	boptions = bson_new();
 	options_converter.convert(boptions);
 
-	if (!mongoc_bulk_operation_remove_with_opts(data->m_bulk, bquery, boptions, &error)) {
-		bson_clear(&bquery);
-		bson_clear(&boptions);
+	if (options.exists(s_limit) && options[s_limit].toBoolean()) {
+		if (!mongoc_bulk_operation_remove_one_with_opts(data->m_bulk, bquery, boptions, &error)) {
+			bson_clear(&bquery);
+			bson_clear(&boptions);
 
-		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+		}
+	} else {
+		if (!mongoc_bulk_operation_remove_many_with_opts(data->m_bulk, bquery, boptions, &error)) {
+			bson_clear(&bquery);
+			bson_clear(&boptions);
+
+			throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+		}
 	}
 
 	data->m_num_ops++;

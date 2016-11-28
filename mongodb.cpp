@@ -197,12 +197,12 @@ static class MongoDBExtension : public Extension {
 			/* MongoDb\Driver\ReadPreference */
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreference, MongoDBDriverReadPreference, _setReadPreference);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setReadPreferenceTags, MongoDBDriverReadPreference, _setReadPreferenceTags);
-			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setMaxStalenessMS, MongoDBDriverReadPreference, _setMaxStalenessMS);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, _setMaxStalenessSeconds, MongoDBDriverReadPreference, _setMaxStalenessSeconds);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, __debugInfo, MongoDBDriverReadPreference, __debugInfo);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, bsonSerialize, MongoDBDriverReadPreference, bsonSerialize);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, getTagSets, MongoDBDriverReadPreference, getTagSets);
 			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, getMode, MongoDBDriverReadPreference, getMode);
-			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, getMaxStalenessMS, MongoDBDriverReadPreference, getMaxStalenessMS);
+			HHVM_MALIAS(MongoDB\\Driver\\ReadPreference, getMaxStalenessSeconds, MongoDBDriverReadPreference, getMaxStalenessSeconds);
 
 			Native::registerNativeDataInfo<MongoDBDriverReadPreferenceData>(MongoDBDriverReadPreferenceData::s_className.get());
 
@@ -211,6 +211,8 @@ static class MongoDBExtension : public Extension {
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY"), (int64_t) MONGOC_READ_SECONDARY);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_SECONDARY_PREFERRED"), (int64_t) MONGOC_READ_SECONDARY_PREFERRED);
 			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("RP_NEAREST"), (int64_t) MONGOC_READ_NEAREST);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("NO_MAX_STALENESS"), (int64_t) MONGOC_NO_MAX_STALENESS);
+			Native::registerClassConstant<KindOfInt64>(s_MongoDriverReadPreference_className.get(), makeStaticString("SMALLEST_MAX_STALENESS_SECONDS"), (int64_t) MONGOC_SMALLEST_MAX_STALENESS_SECONDS);
 
 			/* MongoDb\Driver\Server */
 			HHVM_MALIAS(MongoDB\\Driver\\Server, __debugInfo, MongoDBDriverServer, __debugInfo);

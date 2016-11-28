@@ -1,0 +1,7 @@
+The MongoDB HHVM Driver does not use third-party code distributed under
+different licenses.
+
+However, the MongoDB HHVM Driver uses libbson and libmongoc, which do use
+third-party code distributed under difference licenses. See
+libbson/THIRD_PARTY_NOTICES and libmongoc/THIRD_PARTY_NOTICES for additional
+information.
