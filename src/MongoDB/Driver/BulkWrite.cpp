@@ -84,7 +84,7 @@ const StaticString
 	s_upsert("upsert");
 
 
-void HHVM_METHOD(MongoDBDriverBulkWrite, _update, int hasOperators, const Variant &query, const Variant &update, const Array &options)
+void HHVM_METHOD(MongoDBDriverBulkWrite, _update, bool hasOperators, const Variant &query, const Variant &update, const Array &options)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
 	bson_t *bquery;
