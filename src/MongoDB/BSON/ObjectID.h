@@ -44,7 +44,11 @@ class MongoDBBsonObjectIDData
 
 Object createMongoBsonObjectIDObject(const bson_oid_t *v_oid);
 
+#if HIPPO_HHVM_VERSION >= 31700
+void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId = uninit_variant);
+#else
 void HHVM_METHOD(MongoDBBsonObjectID, __construct, const Variant &objectId = null_variant);
+#endif
 String HHVM_METHOD(MongoDBBsonObjectID, __toString);
 Array HHVM_METHOD(MongoDBBsonObjectID, __debugInfo);
 

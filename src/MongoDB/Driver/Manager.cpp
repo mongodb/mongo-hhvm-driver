@@ -541,7 +541,6 @@ void command_started(const mongoc_apm_command_started_t *event)
 	Class *cls = obj_context->getVMClass();
 	static Class *c_event;
 	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandStarted.get());
-	Variant    result;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
 
 	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
@@ -568,12 +567,20 @@ void command_started(const mongoc_apm_command_started_t *event)
 
 
 	TypedValue args[1] = { *(Variant(o_event)).asCell() };
-	
+
+#if HIPPO_HHVM_VERSION >= 31700
+	g_context->invokeFuncFew(
+		m, obj_context,
+		nullptr, 1, args
+	);
+#else
+	Variant result;
 	g_context->invokeFuncFew(
 		result.asTypedValue(),
 		m, obj_context,
 		nullptr, 1, args
 	);
+#endif
 }
 
 
@@ -583,7 +590,6 @@ static void command_succeeded(const mongoc_apm_command_succeeded_t *event)
 	Class *cls = obj_context->getVMClass();
 	static Class *c_event;
 	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandSucceeded.get());
-	Variant    result;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
 
 	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
@@ -610,11 +616,19 @@ static void command_succeeded(const mongoc_apm_command_succeeded_t *event)
 
 	TypedValue args[1] = { *(Variant(o_event)).asCell() };
 	
+#if HIPPO_HHVM_VERSION >= 31700
+	g_context->invokeFuncFew(
+		m, obj_context,
+		nullptr, 1, args
+	);
+#else
+	Variant result;
 	g_context->invokeFuncFew(
 		result.asTypedValue(),
 		m, obj_context,
 		nullptr, 1, args
 	);
+#endif
 }
 
 
@@ -624,7 +638,6 @@ static void command_failed(const mongoc_apm_command_failed_t *event)
 	Class *cls = obj_context->getVMClass();
 	static Class *c_event;
 	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandFailed.get());
-	Variant    result;
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
 
 	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
@@ -648,11 +661,19 @@ static void command_failed(const mongoc_apm_command_failed_t *event)
 
 	TypedValue args[1] = { *(Variant(o_event)).asCell() };
 	
+#if HIPPO_HHVM_VERSION >= 31700
+	g_context->invokeFuncFew(
+		m, obj_context,
+		nullptr, 1, args
+	);
+#else
+	Variant result;
 	g_context->invokeFuncFew(
 		result.asTypedValue(),
 		m, obj_context,
 		nullptr, 1, args
 	);
+#endif
 }
 
 static void hippo_mongo_driver_manager_set_monitoring_callbacks(mongoc_client_t *client, const ObjectData* this_)

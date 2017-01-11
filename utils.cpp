@@ -64,9 +64,13 @@ HPHP::Object Utils::CreateAndConstruct(HPHP::StaticString classname, const HPHP:
 	assert(c_class);
 	HPHP::Object inst = HPHP::Object{c_class};
 
+#if HIPPO_HHVM_VERSION >= 31700
+	HPHP::g_context->invokeFunc(c_class->getCtor(), HPHP::make_packed_array(message, code), inst.get());
+#else
 	HPHP::TypedValue ret;
 	HPHP::g_context->invokeFunc(&ret, c_class->getCtor(), HPHP::make_packed_array(message, code), inst.get());
 	HPHP::tvRefcountedDecRef(&ret);
+#endif
 
 	return inst;
 }
