@@ -18,6 +18,7 @@
 namespace HPHP {
 
 extern const StaticString s_MongoBsonRegex_className;
+extern const StaticString s_MongoBsonRegex___construct;
 extern const StaticString s_MongoBsonRegex_shortName;
 extern const StaticString s_MongoBsonRegex_pattern;
 extern const StaticString s_MongoBsonRegex_flags;
