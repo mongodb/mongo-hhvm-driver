@@ -1,6 +1,15 @@
 ChangeLog
 =========
 
+1.2.1
+-----
+
+** Bug
+    * [HHVM-280] - Assertion failure in stream_not_found() after failed getmore operation
+    * [HHVM-281] - Fix compile issue with HHVM 3.17
+    * [HHVM-282] - Alphabetize Regex flags when instantiating from BSON
+
+
 1.2.0
 -----
 
