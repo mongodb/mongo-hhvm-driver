@@ -22,6 +22,7 @@
 namespace HPHP {
 
 const StaticString s_MongoBsonRegex_className("MongoDB\\BSON\\Regex");
+const StaticString s_MongoBsonRegex___construct("__construct");
 const StaticString s_MongoBsonRegex_shortName("Regex");
 const StaticString s_MongoBsonRegex_pattern("pattern");
 const StaticString s_MongoBsonRegex_flags("flags");
