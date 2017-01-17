@@ -108,13 +108,20 @@ void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Varia
 		Func  *m   = cls->lookupMethod(s_MongoBSONTypeWrapper_toBSONType.get());
 		TypedValue args[0] = {};
 		Variant    result;
-
+#if HIPPO_HHVM_VERSION >= 31700
+		result = Variant::attach(
+			g_context->invokeFuncFew(
+				m, obj.get(),
+				nullptr, 0, args
+			)
+		);
+#else
 		g_context->invokeFuncFew(
 			result.asTypedValue(),
 			m, obj.get(),
 			nullptr, 0, args
 		);
-
+#endif
 		v = result;
 	}
 
@@ -150,9 +157,26 @@ void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Varia
 		case KindOfRef:
 			convertElement(bson, key, *v.getRefData());
 			break;
-		case KindOfResource:
-			throw MongoDriver::Utils::throwUnexpectedValueException("Got unsupported type 'resource'");
+#if HIPPO_HHVM_VERSION >= 31700
+		case KindOfPersistentVec:
+		case KindOfPersistentDict:
+		case KindOfPersistentKeyset:
+		case KindOfVec:
+		case KindOfDict:
+		case KindOfKeyset:
+#endif
+		case KindOfResource: {
+			StringBuffer buf;
+			buf.printf(
+				"Got unsupported type '%s'",
+				HPHP::getDataTypeString(v.getType()).data()
+			);
+
+			Variant message = buf.detach();
+
+			throw MongoDriver::Utils::throwUnexpectedValueException((char*) message.toString().c_str());
 			return;
+		}
 		case KindOfClass:
 			not_reached();
 	}
@@ -400,13 +424,23 @@ void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key,
 
 	cls = v.get()->getVMClass();
 	m = cls->lookupMethod(s_MongoDriverBsonSerializable_functionName.get());
-	
+
+#if HIPPO_HHVM_VERSION >= 31700
+	result = Variant::attach(
+		g_context->invokeFuncFew(
+			m,
+			v.get(),
+			nullptr
+		)
+	);
+#else
 	g_context->invokeFuncFew(
 		result.asTypedValue(),
 		m,
 		v.get(),
 		nullptr
 	);
+#endif
 
 	if ( ! (
 			result.isArray() || 
@@ -948,7 +982,6 @@ bool BsonToVariantConverter::convert(Variant *v)
 		static Class* c_unserializable_interface;
 		static Class* c_persistable_interface;
 		Object obj;
-		Variant result;
 		bool useTypeMap = true;
 		c_unserializable_interface = Unit::lookupClass(s_MongoDriverBsonUnserializable_className.get());
 		c_persistable_interface = Unit::lookupClass(s_MongoDriverBsonPersistable_className.get());
@@ -993,6 +1026,16 @@ bool BsonToVariantConverter::convert(Variant *v)
 			/* Call bsonUnserialize on the object */
 			Func *m = c_class->lookupMethod(s_MongoDriverBsonUnserializable_functionName.get());
 
+#if HIPPO_HHVM_VERSION >= 31700
+			g_context->invokeFuncFew(
+				m,
+				obj.get(),
+				nullptr,
+				1, args
+			);
+#else
+			Variant result;
+
 			g_context->invokeFuncFew(
 				result.asTypedValue(),
 				m,
@@ -1000,12 +1043,12 @@ bool BsonToVariantConverter::convert(Variant *v)
 				nullptr,
 				1, args
 			);
+#endif
 
 			*v = Variant(obj);
 		}
 	} else if (havePclass) {
 		static Class* c_class;
-		Variant result;
 
 		String class_name = m_state.zchild[s_MongoDriverBsonODM_fieldName].toObject().o_get(
 			s_MongoBsonBinary_data, false, s_MongoBsonBinary_className
@@ -1038,6 +1081,15 @@ bool BsonToVariantConverter::convert(Variant *v)
 		/* Call bsonUnserialize on the object */
 		Func *m = c_class->lookupMethod(s_MongoDriverBsonUnserializable_functionName.get());
 
+#if HIPPO_HHVM_VERSION >= 31700
+		g_context->invokeFuncFew(
+			m,
+			obj.get(),
+			nullptr,
+			1, args
+		);
+#else
+		Variant result;
 		g_context->invokeFuncFew(
 			result.asTypedValue(),
 			m,
@@ -1045,6 +1097,7 @@ bool BsonToVariantConverter::convert(Variant *v)
 			nullptr,
 			1, args
 		);
+#endif
 
 		*v = Variant(obj);
 	} else if (type_descriminator == HIPPO_TYPEMAP_DEFAULT) {
