@@ -85,7 +85,7 @@ void hippo_log_handler(mongoc_log_level_t log_level, const char *log_domain, con
 	}
 }
 
-#define HIPPO_VERSION "1.2.1"
+#define HIPPO_VERSION "1.3.0-dev"
 
 static class MongoDBExtension : public Extension {
 	public:
