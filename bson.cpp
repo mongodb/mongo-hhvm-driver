@@ -689,15 +689,23 @@ bool hippo_bson_visit_regex(const bson_iter_t *iter __attribute__((unused)), con
 
 	/* Call __construct on the object */
 	static Class* c_class = Unit::getClass(s_MongoBsonRegex_className.get(), true);
-	HPHP::TypedValue ret;
 
+#if HIPPO_HHVM_VERSION >= 31700
+	g_context->invokeFunc(
+		c_class->getCtor(),
+		HPHP::make_packed_array(v_regex, v_options),
+		obj.get()
+	);
+#else
+	HPHP::TypedValue ret;
 	g_context->invokeFunc(
 		&ret,
 		c_class->getCtor(),
 		HPHP::make_packed_array(v_regex, v_options),
 		obj.get()
 	);
-	
+#endif
+
 	if (! state->options.types.regex_class_name.empty()) {
 		/* We have a type wrapped class, so wrap it */
 		Variant result = wrapObject(state->options.types.regex_class_name, obj);
