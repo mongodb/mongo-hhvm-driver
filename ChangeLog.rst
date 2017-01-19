@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+1.2.2
+-----
+
+** Bug
+    * [HHVM-281] - Fix compile issue with HHVM 3.17
+
+
 1.2.1
 -----
 
