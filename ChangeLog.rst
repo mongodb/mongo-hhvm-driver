@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+1.2.3
+-----
+
+** Bug
+    * [HHVM-284] - readConcern option should not be included in getMore commands
+
+
 1.2.2
 -----
 
