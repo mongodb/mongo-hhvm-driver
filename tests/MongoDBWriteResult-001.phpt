@@ -29,7 +29,7 @@ object(MongoDB\Driver\WriteResult)#%d (%d) {
     [0]=>
     object(MongoDB\Driver\WriteError)#%d (%d) {
       ["message"]=>
-      string(66) "E11000 duplicate key error%s"
+      string(%d) "E11000 duplicate key error%s"
       ["code"]=>
       int(11000)
       ["index"]=>
