@@ -713,11 +713,14 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 
 	if (options.exists(s_MongoDBDriverManager_appname)) {
 		if (!mongoc_uri_set_appname(uri, options[s_MongoDBDriverManager_appname].toString().c_str())) {
+			mongoc_uri_destroy(uri);
 			throw MongoDriver::Utils::throwInvalidArgumentException("Invalid appname value: '" + options[s_MongoDBDriverManager_appname].toString() + "'");
 		}
 	}
 
 	client = Pool::GetClient(data->m_hash, uri);
+
+	mongoc_uri_destroy(uri);
 
 	if (!client) {
 		throw MongoDriver::Utils::throwRunTimeException("Failed to create Manager from URI: '" + dsn + "'");

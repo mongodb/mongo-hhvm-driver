@@ -304,7 +304,7 @@ HPHP::Object Utils::doExecuteCommand(const char *db, mongoc_client_t *client, in
 		/* This throws an exception upon error */
 		hippo_advance_cursor_and_check_for_error(cmd_cursor);
 
-		return HPHP::hippo_cursor_init_for_command(cmd_cursor, client, db, command, readPreference);
+		cursor = cmd_cursor;
 	}
 
 	/* Prepare result */
