@@ -20,8 +20,6 @@
 #include "hphp/runtime/base/execution-context.h"
 #include "hphp/runtime/ext/stream/ext_stream.h"
 
-#undef TRACE
-
 #include "../../../bson.h"
 #include "../../../pool.h"
 #include "../../../utils.h"

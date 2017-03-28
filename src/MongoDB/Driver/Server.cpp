@@ -17,8 +17,6 @@
 #include "hphp/runtime/ext/extension.h"
 #include "hphp/runtime/vm/native-data.h"
 
-#undef TRACE
-
 #include "../../../bson.h"
 #include "../../../mongodb.h"
 #include "../../../utils.h"

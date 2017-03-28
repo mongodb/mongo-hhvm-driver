@@ -18,8 +18,6 @@
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/execution-context.h"
 
-#undef TRACE
-
 #include "../../../bson.h"
 #include "../../../mongodb.h"
 #include "../../../utils.h"
