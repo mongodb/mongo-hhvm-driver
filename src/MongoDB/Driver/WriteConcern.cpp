@@ -19,8 +19,6 @@
 #include "hphp/runtime/base/type-string.h"
 #include "hphp/runtime/base/string-buffer.h"
 
-#undef TRACE
-
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 

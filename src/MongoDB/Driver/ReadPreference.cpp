@@ -18,8 +18,6 @@
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/runtime/base/array-iterator.h"
 
-#undef TRACE
-
 #include "../../../mongodb.h"
 #include "../../../utils.h"
 

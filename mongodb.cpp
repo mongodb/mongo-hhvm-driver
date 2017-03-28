@@ -18,8 +18,6 @@
 #include "hphp/runtime/vm/native-data.h"
 #include "hphp/util/logger.h"
 
-#undef TRACE
-
 #include "src/MongoDB/Driver/BulkWrite.h"
 #include "src/MongoDB/Driver/Cursor.h"
 #include "src/MongoDB/Driver/CursorId.h"
