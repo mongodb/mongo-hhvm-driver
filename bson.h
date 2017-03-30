@@ -70,6 +70,8 @@ class VariantToBsonConverter
 		void _convertTimestamp(bson_t *bson, const char *key, Object v);
 		void _convertUTCDateTime(bson_t *bson, const char *key, Object v);
 
+		void _convertCursorId(bson_t *bson, const char *key, Object v);
+
 		void _convertSerializable(bson_t *bson, const char *key, Object v);
 
 		void convertDocument(bson_t *bson, const char *key, Variant v);
