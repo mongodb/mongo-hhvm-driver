@@ -35,6 +35,8 @@
 #include "src/MongoDB/BSON/Timestamp.h"
 #include "src/MongoDB/BSON/UTCDateTime.h"
 
+#include "src/MongoDB/Driver/CursorId.h"
+
 extern "C" {
 #include "libbson/src/bson/bson.h"
 #include "libmongoc/src/mongoc/mongoc.h"
@@ -413,6 +415,16 @@ void VariantToBsonConverter::_convertUTCDateTime(bson_t *bson, const char *key, 
 }
 /* }}} */
 
+/* {{{ MongoDriver\Driver\CursorId */
+void VariantToBsonConverter::_convertCursorId(bson_t *bson, const char *key, Object v)
+{
+	MongoDBDriverCursorIdData* data = Native::data<MongoDBDriverCursorIdData>(v.get());
+
+	bson_append_int64(bson, key, -1, data->id);
+}
+/* }}} */
+
+
 /* {{{ Special objects that implement MongoDB\BSON\Serializable */
 void VariantToBsonConverter::_convertSerializable(bson_t *bson, const char *key, Object v)
 {
@@ -528,6 +540,12 @@ bool VariantToBsonConverter::convertSpecialObject(bson_t *bson, const char *key,
 
 		throw MongoDriver::Utils::throwUnexpectedValueException("Unexpected MongoDB\\BSON\\Type instance: " + String(v->getClassName()));
 	}
+
+	if (v.instanceof(s_MongoDriverCursorId_className)) {
+		_convertCursorId(bson, key, v);
+		return true;
+	}
+
 	return false;
 }
 /* }}} */
