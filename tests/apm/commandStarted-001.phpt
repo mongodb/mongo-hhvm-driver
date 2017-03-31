@@ -1,7 +1,5 @@
 --TEST--
 APM: commandStarted callback
---SKIPIF--
-skip APM temporarily removed
 --FILE--
 <?php
 include dirname(__FILE__) . '/../utils.inc';
@@ -38,7 +36,7 @@ class MySubscriber implements MongoDB\Driver\Monitoring\CommandSubscriber
 $query = new MongoDB\Driver\Query( [] );
 $subscriber = new MySubscriber;
 
-$m->addSubscriber( $subscriber );
+MongoDB\Monitoring\addSubscriber( $subscriber );
 
 $cursor = $m->executeQuery( "demo.test", $query );
 ?>

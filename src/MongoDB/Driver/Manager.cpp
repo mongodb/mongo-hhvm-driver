@@ -88,6 +88,7 @@ const StaticString
 	s_MongoDBDriverManager_context_ssl_capath("capath"),
 	/* APM */
 	s_MongoDBDriverManager_subscribers("subscribers"),
+	s_MongoDBDriverManager__Dispatcher("MongoDB\\Monitoring\\_Dispatcher"),
 	s_MongoDBDriverManager_dispatchCommandStarted("_dispatchCommandStarted"),
 	s_MongoDBDriverManager_dispatchCommandSucceeded("_dispatchCommandSucceeded"),
 	s_MongoDBDriverManager_dispatchCommandFailed("_dispatchCommandFailed");
@@ -532,16 +533,22 @@ static bool hippo_mongo_driver_manager_apply_ssl_opts(mongoc_client_t *client, c
 	return 1;
 }
 
-#if APM_0
 void command_started(const mongoc_apm_command_started_t *event)
 {
-	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_started_get_context(event);
-	Class *cls = obj_context->getVMClass();
-	static Class *c_event;
+	Class *cls = Unit::lookupClass(s_MongoDBDriverManager__Dispatcher.get());
 	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandStarted.get());
+	static Class *c_event;
+	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_started_get_context(event);
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
 
-	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
+	auto prop = cls->lookupSProp(s_MongoDBDriverManager_subscribers.get());
+	auto val  = cls->getSPropData(prop);
+
+	if (!val) {
+		return;
+	}
+
+	Array subscribers = tvAsVariant(val).toArray();
 
 	if (subscribers.size() < 1) {
 		return;
@@ -584,13 +591,20 @@ void command_started(const mongoc_apm_command_started_t *event)
 
 static void command_succeeded(const mongoc_apm_command_succeeded_t *event)
 {
-	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_succeeded_get_context(event);
-	Class *cls = obj_context->getVMClass();
-	static Class *c_event;
+	Class *cls = Unit::lookupClass(s_MongoDBDriverManager__Dispatcher.get());
 	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandSucceeded.get());
+	static Class *c_event;
+	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_succeeded_get_context(event);
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
 
-	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
+	auto prop = cls->lookupSProp(s_MongoDBDriverManager_subscribers.get());
+	auto val  = cls->getSPropData(prop);
+
+	if (!val) {
+		return;
+	}
+
+	Array subscribers = tvAsVariant(val).toArray();
 
 	if (subscribers.size() < 1) {
 		return;
@@ -632,13 +646,20 @@ static void command_succeeded(const mongoc_apm_command_succeeded_t *event)
 
 static void command_failed(const mongoc_apm_command_failed_t *event)
 {
-	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_failed_get_context(event);
-	Class *cls = obj_context->getVMClass();
-	static Class *c_event;
+	Class *cls = Unit::lookupClass(s_MongoDBDriverManager__Dispatcher.get());
 	Func  *m   = cls->lookupMethod(s_MongoDBDriverManager_dispatchCommandFailed.get());
+	static Class *c_event;
+	ObjectData *obj_context = (ObjectData*) mongoc_apm_command_failed_get_context(event);
 	MongoDBDriverManagerData* data = Native::data<MongoDBDriverManagerData>(obj_context);
 
-	Array subscribers = obj_context->o_get(s_MongoDBDriverManager_subscribers, false, s_MongoDriverManager_className).toArray();
+	auto prop = cls->lookupSProp(s_MongoDBDriverManager_subscribers.get());
+	auto val  = cls->getSPropData(prop);
+
+	if (!val) {
+		return;
+	}
+
+	Array subscribers = tvAsVariant(val).toArray();
 
 	if (subscribers.size() < 1) {
 		return;
@@ -684,7 +705,6 @@ static void hippo_mongo_driver_manager_set_monitoring_callbacks(mongoc_client_t 
 	mongoc_client_set_apm_callbacks(client, callbacks, (void *) this_);
 	mongoc_apm_callbacks_destroy(callbacks);
 }
-#endif
 
 void MongoDBDriverManagerData::sweep()
 {
@@ -726,9 +746,7 @@ void HHVM_METHOD(MongoDBDriverManager, __construct, const String &dsn, const Arr
 	data->m_client = client;
 
 	hippo_mongo_driver_manager_apply_ssl_opts(data->m_client, driverOptions);
-#ifdef APM_0
 	hippo_mongo_driver_manager_set_monitoring_callbacks(data->m_client, this_);
-#endif
 }
 
 const StaticString
