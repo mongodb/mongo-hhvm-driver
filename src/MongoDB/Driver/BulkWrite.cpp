@@ -62,19 +62,32 @@ void HHVM_METHOD(MongoDBDriverBulkWrite, __construct, const Variant &bulkWriteOp
 	}
 }
 
-Variant HHVM_METHOD(MongoDBDriverBulkWrite, insert, const Variant &document)
+Variant HHVM_METHOD(MongoDBDriverBulkWrite, _insert, const Variant &document, const Array &options)
 {
 	MongoDBDriverBulkWriteData* data = Native::data<MongoDBDriverBulkWriteData>(this_);
-	bson_t *bson;
+	bson_t *binsert, *boptions;
+	bson_error_t error = {0};
 
-	VariantToBsonConverter converter(document, HIPPO_BSON_ADD_ID | HIPPO_BSON_RETURN_ID);
-	bson = bson_new();
-	converter.convert(bson);
+	VariantToBsonConverter insert_converter(document, HIPPO_BSON_ADD_ID | HIPPO_BSON_RETURN_ID);
+	binsert = bson_new();
+	insert_converter.convert(binsert);
 
-	mongoc_bulk_operation_insert(data->m_bulk, bson);
+	VariantToBsonConverter options_converter(options, HIPPO_BSON_NO_FLAGS);
+	boptions = bson_new();
+	options_converter.convert(boptions);
+
+	if (!mongoc_bulk_operation_insert_with_opts(data->m_bulk, binsert, boptions, &error)) {
+		bson_clear(&binsert);
+		bson_clear(&boptions);
+
+		throw MongoDriver::Utils::throwExceptionFromBsonError(&error);
+	}
 	data->m_num_ops++;
+	
+	bson_clear(&binsert);
+	bson_clear(&boptions);
 
-	return Variant(converter.m_out);
+	return Variant(insert_converter.m_out);
 }
 
 const StaticString
