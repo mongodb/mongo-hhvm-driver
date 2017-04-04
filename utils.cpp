@@ -162,7 +162,7 @@ HPHP::Object Utils::throwExceptionFromBsonError(bson_error_t *error)
 			return Utils::CreateAndConstruct(s_MongoDriverExceptionRuntimeException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 
 		case MONGOC_ERROR_COMMAND_INVALID_ARG:
-			return Utils::CreateAndConstruct(s_MongoDriverExceptionInvalidArgumentException_className, HPHP::Variant("Cannot execute an empty BulkWrite"), HPHP::Variant((uint64_t) 0));
+			return Utils::CreateAndConstruct(s_MongoDriverExceptionInvalidArgumentException_className, HPHP::Variant(error->message), HPHP::Variant((uint64_t) error->code));
 	}
 	switch (error->domain) {
 		case MONGOC_ERROR_CLIENT:

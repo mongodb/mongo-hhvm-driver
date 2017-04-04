@@ -26,5 +26,5 @@ var_dump( MongoDB\BSON\toJson( MongoDB\BSON\fromPHP( $a ) ) );
 var_dump( MongoDB\BSON\toJson( MongoDB\BSON\fromPHP( $f ) ) );
 ?>
 --EXPECTF--
-string(6%d) "{ "barbar" : 3.141592653589%d, "foo" : { "3" : 42, "1" : false } }"
+string(%d) "{ "barbar" : 3.141592653589%d, "foo" : { "3" : 42, "1" : false } }"
 string(25) "{ "3" : 42, "1" : false }"

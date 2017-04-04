@@ -209,7 +209,11 @@ void VariantToBsonConverter::convertDouble(bson_t *bson, const char *key, double
 
 void VariantToBsonConverter::convertString(bson_t *bson, const char *key, String v)
 {
-	bson_append_utf8(bson, key, -1, v.c_str(), v.size());
+	if (bson_utf8_validate(v.c_str(), v.size(), true)) {
+		bson_append_utf8(bson, key, -1, v.c_str(), v.size());
+	} else {
+		throw MongoDriver::Utils::throwUnexpectedValueException("Got invalid UTF-8 value serializing '" + String(v.c_str()) + "'");
+	}
 }
 
 char *VariantToBsonConverter::_getUnmangledPropertyName(String key)
@@ -280,9 +284,16 @@ void VariantToBsonConverter::convertDocument(bson_t *bson, const char *property_
 			const char *unmangledName;
 
 			unmangledName = _getUnmangledPropertyName(s_key);
+			if (strlen(s_key.c_str()) != s_key.size()) {
+				free((void*) unmangledName);
+				throw MongoDriver::Utils::throwUnexpectedValueException("BSON keys cannot contain null bytes. Unexpected null byte after \"" + String(s_key.c_str()) + "\".");
+			}
 			convertElement(property_name != NULL ? &child : bson, unmangledName, data);
 			free((void*) unmangledName);
 		} else {
+			if (strlen(s_key.c_str()) != s_key.size()) {
+				throw MongoDriver::Utils::throwUnexpectedValueException("BSON keys cannot contain null bytes. Unexpected null byte after \"" + String(s_key.c_str()) + "\".");
+			}
 			convertElement(property_name != NULL ? &child : bson, s_key.c_str(), data);
 		}
 		m_level--;

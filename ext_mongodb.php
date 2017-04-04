@@ -737,8 +737,39 @@ final class BulkWrite implements \Countable {
 	<<__Native>>
 	public function __construct(?array $bulkWriteOptions = array());
 
+	private function _isLegacyIndex( mixed $document )
+	{
+		$docAsArray = (array) $document;
+
+		if (
+			array_key_exists( 'key', $docAsArray ) &&
+			( is_array( $docAsArray['key'] ) || is_object( $docAsArray ) ) &&
+			array_key_exists( 'name', $docAsArray ) &&
+			is_string( $docAsArray['name'] ) &&
+			array_key_exists( 'ns', $docAsArray ) &&
+			is_string( $docAsArray['ns'] )
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public function insert( mixed $document ) : mixed
+	{
+		$options = [];
+
+		if ( $this->_isLegacyIndex( $document ) )
+		{
+			$options['legacyIndex'] = true;
+		}
+
+		/* Can throw an exception */
+		return $this->_insert( $document, $options );
+	}
+
 	<<__Native>>
-	public function insert(mixed $document) : mixed;
+	private function _insert( mixed $document, array $options ) : mixed;
 
 	private function _queryOptBool( array &$transformedOptions, array $options, string $key )
 	{

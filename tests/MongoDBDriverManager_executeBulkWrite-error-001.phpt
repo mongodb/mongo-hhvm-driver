@@ -19,4 +19,4 @@ try {
 ?>
 --EXPECT--
 MongoDB\Driver\Exception\InvalidArgumentException
-Cannot execute an empty BulkWrite
+Cannot do an empty bulk write
