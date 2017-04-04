@@ -861,7 +861,7 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 	<<__Native>>
 	private function _setMaxStalenessSeconds(int $maxStalenessSeconds): void;
 
-	public function __construct(int $readPreference, array $tagSets = null, array $options = [] )
+	public function __construct(mixed $readPreference, array $tagSets = null, array $options = [] )
 	{
 		if ($tagSets !== NULL && gettype($tagSets) != 'array') {
 			return;
@@ -879,7 +879,30 @@ final class ReadPreference implements \MongoDB\BSON\Serializable {
 				break;
 
 			default:
-				Utils::throwHippoException(Utils::ERROR_INVALID_ARGUMENT, "Invalid mode: " . $readPreference);
+				if ( strcasecmp( $readPreference, 'primary' ) == 0 )
+				{
+					$this->_setReadPreference(ReadPreference::RP_PRIMARY);
+				}
+				else if ( strcasecmp( $readPreference, 'primaryPreferred' ) == 0 )
+				{
+					$this->_setReadPreference(ReadPreference::RP_PRIMARY_PREFERRED);
+				}
+				else if ( strcasecmp( $readPreference, 'secondary' ) == 0 )
+				{
+					$this->_setReadPreference(ReadPreference::RP_SECONDARY);
+				}
+				else if ( strcasecmp( $readPreference, 'secondaryPreferred' ) == 0 )
+				{
+					$this->_setReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+				}
+				else if ( strcasecmp( $readPreference, 'nearest' ) == 0 )
+				{
+					$this->_setReadPreference(ReadPreference::RP_NEAREST);
+				}
+				else
+				{
+					Utils::throwHippoException(Utils::ERROR_INVALID_ARGUMENT, "Invalid mode: " . $readPreference);
+				}
 				break;
 		}
 
