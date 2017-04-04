@@ -25,11 +25,7 @@ HHVM_EXTENSION(mongodb
  src/MongoDB/Driver/Monitoring/CommandStartedEvent.cpp
  src/MongoDB/Driver/Monitoring/CommandSucceededEvent.cpp
  src/MongoDB/Driver/Monitoring/CommandFailedEvent.cpp
- libbson/src/yajl/yajl.c libbson/src/yajl/yajl_alloc.c
- libbson/src/yajl/yajl_buf.c libbson/src/yajl/yajl_encode.c
- libbson/src/yajl/yajl_gen.c libbson/src/yajl/yajl_lex.c
- libbson/src/yajl/yajl_parser.c libbson/src/yajl/yajl_tree.c
- libbson/src/yajl/yajl_version.c
+ libbson/src/jsonsl/jsonsl.c
  libbson/src/bson/bcon.c libbson/src/bson/bson-atomic.c
  libbson/src/bson/bson-clock.c libbson/src/bson/bson-context.c
  libbson/src/bson/bson-decimal128.c
@@ -69,7 +65,6 @@ HHVM_EXTENSION(mongodb
  libmongoc/src/mongoc/mongoc-log.c
  libmongoc/src/mongoc/mongoc-matcher-op.c libmongoc/src/mongoc/mongoc-matcher.c
  libmongoc/src/mongoc/mongoc-memcmp.c
- libmongoc/src/mongoc/mongoc-opcode.c
  libmongoc/src/mongoc/mongoc-openssl.c
  libmongoc/src/mongoc/mongoc-queue.c
  libmongoc/src/mongoc/mongoc-rand-common-crypto.c
