@@ -95,6 +95,7 @@ static class MongoDBExtension : public Extension {
 			HHVM_FALIAS(MongoDB\\BSON\\fromJson, MongoDBBsonFromJson);
 			HHVM_FALIAS(MongoDB\\BSON\\toPHP, MongoDBBsonToPHP);
 			HHVM_FALIAS(MongoDB\\BSON\\toJson, MongoDBBsonToJson);
+			HHVM_FALIAS(MongoDB\\BSON\\toExtendedJson, MongoDBBsonToExtendedJson);
 
 			/* MongoDB\BSON\Binary */
 			Native::registerClassConstant<KindOfInt64>(s_MongoBsonBinary_className.get(), makeStaticString("TYPE_GENERIC"), (int64_t) BSON_SUBTYPE_BINARY);

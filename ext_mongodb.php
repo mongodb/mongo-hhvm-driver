@@ -1253,6 +1253,9 @@ function toPHP(string $data, ?array $typemap = array()) : mixed;
 <<__Native>>
 function toJson(string $data) : mixed;
 
+<<__Native>>
+function toExtendedJson(string $data) : mixed;
+
 trait DenySerialization
 {
 	public function serialize() : string
