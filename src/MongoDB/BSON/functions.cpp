@@ -82,7 +82,7 @@ Variant HHVM_FUNCTION(MongoDBBsonToPHP, const String &data, const Variant &typem
 	}
 }
 
-Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
+static Variant hippo_bson_to_json(const String &data, int type)
 {
 	const bson_t  *b;
 	bson_reader_t *reader;
@@ -97,7 +97,11 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 		size_t  str_len;
 		unsigned char *data_s;
 
-		str = bson_as_json(b, &str_len);
+		if (type == 0) {
+			str = bson_as_json(b, &str_len);
+		} else {
+			str = bson_as_extended_json(b, &str_len);
+		}
 
 		if (!str) {
 			bson_reader_destroy(reader);
@@ -124,6 +128,17 @@ Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
 
 	return Variant(s);
 }
+
+Variant HHVM_FUNCTION(MongoDBBsonToJson, const String &data)
+{
+	return hippo_bson_to_json(data, 0);
+}
+
+Variant HHVM_FUNCTION(MongoDBBsonToExtendedJson, const String &data)
+{
+	return hippo_bson_to_json(data, 1);
+}
+
 
 
 }
