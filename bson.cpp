@@ -178,8 +178,10 @@ void VariantToBsonConverter::convertElement(bson_t *bson, const char *key, Varia
 			throw MongoDriver::Utils::throwUnexpectedValueException((char*) message.toString().c_str());
 			return;
 		}
+#if HIPPO_HHVM_VERSION < 31900
 		case KindOfClass:
 			not_reached();
+#endif
 	}
 }
 
