@@ -1,5 +1,13 @@
-ChangeLog
+CHANGELOG
 =========
+
+1.2.4
+-----
+
+** Bug
+    * [HHVM-287] - Using a projection with an empty field name causes a crash when destroying cursor
+    * [HHVM-293] - API breaks in HHVM 3.18 and 3.19
+
 
 1.2.3
 -----
