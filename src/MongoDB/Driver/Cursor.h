@@ -52,6 +52,8 @@ class MongoDBDriverCursorData
 
 		void sweep() {
 			mongoc_cursor_destroy(cursor);
+			free(m_db);
+			free(m_collection);
 		}
 
 		MongoDBDriverCursorData() {

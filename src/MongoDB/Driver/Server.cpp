@@ -80,6 +80,7 @@ Object hippo_mongo_driver_server_create_from_id(mongoc_client_t *client, uint32_
 	}
 
 	tmp->o_set(s_MongoDriverServer___serverId, mongoc_server_description_host(sd)->host_and_port, s_MongoDriverServer_className);
+	mongoc_server_description_destroy(sd);
 
 	MongoDBDriverServerData* result_data = Native::data<MongoDBDriverServerData>(tmp);
 
