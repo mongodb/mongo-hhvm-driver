@@ -1,6 +1,10 @@
 MongoDB
 =======
 
+**Note:** This driver is no longer maintained. Please read the announcement_.
+
+.. _announcement: https://drck.me/hhvm-mongo-da6
+
 This is the low-level HHVM driver for MongoDB. The API is the same as the PHP
 driver for MongoDB. The documentation for both of them is the same, and can be
 found at http://www.php.net/manual/en/set.mongodb.php
