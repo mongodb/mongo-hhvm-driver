@@ -2,7 +2,8 @@
 
 The MongoDB HHVM Driver is now officially end-of-life (EOL). No further development, bugfixes, enhancements, documentation changes or maintenance will be provided by this project and pull requests will no longer be accepted.
 
-## About
+About
+-----
 
 This is the low-level HHVM driver for MongoDB. The API is the same as the PHP
 driver for MongoDB. The documentation for both of them is the same, and can be
